@@ -55,57 +55,219 @@
                                     <artifactId>assembly</artifactId>
                                     <version>${project.version}</version>
                                     <type>tar.gz</type>
+                                    <fileMappers>
+                                      <org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
+                                        <pattern>^\Qassembly-${project.version}/\E</pattern>
+                                        <replacement>./</replacement>
+                                      </org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
+                                    </fileMappers>
                                 </artifactItem>
                             </artifactItems>
+                            <outputDirectory>${project.build.directory}/minion/opt/karaf</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- BUILD THE DOCKER IMAGE -->
             <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <extensions>true</extensions>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
-                    <skip>${skip-docker-image-build}</skip>
-                    <showLogs>true</showLogs>
-                    <images>
-                        <image>
-                            <name>${docker.image}</name>
-                            <build>
-                                <dockerFileDir>app</dockerFileDir>
-                                <filter>@</filter>
-                                <assemblies>
-                                    <!-- COPY the assembly contents to the docker build directory under subdirectory "worK" -->
-                                    <assembly>
-                                        <name>work</name>
-                                        <inline>
-                                            <id>copy-archive</id>
-                                            <fileSets>
-                                                <fileSet>
-                                                    <directory>${project.build.directory}/dependency/assembly-${project.version}</directory>
-                                                    <outputDirectory>karaf</outputDirectory>
-                                                </fileSet>
-                                            </fileSets>
-                                        </inline>
-                                    </assembly>
-                                </assemblies>
-                                <skipPush>${docker.image.skipPush}</skipPush> <!-- only applies to the push goal - not the build goal -->
-                            </build>
-                        </image>
-                    </images>
+                    <from>
+                        <image>opennms/deploy-base:jre-1.2.0.b105</image>
+                    </from>
+                    <to>
+                        <image>${docker.image}</image>
+                    </to>
+                    <container>
+                        <entrypoint>
+                            <entrypoint>/opt/karaf/bin/karaf</entrypoint>
+                        </entrypoint>
+                        <args>
+                            <arg>daemon</arg>
+                        </args>
+<!--                        <user>nobody</user>-->
+                        <appRoot>/opt/karaf</appRoot>
+                        <workingDirectory>/opt/karaf</workingDirectory>
+                        <environment>
+
+                        </environment>
+                        <labels>
+                            <!--
+                            <org.opencontainers.image.created>${BUILD_DATE}</org.opencontainers.image.created>
+                            <org.opencontainers.image.title>TBD ${VERSION}</org.opencontainers.image.title>
+                            <org.opencontainers.image.source>${SOURCE}</org.opencontainers.image.source>
+                            <org.opencontainers.image.revision>${REVISION}</org.opencontainers.image.revision>
+                            <org.opencontainers.image.version>${VERSION}</org.opencontainers.image.version>
+                            -->
+                            <org.opencontainers.image.vendor>The OpenNMS Group, Inc.</org.opencontainers.image.vendor>
+                            <org.opencontainers.image.authors>OpenNMS Community</org.opencontainers.image.authors>
+                            <org.opencontainers.image.licenses>AGPL-3.0</org.opencontainers.image.licenses>
+                            <!--
+                            <org.opennms.image.base>${BASE_IMAGE}</org.opennms.image.base>
+                            <org.opennme.cicd.jobid>${BUILD_JOB_ID}</org.opennme.cicd.jobid>
+                            <org.opennms.cicd.buildnumber>${BUILD_NUMBER}</org.opennms.cicd.buildnumber>
+                            <org.opennms.cicd.buildurl>${BUILD_URL}</org.opennms.cicd.buildurl>
+                            <org.opennms.cicd.branch>${BUILD_BRANCH}</org.opennms.cicd.branch>
+                            -->
+                        </labels>
+                        <ports>
+                            <port>5005</port>
+                            <port>8101</port>
+                            <port>8181</port>
+                        </ports>
+
+                    </container>
+                    <extraDirectories>
+                        <paths>
+                            <path>${project.build.directory}/minion/</path>
+                        </paths>
+                        <permissions>
+                            <permission>
+                                <file>/opt/karaf/bin/karaf</file>
+                                <mode>755</mode>
+                            </permission>
+                        </permissions>
+                    </extraDirectories>
+                    <pluginExtensions>
+
+                        <pluginExtension>
+                            <implementation>org.opennms.horizon.shared.maven.jib.extension.LayerRemover</implementation>
+                        </pluginExtension>
+                        <pluginExtension>
+                            <implementation>com.google.cloud.tools.jib.maven.extension.layerfilter.JibLayerFilterExtension</implementation>
+                            <configuration implementation="com.google.cloud.tools.jib.maven.extension.layerfilter.Configuration">
+                                <filters>
+                                    <!-- Declare layer ordering -->
+                                    <filter>
+                                        <glob>_nothing_</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>_nothing_</glob>
+                                        <toLayer>apache</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>_nothing_</glob>
+                                        <toLayer>third-party</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>_nothing_</glob>
+                                        <toLayer>opennms</toLayer>
+                                    </filter>
+
+                                    <!-- actual filters -->
+                                    <filter>
+                                        <glob>/opt/karaf/bin/**</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/data/**</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/deploy/**</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/etc/**</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/lib/**</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/system</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/system/**</glob>
+                                        <toLayer>third-party</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/system/org/apache/**</glob>
+                                        <toLayer>apache</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/system/org/apache/karaf/**</glob>
+                                        <toLayer>karaf</toLayer>
+                                    </filter>
+                                    <filter>
+                                        <glob>/opt/karaf/system/org/opennms/**</glob>
+                                        <toLayer>opennms</toLayer>
+                                    </filter>
+                                </filters>
+                            </configuration>
+                        </pluginExtension>
+                    </pluginExtensions>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-layer-filter-extension-maven</artifactId>
+                        <version>0.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.opennms.horizon.shared</groupId>
+                        <artifactId>jib-extensions</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <!-- BUILD THE DOCKER IMAGE -->
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <skip>${skip-docker-image-build}</skip>
+                            <showLogs>true</showLogs>
+                            <images>
+                                <image>
+                                    <name>${docker.image}</name>
+                                    <build>
+                                        <dockerFileDir>app</dockerFileDir>
+                                        <filter>@</filter>
+                                        <assemblies>
+                                            <!-- COPY the assembly contents to the docker build directory under subdirectory "worK" -->
+                                            <assembly>
+                                                <name>work</name>
+                                                <inline>
+                                                    <id>copy-archive</id>
+                                                    <fileSets>
+                                                        <fileSet>
+                                                            <directory>${project.build.directory}/dependency/assembly-${project.version}</directory>
+                                                            <outputDirectory>karaf</outputDirectory>
+                                                        </fileSet>
+                                                    </fileSets>
+                                                </inline>
+                                            </assembly>
+                                        </assemblies>
+                                        <skipPush>${docker.image.skipPush}</skipPush> <!-- only applies to the push goal - not the build goal -->
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

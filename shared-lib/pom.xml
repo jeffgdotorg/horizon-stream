@@ -22,6 +22,7 @@
         <module>horizon-common-logging</module>
         <module>horizon-common-utils</module>
         <module>horizon-ipc</module>
+        <module>maven</module>
         <module>snmp</module>
         <module>icmp-api</module>
         <module>protobuf</module>
