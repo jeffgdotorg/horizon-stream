@@ -6,6 +6,7 @@ metadata:
   labels:
     app: {{ .Values.OpenNMS.Core.ServiceName }}
     app.kubernetes.io/name: {{ .Values.OpenNMS.Core.ServiceName }}
+    ignite-cluster: core
   annotations:
     autoupdate: "true"
 spec:
@@ -13,10 +14,12 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.OpenNMS.Core.ServiceName }}
+      ignite-cluster: core
   template:
     metadata:
       labels:
         app: {{ .Values.OpenNMS.Core.ServiceName }}
+        ignite-cluster: core
     spec:
       {{- if .Values.NodeRestrictions.Enabled }}
       tolerations:
@@ -107,7 +110,11 @@ spec:
             - name: http
               containerPort: {{ .Values.OpenNMS.Core.HttpPort }}
             - name: grpc
-              containerPort: {{ .Values.OpenNMS.Core.GrpcPort }}
+              containerPort: {{ .Values.OpenNMS.Core.GrpcPort }}                        
+            - name: ignite1
+              containerPort: 47100
+            - name: ignite2
+              containerPort: 47500
           {{- if not .Values.TestDeploy }}
 {{/*    TODO  livenessProbe:*/}}
 {{/*          readinessProbe:*/}}

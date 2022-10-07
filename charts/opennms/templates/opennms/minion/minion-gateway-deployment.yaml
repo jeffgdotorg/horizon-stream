@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-minion-gateway
+  labels:
+    ignite-cluster: core
+    app: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
+  replicas: {{ .Values.OpenNMS.Minion.Replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
+        ignite-cluster: core
+    spec:
+      containers:
+        - name: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
+          image: {{ .Values.OpenNMS.Minion.GatewayImage }}
+          imagePullPolicy: {{ .Values.OpenNMS.Minion.ImagePullPolicy }}
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.OpenNMS.MinionGateway.Port }}
+            - name: igniteClient
+              containerPort: {{ .Values.OpenNMS.Minion.IgniteClientPort }}
+            - name: igniteCluster
+              containerPort: {{ .Values.OpenNMS.Core.IgniteClusterPort }}
+            - name: igniteDiscovery
+              containerPort: {{ .Values.OpenNMS.Core.IgniteDiscoveryPort }}
+          resources:
+            limits:
+              cpu: "{{ .Values.OpenNMS.MinionGateway.Resources.Limits.Cpu }}"
+              memory: "{{ .Values.OpenNMS.MinionGateway.Resources.Limits.Memory }}"
+            requests:
+              cpu: "{{ .Values.OpenNMS.MinionGateway.Resources.Requests.Cpu }}"
+              memory: "{{ .Values.OpenNMS.MinionGateway.Resources.Requests.Memory }}"

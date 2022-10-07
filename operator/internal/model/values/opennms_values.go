@@ -23,17 +23,23 @@ type OpenNMSValues struct {
 }
 
 type CoreValues struct {
-	ServiceValues `yaml:",inline"`
-	HttpPort      int `yaml:"HttpPort"`
-	SshPort       int `yaml:"SshPort"`
-	GrpcPort      int `yaml:"GrpcPort"`
+	ServiceValues       `yaml:",inline"`
+	HttpPort            int `yaml:"HttpPort"`
+	SshPort             int `yaml:"SshPort"`
+	GrpcPort            int `yaml:"GrpcPort"`
+	IgniteClusterPort   int `yaml:"IgniteClusterPort"`
+	IgniteDiscoveryPort int `yaml:"IgniteDiscoveryPort"`
 }
 
 type MinionValues struct {
 	ServiceValues `yaml:",inline"`
 	SshPort       int `yaml:"SshPort"`
-	SnmpPort      int `yaml:"SnmpPort"`
-	SyslogPort    int `yaml:"SyslogPort"`
+}
+
+type MinionGatewayValues struct {
+	ServiceValues    `yaml:",inline"`
+	GrpcPort         int `yaml:"GrpcPort"`
+	IgniteClientPort int `yaml:"IgniteClientPort"`
 }
 
 type TimeseriesValues struct {

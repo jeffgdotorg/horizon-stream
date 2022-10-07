@@ -10,6 +10,8 @@ OpenNMS:
     HttpPort: 8181
     SshPort: 8101
     GrpcPort: 8990
+    IgniteClusterPort: 47100
+    IgniteDiscoveryPort: 47500
     Resources:
       Limits:
         Cpu: "2"
@@ -47,12 +49,26 @@ OpenNMS:
         Memory: 250Mi
   Minion:
     ServiceName: opennms-minion
-    Image: opennms/minion:29.0.10
+    Image: opennms/horizon-stream-minion
     ImagePullPolicy: IfNotPresent
     Replicas: 1
-    SshPort: 8201
-    SnmpPort: 1162
-    SyslogPort: 1514
+    Port: 8181
+    SshPort: 8101
+    Resources:
+      Limits:
+        Cpu: "1"
+        Memory: 2050M
+      Requests:
+        Cpu: "1"
+        Memory: 512Mi
+  MinionGateway:
+    ServiceName: opennms-minion-gateway
+    GatewayImage: opennms/horizon-stream-minion-gateway
+    ImagePullPolicy: IfNotPresent
+    Port: 8080
+    GrpcPort: 8990
+    IgniteClientPort: 10800
+    Replicas: 1
     Resources:
       Limits:
         Cpu: "1"

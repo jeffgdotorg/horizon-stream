@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.OpenNMS.Core.ServiceName }}-ignite
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.OpenNMS.Core.IgnitePort1 }}
+      protocol: TCP
+      name: igniteCluster
+    - port: {{ .Values.OpenNMS.Core.IgnitePort2 }}
+      protocol: TCP
+      name: igniteDiscovery
+  selector:
+    ignite-cluster: core

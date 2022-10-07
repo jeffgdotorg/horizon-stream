@@ -30,10 +30,12 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 	//core
 	var configMap corev1.ConfigMap
 	var coreService corev1.Service
+	var coreIgniteService corev1.Service
 	var coreDeployment appsv1.Deployment
 
 	yaml.LoadYaml(filepath("opennms/core/core-configmap.yaml"), values, &configMap)
 	yaml.LoadYaml(filepath("opennms/core/core-service.yaml"), values, &coreService)
+	yaml.LoadYaml(filepath("opennms/core/core-ignite-service.yaml"), values, &coreIgniteService)
 	yaml.LoadYaml(filepath("opennms/core/core-deployment.yaml"), values, &coreDeployment)
 
 	//api
@@ -53,11 +55,17 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 	//minion
 	var minionCM corev1.ConfigMap
 	var minionSVC corev1.Service
+	var minionGatewaySVC corev1.Service
+	var minionGatewayIgniteSVC corev1.Service
 	var minionDeploy appsv1.Deployment
+	var minionGatewayDeploy appsv1.Deployment
 
 	yaml.LoadYaml(filepath("opennms/minion/minion-configmap.yaml"), values, &minionCM)
 	yaml.LoadYaml(filepath("opennms/minion/minion-service.yaml"), values, &minionSVC)
+	yaml.LoadYaml(filepath("opennms/minion/minion-gateway-service.yaml"), values, &minionGatewaySVC)
+	yaml.LoadYaml(filepath("opennms/minion/minion-gateway-ignite-service.yaml"), values, &minionGatewayIgniteSVC)
 	yaml.LoadYaml(filepath("opennms/minion/minion-deployment.yaml"), values, &minionDeploy)
+	yaml.LoadYaml(filepath("opennms/minion/minion-gateway-deployment.yaml"), values, &minionGatewayDeploy)
 
 	//notification
 	var noteDeployment appsv1.Deployment
@@ -69,6 +77,7 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 	h.Config = []client.Object{
 		&configMap,
 		&coreService,
+		&coreIgniteService,
 		&coreDeployment,
 		&apiService,
 		&apiDeployment,

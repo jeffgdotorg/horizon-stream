@@ -9,7 +9,6 @@ require (
 	github.com/elastic/cloud-on-k8s v0.0.0-20220204111846-a1f1f0019957
 	github.com/go-co-op/gocron v1.11.0
 	github.com/go-logr/logr v1.2.2
-	github.com/google/uuid v1.3.0
 	github.com/mittwald/go-helm-client v0.11.3
 	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.2
@@ -78,6 +77,7 @@ require (
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gosuri/uitable v0.0.4 // indirect
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7 // indirect
