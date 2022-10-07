@@ -36,6 +36,8 @@ requires:
     path: shared-lib/skaffold.yaml
   - configs: ["horizon-stream-ui"]
     path: ui/skaffold.yaml
+  - configs: ["minion-gateway"]
+    path: minion-gateway/skaffold.yaml
   - configs: ["operator"]
     path: operator/skaffold.yaml
 build:
@@ -186,6 +188,8 @@ deploy:
           OpenNMS.API.Image: opennms/horizon-stream-rest-server
           OpenNMS.UI.Image: opennms/horizon-stream-ui
           OpenNMS.Notification.Image: opennms/horizon-stream-notification
+          OpenNMS.Minion.Image: opennms/horizon-stream-minion
+          OpenNMS.MinionGateway.Image: opennms/horizon-stream-minion-gateway
           Keycloak.Image: opennms/horizon-stream-keycloak-dev
           Grafana.Image: opennms/horizon-stream-grafana-dev
 profiles:
