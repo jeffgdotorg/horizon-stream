@@ -329,6 +329,7 @@
     </feature>
 
     <feature name="horizon-shared-task-set-publisher-common" version="${project.version}">
+        <feature>protobuf</feature>
         <feature version="${project.version}">3rdparty-ignite</feature>
 
         <bundle>mvn:org.opennms.horizon.shared/protobuf/${project.version}</bundle>
