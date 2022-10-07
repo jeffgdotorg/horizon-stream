@@ -108,29 +108,6 @@ data:
               "create-client"
             ]
           }
-        },
-        {
-          "username": "{{ .Values.Keycloak.UserUsername }}",
-          "firstName": "User001",
-          "lastName": "",
-          "email": "user001@test.opennms.org",
-          "enabled": true,
-          "emailVerified": false,
-          "credentials": [
-            {
-              "type": "password",
-              "value": "{{ .Values.Keycloak.UserPassword }}"
-            }
-          ],
-          "realmRoles": [
-            "user"
-          ],
-          "clientRoles": {
-            "account": [
-              "manage-account",
-              "view-profile"
-            ]
-          }
         }
       ]
     }

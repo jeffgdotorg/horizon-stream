@@ -111,10 +111,10 @@ spec:
               containerPort: {{ .Values.OpenNMS.Core.HttpPort }}
             - name: grpc
               containerPort: {{ .Values.OpenNMS.Core.GrpcPort }}                        
-            - name: ignite1
-              containerPort: 47100
-            - name: ignite2
-              containerPort: 47500
+            - name: ig-cluster
+              containerPort: {{ .Values.OpenNMS.Core.IgniteClusterPort }}
+            - name: ig-discovery
+              containerPort: {{ .Values.OpenNMS.Core.IgniteDiscoveryPort }}
           {{- if not .Values.TestDeploy }}
 {{/*    TODO  livenessProbe:*/}}
 {{/*          readinessProbe:*/}}

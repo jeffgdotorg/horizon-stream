@@ -51,7 +51,7 @@ spec:
             - name: http
               containerPort: {{ .Values.OpenNMS.Minion.Port }}
             - name: ssh
-              containerPort: {{ .Values.OpenNMS.Minion.GrpcPort }}
+              containerPort: {{ .Values.OpenNMS.Minion.SshPort }}
           volumeMounts:
             - name: minion-config-volume
               mountPath: "/opt/karaf/etc/org.opennms.core.ipc.grpc.client.cfg"

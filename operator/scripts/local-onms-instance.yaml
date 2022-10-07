@@ -22,7 +22,7 @@ spec:
     cpu: "0"
     mem: 100Mi
   minion:
-    image: opennms/minion:29.0.10
+    image: opennms/horizon-stream-minion
     cpu: "0"
     mem: 1000Mi
   notification:
@@ -30,7 +30,7 @@ spec:
     cpu: "0"
     mem: 100Mi
   keycloak:
-    image: opennms/horizon-stream-keycloak:latest
+    image: opennms/horizon-stream-keycloak:test
   grafana:
     image: opennms/horizon-stream-grafana
   postgres:

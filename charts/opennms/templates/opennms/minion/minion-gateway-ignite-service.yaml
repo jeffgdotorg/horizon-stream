@@ -10,7 +10,7 @@ spec:
   ports:
     - port: {{ .Values.OpenNMS.MinionGateway.IgniteClientPort }}
       protocol: TCP
-      name: ignite-client
+      name: ig-client
       targetPort: {{ .Values.OpenNMS.MinionGateway.IgniteClientPort }}
   selector:
     app: {{ .Values.OpenNMS.MinionGateway.ServiceName }}

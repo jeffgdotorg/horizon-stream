@@ -15,11 +15,12 @@ limitations under the License.
 package values
 
 type OpenNMSValues struct {
-	Core         CoreValues    `yaml:"Core"`
-	API          ServiceValues `yaml:"API"`
-	UI           ServiceValues `yaml:"UI"`
-	Minion       MinionValues  `yaml:"Minion"`
-	Notification ServiceValues `yaml:"Notification"`
+	Core          CoreValues          `yaml:"Core"`
+	API           ServiceValues       `yaml:"API"`
+	UI            ServiceValues       `yaml:"UI"`
+	Minion        MinionValues        `yaml:"Minion"`
+	MinionGateway MinionGatewayValues `yaml:"MinionGateway"`
+	Notification  ServiceValues       `yaml:"Notification"`
 }
 
 type CoreValues struct {

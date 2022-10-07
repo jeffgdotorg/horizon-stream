@@ -118,8 +118,6 @@ Keycloak:
       Memory: 500Mi
   AdminUsername: admin
   AdminPassword: notset
-  UserUsername: user001
-  UserPassword: notset
   RealmName: opennms
 Grafana:
   Path: /grafana

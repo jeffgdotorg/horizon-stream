@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-minion-gateway
+  name: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
   labels:
     ignite-cluster: core
-    app: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
+    app: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
-  replicas: {{ .Values.OpenNMS.Minion.Replicas }}
+      app: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
+  replicas: {{ .Values.OpenNMS.MinionGateway.Replicas }}
   template:
     metadata:
       labels:
-        app: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
+        app: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
         ignite-cluster: core
     spec:
       containers:
-        - name: {{ .Values.OpenNMS.Minion.ServiceName }}-gateway
-          image: {{ .Values.OpenNMS.Minion.GatewayImage }}
+        - name: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
+          image: {{ .Values.OpenNMS.MinionGateway.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.Minion.ImagePullPolicy }}
           env:
             - name: JAVA_TOOL_OPTIONS
@@ -29,11 +29,13 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.MinionGateway.Port }}
-            - name: igniteClient
-              containerPort: {{ .Values.OpenNMS.Minion.IgniteClientPort }}
-            - name: igniteCluster
+            - name: grpc
+              containerPort: {{ .Values.OpenNMS.MinionGateway.GrpcPort }}
+            - name: ig-client
+              containerPort: {{ .Values.OpenNMS.MinionGateway.IgniteClientPort }}
+            - name: ig-cluster
               containerPort: {{ .Values.OpenNMS.Core.IgniteClusterPort }}
-            - name: igniteDiscovery
+            - name: ig-discovery
               containerPort: {{ .Values.OpenNMS.Core.IgniteDiscoveryPort }}
           resources:
             limits:
