@@ -63,7 +63,7 @@ OpenNMS:
         Memory: 512Mi
   MinionGateway:
     ServiceName: opennms-minion-gateway
-    GatewayImage: opennms/horizon-stream-minion-gateway
+    Image: opennms/horizon-stream-minion-gateway
     ImagePullPolicy: IfNotPresent
     Port: 8080
     GrpcPort: 8990
@@ -164,7 +164,7 @@ Prometheus:
         Memory: 100Mi
 Kafka:
   ServiceName: onms-kafka
-  Image: quay.io/strimzi/kafka:latest-kafka-2.8.1
+  Image: quay.io/strimzi/kafka:latest-kafka-3.3.1
   ImagePullPolicy: IfNotPresent
   Replicas: 1 
   Port: 9092
