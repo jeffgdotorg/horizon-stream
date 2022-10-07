@@ -129,7 +129,6 @@
                         </permissions>
                     </extraDirectories>
                     <pluginExtensions>
-
                         <pluginExtension>
                             <implementation>org.opennms.horizon.shared.maven.jib.extension.LayerRemover</implementation>
                         </pluginExtension>
@@ -219,7 +218,28 @@
 
     <profiles>
         <profile>
-            <id>docker</id>
+            <id>build-docker-images-enabled</id>
+            <!-- asdf -->
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>dockerBuild</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker2</id>
             <build>
                 <plugins>
                     <!-- BUILD THE DOCKER IMAGE -->
