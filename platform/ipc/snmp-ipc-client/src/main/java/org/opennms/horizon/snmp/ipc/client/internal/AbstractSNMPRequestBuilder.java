@@ -28,6 +28,9 @@
 
 package org.opennms.horizon.snmp.ipc.client.internal;
 
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +41,8 @@ import org.opennms.horizon.grpc.snmp.contract.SnmpGetRequest;
 import org.opennms.horizon.grpc.snmp.contract.SnmpMultiResponse;
 import org.opennms.horizon.grpc.snmp.contract.SnmpRequest;
 import org.opennms.horizon.grpc.snmp.contract.SnmpResponse;
+import org.opennms.horizon.grpc.snmp.contract.SnmpValue.ValueCase;
+import org.opennms.horizon.grpc.snmp.contract.SnmpValueType;
 import org.opennms.horizon.grpc.snmp.contract.SnmpWalkRequest;
 import org.opennms.horizon.shared.snmp.SnmpInstId;
 import org.opennms.horizon.shared.snmp.SnmpObjId;
@@ -122,7 +127,42 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
     }
 
     protected final SnmpValue mapValue(org.opennms.horizon.grpc.snmp.contract.SnmpValue value) {
-        return valueFactory.getValue(value.getTypeValue(), value.getValue().toByteArray());
+        SnmpValueType type = SnmpValueType.forNumber(value.getTypeValue());
+        switch (type) {
+            case INT32:
+                return valueFactory.getInt32(Long.valueOf(value.getSint64()).intValue());
+            case OCTET_STRING:
+                return valueFactory.getOctetString(value.getBytes().toByteArray());
+            case NULL:
+                return valueFactory.getNull();
+            case OBJECT_IDENTIFIER:
+                return valueFactory.getObjectId(SnmpObjId.get(value.getString()));
+            case IPADDRESS:
+                try {
+                    InetAddress address = InetAddress.getByAddress(value.getBytes().toByteArray());
+                    return valueFactory.getIpAddress(address);
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
+            case COUNTER32:
+                return valueFactory.getCounter32(value.getUint64());
+            case GAUGE32:
+                return valueFactory.getGauge32(value.getUint64());
+            case TIMETICKS:
+                return valueFactory.getTimeTicks(value.getUint64());
+            case OPAQUE:
+                return valueFactory.getOpaque(value.getBytes().toByteArray());
+            case COUNTER64:
+                BigInteger integer = new BigInteger(value.getBytes().toByteArray());
+                return valueFactory.getCounter64(integer);
+            case NO_SUCH_OBJECT:
+                return valueFactory.getValue(SnmpValueType.NO_SUCH_OBJECT_VALUE, new byte[0]);
+            case NO_SUCH_INSTANCE:
+                return valueFactory.getValue(SnmpValueType.NO_SUCH_INSTANCE_VALUE, new byte[0]);
+            case END_OF_MIB:
+                return valueFactory.getValue(SnmpValueType.END_OF_MIB_VALUE, new byte[0]);
+        }
+        throw new IllegalArgumentException("Unsupported value type");
     }
 
     protected final List<SnmpResult> mapResults(SnmpResponse res) {

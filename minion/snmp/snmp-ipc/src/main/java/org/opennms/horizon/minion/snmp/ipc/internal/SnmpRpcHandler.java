@@ -1,8 +1,11 @@
 package org.opennms.horizon.minion.snmp.ipc.internal;
 
+import com.google.common.primitives.Bytes;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -225,10 +228,44 @@ public class SnmpRpcHandler implements RpcHandler<SnmpRequest, SnmpMultiResponse
     }
 
     private static org.opennms.horizon.grpc.snmp.contract.SnmpValue mapValue(SnmpValue value) {
-        return org.opennms.horizon.grpc.snmp.contract.SnmpValue.newBuilder()
-            .setType(SnmpValueType.forNumber(value.getType()))
-            .setValue(ByteString.copyFrom(value.getBytes()))
-            .build();
+        SnmpValueType valueType = SnmpValueType.forNumber(value.getType());
+        org.opennms.horizon.grpc.snmp.contract.SnmpValue.Builder builder = org.opennms.horizon.grpc.snmp.contract.SnmpValue.newBuilder()
+            .setType(valueType);
+        // have to stay in-line with snmp-grpc client
+        switch (valueType) {
+            case INT32:
+                builder.setSint64(value.toLong());
+                break;
+            case OCTET_STRING:
+            case OPAQUE:
+                builder.setBytes(ByteString.copyFrom(value.getBytes()));
+                break;
+            case NULL:
+                builder.setBytes(ByteString.EMPTY);
+                break;
+            case OBJECT_IDENTIFIER:
+                builder.setString(value.toSnmpObjId().toString());
+                break;
+            case IPADDRESS:
+                byte[] address = value.toInetAddress().getAddress();
+                builder.setBytes(ByteString.copyFrom(address));
+                break;
+            case COUNTER32:
+            case GAUGE32:
+            case TIMETICKS:
+                builder.setUint64(value.toLong());
+                break;
+            case COUNTER64:
+                builder.setBytes(ByteString.copyFrom(value.toBigInteger().toByteArray()));
+                break;
+            case NO_SUCH_OBJECT:
+            case NO_SUCH_INSTANCE:
+            case END_OF_MIB:
+                builder.setBytes(ByteString.EMPTY);
+                builder.setBytes(ByteString.EMPTY);
+                builder.setBytes(ByteString.EMPTY);
+        }
+        return builder.build();
     }
 
     private CompletableFuture<SnmpResponse> get(SnmpRequest request, SnmpGetRequest get) throws Exception {

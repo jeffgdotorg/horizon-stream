@@ -62,7 +62,14 @@ enum SnmpValueType {
 
 message SnmpValue {
   SnmpValueType type = 1;
-  bytes value = 2;
+  oneof value {
+    sint32 sint32 = 2;
+    sint64 sint64 = 3;
+    uint32 uint32 = 4;
+    uint64 uint64 = 5;
+    string string = 6;
+    bytes bytes = 7;
+  };
 }
 
 enum Version {
