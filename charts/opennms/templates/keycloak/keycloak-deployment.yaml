@@ -51,12 +51,8 @@ spec:
               value: kubernetes
             - name: KC_CACHE
               value: ispn
-            - name: KC_HOSTNAME
-              value: "{{ .Values.Host }}"
-            {{- if .Values.Keycloak.HostnamePort }}
-            - name: KC_HOSTNAME_PORT
-              value: "{{ .Values.Keycloak.HostnamePort }}"
-            {{- end }}
+            - name: KC_HOSTNAME_URL
+              value: "{{ .Values.Keycloak.HostnameUrl }}"
             {{- if .Values.Keycloak.HostnameAdminUrl }}
             - name: KC_HOSTNAME_ADMIN_URL
               value: "{{ .Values.Keycloak.HostnameAdminUrl }}"
@@ -75,22 +71,26 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: keycloakPwd
+            {{- if .Values.Keycloak.AdminUsername }}
             - name: KEYCLOAK_ADMIN
               valueFrom:
                 secretKeyRef:
                   key: username
                   name: {{ .Values.Keycloak.ServiceName }}-initial-admin
+            {{- end }}
+            {{- if .Values.Keycloak.AdminPassword }}
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
                   name: {{ .Values.Keycloak.ServiceName }}-initial-admin
-            - name: KC_HOSTNAME_STRICT_BACKCHANNEL
+            {{- end }}
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_HOSTNAME_STRICT_HTTPS
               value: "false"
             - name: KC_HTTP_ENABLED
               value: "true"
-            - name: KC_HTTP_RELATIVE_PATH
-              value: "{{ .Values.Keycloak.Path }}"
             - name: KC_PROXY
               value: passthrough
             - name: jgroups.dns.query
@@ -100,6 +100,10 @@ spec:
               value: "/mnt/certificates/tls.crt"
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: "/mnt/certificates/tls.key"
+            {{- end }}
+            {{- if .Values.Keycloak.JavaOpts }}
+            - name: JAVA_OPTS
+              value: "{{ .Values.Keycloak.JavaOpts }}"
             {{- end }}
           ports:
             - name: http

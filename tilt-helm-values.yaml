@@ -6,7 +6,7 @@ TLS:
   Enabled: False
 Keycloak:
   AdminPassword: admin
-  HostnamePort: 8123
+  HostnameUrl: http://localhost:8123/auth
   HostnameAdminUrl: http://localhost:8123/auth
 
 OpenNMS:

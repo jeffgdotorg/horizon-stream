@@ -150,7 +150,7 @@ Keycloak:
   ImagePullPolicy: IfNotPresent
   Port: 8080
   HttpsPort: 8443
-  HostnamePort: ~
+  HostnameUrl: ~
   HostnameAdminUrl: ~
   Replicas: 1
   ServiceName: onms-keycloak
