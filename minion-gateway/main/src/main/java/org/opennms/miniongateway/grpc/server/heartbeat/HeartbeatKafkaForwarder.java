@@ -29,48 +29,30 @@
 package org.opennms.miniongateway.grpc.server.heartbeat;
 
 import com.google.protobuf.Message;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.header.internals.RecordHeader;
-import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.shared.grpc.common.TenantIDGrpcServerInterceptor;
 import org.opennms.horizon.shared.ipc.sink.api.MessageConsumer;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opennms.miniongateway.grpc.server.kafka.KafkaGrpcMessagePublisher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 
 /**
  * Forwarder of Heartbeat messages - received via GRPC and forwarded to Kafka.
  */
 @Component
 public class HeartbeatKafkaForwarder implements MessageConsumer<Message, Message> {
-    public static final String DEFAULT_TASK_RESULTS_TOPIC = "heartbeat";
 
-    private final Logger logger = LoggerFactory.getLogger(HeartbeatKafkaForwarder.class);
-    private final RateLimitedLog usingDefaultTenantIdLog =
-        RateLimitedLog
-            .withRateLimit(logger)
-            .maxRate(1)
-            .every(Duration.ofMinutes(1))
-            .build();
+    public static final String DEFAULT_HEARTBEAT_RESULTS_TOPIC = "heartbeat";
 
-    @Autowired
-    @Qualifier("kafkaByteArrayProducerTemplate")
-    private KafkaTemplate<String, byte[]> kafkaTemplate;
+    private final KafkaGrpcMessagePublisher kafkaPublisher;
 
-    @Value("${task.results.kafka-topic:" + DEFAULT_TASK_RESULTS_TOPIC + "}")
-    private String kafkaTopic;
-
-    @Autowired
-    private TenantIDGrpcServerInterceptor tenantIDGrpcInterceptor;
+    public HeartbeatKafkaForwarder(@Qualifier("kafkaByteArrayProducerTemplate") KafkaTemplate<String, byte[]> kafkaProducer,
+        TenantIDGrpcServerInterceptor tenantIDGrpcInterceptor,
+        @Value("${heartbeat.results.kafka-topic:" + DEFAULT_HEARTBEAT_RESULTS_TOPIC + "}") String kafkaTopic) {
+        this.kafkaPublisher = new KafkaGrpcMessagePublisher("heartbeat", kafkaProducer, tenantIDGrpcInterceptor, kafkaTopic);
+    }
 
     @Override
     public SinkModule<Message, Message> getModule() {
@@ -78,18 +60,7 @@ public class HeartbeatKafkaForwarder implements MessageConsumer<Message, Message
     }
 
     @Override
-    public void handleMessage(Message messageLog) {
-        // Retrieve the Tenant ID from the TenantID GRPC Interceptor
-        String tenantId = tenantIDGrpcInterceptor.readCurrentContextTenantId();
-        logger.info("Received heartbeat; sending to Kafka: tenant-id: {}; kafka-topic={}; message={}", tenantId, kafkaTopic, messageLog);
-        byte[] rawContent = messageLog.toByteArray();
-
-        var producerRecord = new ProducerRecord<String, byte[]>(kafkaTopic, rawContent);
-        // add tenant id to kafka header
-        producerRecord.headers().add(new RecordHeader(GrpcConstants.TENANT_ID_KEY,
-            tenantId.getBytes(StandardCharsets.UTF_8)));
-
-        this.kafkaTemplate.send(producerRecord);
+    public void handleMessage(Message message) {
+        this.kafkaPublisher.send(message);
     }
-
 }
