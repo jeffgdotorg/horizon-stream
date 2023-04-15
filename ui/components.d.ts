@@ -86,6 +86,7 @@ declare module '@vue/runtime-core' {
     LeafletMap: typeof import('./src/components/Map/LeafletMap.vue')['default']
     LineChart: typeof import('./src/components/Flows/LineChart.vue')['default']
     LineGraph: typeof import('./src/components/Graphs/LineGraph.vue')['default']
+    LocationsCard: typeof import('./src/components/Locations/LocationsCard.vue')['default']
     MapAlarmsGrid: typeof import('./src/components/Map/MapAlarmsGrid.vue')['default']
     MapNodesGrid: typeof import('./src/components/Map/MapNodesGrid.vue')['default']
     MapSearch: typeof import('./src/components/Map/MapSearch.vue')['default']
