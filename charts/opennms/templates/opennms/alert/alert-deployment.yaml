@@ -55,7 +55,7 @@ spec:
                   name: postgres
                   key: alertPwd
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
+              value: "{{ .Values.Kafka.Host }}:{{ .Values.Kafka.Port }}"
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.Alert.Port }}

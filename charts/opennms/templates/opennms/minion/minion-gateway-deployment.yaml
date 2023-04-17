@@ -63,7 +63,7 @@ spec:
                   key: minionGatewayPwd
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
             - name: KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
+              value: "{{ .Values.Kafka.Host }}:{{ .Values.Kafka.Port }}"
             - name: IGNITE_UPDATE_NOTIFIER # Disable Ignite version lookups
               value: "false"
           ports:

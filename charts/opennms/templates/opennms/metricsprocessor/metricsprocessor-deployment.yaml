@@ -47,7 +47,7 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
+              value: "{{ .Values.Kafka.Host }}:{{ .Values.Kafka.Port }}"
             - name: CORTEX_WRITE_URL
               value: {{ .Values.Cortex.Protocol }}://{{ .Values.Cortex.Host }}:{{ .Values.Cortex.Port }}{{ .Values.Cortex.PathWrite }}
           ports:

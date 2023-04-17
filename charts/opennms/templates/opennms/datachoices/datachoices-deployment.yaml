@@ -55,7 +55,7 @@ spec:
                   name: postgres
                   key: dataChoicesPwd
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
+              value: "{{ .Values.Kafka.Host }}:{{ .Values.Kafka.Port }}"
             - name: KEYCLOAK_BASE_URL
               value: "http://{{ .Values.Keycloak.ServiceName }}:8080/auth/"
             - name: KEYCLOAK_REALM
