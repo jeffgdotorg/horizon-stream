@@ -1,18 +1,38 @@
+<!-- 
+  It display an icon, once hover, presenting a list of actionable items
+
+  Props:
+    - items: actionable item list
+      - default: empty list
+      - structure:
+        {
+          label: 'some label',
+          handler: some method to be called on click
+        }
+    - icon: three vertical dots (MoreVert)
+      - different icon size could be set
+    - listPosition: positioning the list related to the icon
+      - 'right' as default
+      - configurable: could be expanded later if needed
+ -->
 <template>
   <div class="context-menu">
     <FeatherIcon
       :icon="icon.MoreVert"
       class="context-menu-icon"
       ref="contextMenuIconRef"
+      data-test="context-menu-icon"
     />
     <ul
       class="context-menu-list"
       :style="{ top: `${contextMenuListPos.top}px`, left: `${contextMenuListPos.left}px` }"
+      data-test="context-menu-list"
     >
       <li
         v-for="item in items"
         :key="item.label"
         @click="item.handler"
+        :data-test="item.label"
       >
         {{ item.label }}
       </li>
@@ -51,7 +71,7 @@ const contextMenuIconSize = reactive(useElementSize(contextMenuIconRef))
 const contextMenuListPos = reactive({ top: 0, left: 0 })
 watchEffect(() => {
   switch (props.listPosition) {
-    // to make the component configurable when needed
+    // to make the positionning configurable when needed
     case 'left':
     case 'bottom':
     case 'top':
@@ -68,6 +88,7 @@ const icon = markRaw({
 
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
+@use '@featherds/styles/mixins/elevation';
 
 .context-menu {
   position: relative;
@@ -90,13 +111,15 @@ const icon = markRaw({
   display: none;
   padding: var(variables.$spacing-s) var(variables.$spacing-m);
   box-shadow: var(variables.$shadow-1);
+  @include elevation.elevation(2);
   &:hover {
     display: block;
   }
-  > li {
+  > * {
     margin-bottom: var(variables.$spacing-xs);
+    text-transform: capitalize;
     &:last-child {
-      margin-bottom: none;
+      margin-bottom: 0;
     }
     &:hover {
       cursor: pointer;
