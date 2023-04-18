@@ -1,6 +1,6 @@
 <template>
   <div class="flows-container">
-    <PageHeadline
+    <HeadlinePage
       text="Flows"
       data-test="flows-page-header"
     />
