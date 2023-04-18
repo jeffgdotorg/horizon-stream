@@ -26,23 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.horizon.systemtests.steps.cloud;
 
-package org.opennms.horizon.systemtests.steps.portal;
-
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
-import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
 
-public class EditInstanceSteps {
+import java.time.Duration;
 
-    @Then("the IT Administrator sees {string} as a single user for the instance")
-    public void instanceHasASingleUser(String email) {
-        EditInstancePage.verifyNumberOfUsers(1);
-        if (email.equals("ADMIN")) {
-            email = SecretsStorage.adminUserEmail;
-        } else if (email.equals("OKTA_USER")) {
-            email = SecretsStorage.oktaUserEmail;
-        }
-        EditInstancePage.verifyUserEmailInTable(email);
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selenide.$;
+import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
+
+public class AppliancesSteps {
+
+    @Then("check minion in the list")
+    public static void justWait() {
+        $(byText(MINIONS.get(0).minionId)).shouldBe(Condition.visible, Duration.ofMinutes(10));
+    }
+
+    @Then("wait")
+    public static void waitSecond() {
+        Selenide.sleep(60_000);
     }
 }

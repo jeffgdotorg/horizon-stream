@@ -26,23 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.horizon.alertservice.db.repository;
 
-package org.opennms.horizon.systemtests.steps.portal;
+import org.opennms.horizon.alertservice.db.entity.ThresholdedEvent;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
-import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
+import java.util.Date;
+import java.util.List;
 
-public class EditInstanceSteps {
+@Repository
+public interface ThresholdedEventRepository extends JpaRepository<ThresholdedEvent, Long> {
 
-    @Then("the IT Administrator sees {string} as a single user for the instance")
-    public void instanceHasASingleUser(String email) {
-        EditInstancePage.verifyNumberOfUsers(1);
-        if (email.equals("ADMIN")) {
-            email = SecretsStorage.adminUserEmail;
-        } else if (email.equals("OKTA_USER")) {
-            email = SecretsStorage.oktaUserEmail;
-        }
-        EditInstancePage.verifyUserEmailInTable(email);
-    }
+    int countByReductionKeyAndTenantIdAndExpiryTimeGreaterThanEqual(String reductionKey, String tenantId, Date expiryTime);
+    List<ThresholdedEvent> findAllByReductionKeyAndTenantIdAndExpiryTimeLessThan(String reductionKey, String tenantId, Date expiryTime);
+
+    long deleteByReductionKeyAndTenantId(String reductionKey, String tenantId);
+
 }

@@ -7,8 +7,8 @@
     data-test="severity-card"
   >
     <div class="label-add-icon">
-      <AlertsSeverityLabel
-        :severity="severity"
+      <PillColor
+        :type="severity"
         data-test="severity-label"
       />
       <Transition name="icon-anim">
@@ -37,8 +37,8 @@
     data-test="severity-card"
   >
     <div class="label-add-icon">
-      <AlertsSeverityLabel
-        :severity="severity"
+      <PillColor
+        :type="severity"
         data-test="severity-label"
       />
     </div>

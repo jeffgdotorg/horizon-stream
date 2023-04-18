@@ -26,23 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.horizon.systemtests.keyvalue;
 
-package org.opennms.horizon.systemtests.steps.portal;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.security.keyvault.secrets.SecretClient;
+import com.azure.security.keyvault.secrets.SecretClientBuilder;
 
-import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
-import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
+public class SecretsStorage {
+    public static final SecretClient secretClient = new SecretClientBuilder()
+        .vaultUrl("https://automation-test-vault.vault.azure.net/")
+        .credential(new DefaultAzureCredentialBuilder().build())
+        .buildClient();
 
-public class EditInstanceSteps {
+    public static String portalHost = getSecretValueForEnv("portal-host");
+    public static String adminUserEmail = getSecretValueForEnv("hs-portal-userEmail");
+    public static String adminUserPassword = getSecretValueForEnv("hs-portal-userPassword");
+    public static String oktaUserEmail = getSecretValueForEnv("hs-portal-oktaEmail");
 
-    @Then("the IT Administrator sees {string} as a single user for the instance")
-    public void instanceHasASingleUser(String email) {
-        EditInstancePage.verifyNumberOfUsers(1);
-        if (email.equals("ADMIN")) {
-            email = SecretsStorage.adminUserEmail;
-        } else if (email.equals("OKTA_USER")) {
-            email = SecretsStorage.oktaUserEmail;
-        }
-        EditInstancePage.verifyUserEmailInTable(email);
+    private static String getSecretValueForEnv(String secret) {
+        return secretClient.getSecret(secret + "-" + "dev").getValue();
+    }
+
+    private static String getSecretValue(String secret) {
+        return secretClient.getSecret(secret).getValue();
     }
 }

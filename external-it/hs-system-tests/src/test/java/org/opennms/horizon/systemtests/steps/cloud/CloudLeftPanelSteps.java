@@ -26,23 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
-package org.opennms.horizon.systemtests.steps.portal;
+package org.opennms.horizon.systemtests.steps.cloud;
 
 import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
-import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
+import org.opennms.horizon.systemtests.pages.cloud.CloudLeftPanelPage;
 
-public class EditInstanceSteps {
+public class CloudLeftPanelSteps {
 
-    @Then("the IT Administrator sees {string} as a single user for the instance")
-    public void instanceHasASingleUser(String email) {
-        EditInstancePage.verifyNumberOfUsers(1);
-        if (email.equals("ADMIN")) {
-            email = SecretsStorage.adminUserEmail;
-        } else if (email.equals("OKTA_USER")) {
-            email = SecretsStorage.oktaUserEmail;
-        }
-        EditInstancePage.verifyUserEmailInTable(email);
+    @Then("Navigate to the 'Appliances' through the left panel")
+    public void clickOnAppliancesSection() {
+        CloudLeftPanelPage.clickOnApplianceSection();
     }
 }

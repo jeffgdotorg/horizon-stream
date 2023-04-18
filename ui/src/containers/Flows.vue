@@ -44,14 +44,17 @@
           <div class="total-flows">{{ flowsStore.totalFlows }}</div>
         </div>
         <div class="utilitys">
-          <FeatherButton icon="Add">
+          <FeatherButton icon="Download">
             <FeatherIcon
               class="utility-icon"
               :icon="Download"
             >
             </FeatherIcon>
           </FeatherButton>
-          <FeatherButton icon="Add">
+          <FeatherButton
+            @click="flowsStore.updateCharts"
+            icon="Refresh"
+          >
             <FeatherIcon
               class="utility-icon"
               :icon="Refresh"
@@ -153,6 +156,8 @@ const timeOptions = ref([
   { value: TimeRange.Last_24Hours, name: '24H' },
   { value: TimeRange.SevenDays, name: '7D' }
 ])
+
+onUnmounted(() => flowsStore.$reset)
 </script>
 
 <style scoped lang="scss">

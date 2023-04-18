@@ -30,6 +30,7 @@
 package org.opennms.horizon.systemtests.steps.portal;
 
 import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
 import org.opennms.horizon.systemtests.pages.portal.AddNewInstancePopup;
 
 public class AddNewInstanceSteps {
@@ -51,6 +52,9 @@ public class AddNewInstanceSteps {
 
     @Then("set assigned user email as {string}")
     public void setEmailAddressForAssignedUser(String email) {
+        if (email.equals("OKTA_USER")) {
+            email = SecretsStorage.oktaUserEmail;
+        }
         AddNewInstancePopup.setAssignedUserEmail(email);
         AddNewInstancePopup.confirmEmailInDropdown(email);
     }

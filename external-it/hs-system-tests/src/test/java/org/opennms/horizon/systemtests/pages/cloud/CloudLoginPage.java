@@ -26,23 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.horizon.systemtests.pages.cloud;
 
-package org.opennms.horizon.systemtests.steps.portal;
+import com.codeborne.selenide.SelenideElement;
 
-import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
-import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Selenide.$;
 
-public class EditInstanceSteps {
+public class CloudLoginPage {
+    private static final SelenideElement userNameInp = $("#idp-discovery-username");
+    private static final SelenideElement nextBtn = $("#idp-discovery-submit");
+    private static final SelenideElement passwordInp = $("#okta-signin-password");
+    private static final SelenideElement submitBtn = $("#okta-signin-submit");
 
-    @Then("the IT Administrator sees {string} as a single user for the instance")
-    public void instanceHasASingleUser(String email) {
-        EditInstancePage.verifyNumberOfUsers(1);
-        if (email.equals("ADMIN")) {
-            email = SecretsStorage.adminUserEmail;
-        } else if (email.equals("OKTA_USER")) {
-            email = SecretsStorage.oktaUserEmail;
-        }
-        EditInstancePage.verifyUserEmailInTable(email);
+    public static void setUsername(String username) {
+        userNameInp.shouldBe(enabled).setValue(username);
+    }
+
+    public static void clickNextBtn() {
+        nextBtn.shouldBe(enabled).click();
+    }
+
+    public static void setPassword(String password) {
+        passwordInp.shouldBe(enabled).setValue(password);
+    }
+
+    public static void clickSubmitBtn() {
+        submitBtn.shouldBe(enabled).click();
     }
 }

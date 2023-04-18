@@ -23,8 +23,7 @@
             class="severity"
             data-test="severity"
           >
-            <AlertsSeverityLabel :severity="alert.severity" />
-            <div>&nbsp;</div>
+            <PillColor :type="alert.severity" />
           </div>
           <div
             class="cause headline"

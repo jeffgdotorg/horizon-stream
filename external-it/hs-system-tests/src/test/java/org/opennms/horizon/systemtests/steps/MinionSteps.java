@@ -26,23 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.horizon.systemtests.steps;
 
-package org.opennms.horizon.systemtests.steps.portal;
+import io.cucumber.java.en.When;
+import testcontainers.MinionContainer;
 
-import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
-import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
+import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 
-public class EditInstanceSteps {
-
-    @Then("the IT Administrator sees {string} as a single user for the instance")
-    public void instanceHasASingleUser(String email) {
-        EditInstancePage.verifyNumberOfUsers(1);
-        if (email.equals("ADMIN")) {
-            email = SecretsStorage.adminUserEmail;
-        } else if (email.equals("OKTA_USER")) {
-            email = SecretsStorage.oktaUserEmail;
-        }
-        EditInstancePage.verifyUserEmailInTable(email);
+public class MinionSteps {
+    @When("Run a minion {string} as name, {string} as location and connect to the cloud instance")
+    public void runMinion(String minionId, String minionLocation) {
+        MinionContainer minionContainer = new MinionContainer(MINIONS.get(0).gatewayHost, minionId, minionLocation);
+        minionContainer.start();
     }
 }
