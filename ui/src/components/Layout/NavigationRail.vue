@@ -4,87 +4,72 @@
     :content="content"
   >
     <template v-slot:icon>
-      <IconTextAnimate class="nav-rail-home">
-        <template v-slot:icon>
-          <FeatherIcon
-            :icon="LogoIcon"
-            title="Home"
-            class="product-icon"
-            @click="gotoHome"
-          />
-        </template>
-        <template v-slot:text>
-          <FeatherIcon
-            :icon="LogoText"
-            title="Home"
-            class="product-icon"
-            @click="gotoHome"
-          />
-        </template>
-      </IconTextAnimate>
+      <router-link to="/">
+        <IconTextAnimate class="nav-rail-home">
+          <template v-slot:icon>
+            <FeatherIcon
+              :icon="LogoIcon"
+              title="Home"
+            />
+          </template>
+          <template v-slot:text>
+            <FeatherIcon
+              :icon="LogoText"
+              title="Home"
+            />
+          </template>
+        </IconTextAnimate>
+      </router-link>
     </template>
     <template v-slot:nav>
-      <FeatherAppRailNavItem
-        href="/"
-        :icon="Icons.Home"
+
+      <NavigationRailNavItem
         title="Home"
-        :class="{ selected: isSelected('/') }"
-      />
-      <FeatherAppRailNavItem
-        href="/appliances"
-        :icon="Icons.Appliances"
+        href="/"
+        :icon="Icons.Home"/>
+
+      <NavigationRailNavItem
         title="Appliances"
-        :class="{ selected: isSelected('/appliances') }"
-      />
-      <FeatherAppRailNavItem
-        href="/map"
-        :icon="Icons.Location"
+        href="/appliances"
+        :icon="Icons.Appliances"/>
+
+      <NavigationRailNavItem
         title="Map"
-        :class="{ selected: isSelected('/map') }"
-      />
-      <FeatherAppRailNavItem
-        href="/inventory"
-        :icon="Icons.Business"
+        href="/map"
+        :icon="Icons.Location"/>
+
+      <NavigationRailNavItem
         title="Inventory"
-        :class="{ selected: isSelected('/inventory') }"
-      />
-      <FeatherAppRailNavItem
-        href="/discovery"
-        :icon="Icons.Discovery"
+        href="/inventory"
+        :icon="Icons.Business"/>
+
+      <NavigationRailNavItem
         title="Discovery"
-        :class="{ selected: isSelected('/discovery') }"
-      />
-      <FeatherAppRailNavItem
-        href="/monitoring-policies"
-        :icon="Icons.Monitoring"
+        href="/discovery"
+        :icon="Icons.Discovery"/>
+
+      <NavigationRailNavItem
         title="Monitoring Policies"
-        :class="{ selected: isSelected('/monitoring-policies') }"
-      />
-      <FeatherAppRailNavItem
-        href="/alerts"
-        :icon="Icons.Warning"
+        href="/monitoring-policies"
+        :icon="Icons.Monitoring"/>
+
+      <NavigationRailNavItem
         title="Alerts"
-        :class="{ selected: isSelected('/alerts') }"
-      />
-      <FeatherAppRailNavItem
-        href="/locations"
-        :icon="Icons.Location"
-        title="Locations"
-        :class="{ selected: isSelected('/locations') }"
-      />
-      <FeatherAppRailNavItem
+        href="/alerts"
+        :icon="Icons.Warning"/>
+
+      <NavigationRailNavItem
         v-if="false"
-        href="/synthetic-transactions"
-        :icon="Icons.Cycle"
         title="Synthetic Transactions"
-        :class="{ selected: isSelected('/synthetic-transactions') }"
-      />
+        href="/synthetic-transactions"
+        :icon="Icons.Cycle"/>
     </template>
   </FeatherAppRail>
 </template>
 
 <script setup lang="ts">
-import { IconTextAnimate, FeatherAppRailNavItem } from '@featherds/app-rail'
+import { IconTextAnimate, FeatherAppRail } from '@featherds/app-rail'
+
 import Appliances from '@featherds/icon/hardware/Appliances'
 import Home from '@featherds/icon/action/Home'
 // import Map from '@material-design-icons/svg/outlined/map.svg'
@@ -96,6 +81,7 @@ import Monitoring from '@featherds/icon/hardware/MinionProfiles'
 import Cycle from '@featherds/icon/action/Cycle'
 import Warning from '@featherds/icon/notification/Warning'
 import Location from '@featherds/icon/action/Location'
+import NavigationRailNavItem from '@/components/Layout/NavigationRailNavItem.vue'
 
 const Icons = markRaw({
   Appliances,
@@ -114,26 +100,4 @@ const labels = {
 }
 const content = 'mainContent'
 
-const router = useRouter()
-const route = useRoute()
-
-const isSelected = (path: string) => path === route.fullPath
-
-const gotoHome = () => {
-  router.push('/')
-}
 </script>
-
-<style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
-
-.icon-text-animate {
-  &:hover {
-    cursor: pointer;
-  }
-}
-.product-text {
-  @include typography.headline2;
-  color: var(--feather-app-rail-text-color);
-}
-</style>
