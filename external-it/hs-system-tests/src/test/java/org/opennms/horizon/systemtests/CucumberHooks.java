@@ -26,7 +26,6 @@ public class CucumberHooks {
             return;
         }
 
-        System.out.println("CLOUD BEFORE STEP");
         Selenide.open(SecretsStorage.portalHost);
         PortalLoginPage.closeCookieHeader();
         PortalLoginPage.setUsername(SecretsStorage.adminUserEmail);
@@ -94,6 +93,8 @@ public class CucumberHooks {
 
     @AfterAll
     public static void tearDown() {
-        MINIONS.get(0).stop();
+        if (!MINIONS.isEmpty()) {
+            MINIONS.get(0).stop();
+        }
     }
 }
