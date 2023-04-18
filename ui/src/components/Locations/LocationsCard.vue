@@ -1,22 +1,66 @@
 <template>
-  <div class="container">
-    <div class="name">Localhost</div>
-    <div class="status">color pill</div>
-    <FeatherIcon
-      :icon="icon.AccountCircle"
-      class="my-primary-icon"
-    >
-    </FeatherIcon>
+  <div class="locations-card-wrapper">
+    <div class="name">
+      <ButtonText :label="item.location" />
+    </div>
+    <PillColor
+      :type="item.status"
+      class="status"
+    />
+    <div class="expiry">
+      <!-- TODO: to be used when icon avail in FDS -->
+      <!-- <FeatherIcon
+        :icon="Expiry"
+        class="icon"
+      /> -->
+      <Icon :icon="iconExpiry" />
+    </div>
+    <div class="context-menu">
+      <HoverMenu :items="item.contextMenu" />
+    </div>
   </div>
-  <!-- context menu -->
 </template>
 
 <script lang="ts" setup>
-import AccountCircle from '@featherds/icon/action/AccountCircle'
+import Expiry from '@/assets/placeholder.svg'
+import { IIcon } from '@/types'
 
-const icon = markRaw({
-  AccountCircle
+defineProps({
+  item: {
+    type: Object,
+    required: true
+  }
 })
+const iconExpiry: IIcon = {
+  image: Expiry
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@use '@featherds/styles/themes/variables';
+
+.locations-card-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(variables.$spacing-s);
+}
+
+.name {
+  flex-grow: 3;
+}
+.status {
+  display: flex;
+  flex-grow: 2;
+  justify-content: center;
+}
+.expiry {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+.context-menu {
+  display: flex;
+  flex-grow: 0.5;
+  justify-content: flex-end;
+}
+</style>
