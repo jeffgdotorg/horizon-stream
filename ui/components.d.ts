@@ -108,6 +108,7 @@ declare module '@vue/runtime-core' {
     MonitoringPoliciesSaveButtons: typeof import('./src/components/MonitoringPolicies/MonitoringPoliciesSaveButtons.vue')['default']
     MonitoringPoliciesThresholdCondition: typeof import('./src/components/MonitoringPolicies/MonitoringPoliciesThresholdCondition.vue')['default']
     NavigationRail: typeof import('./src/components/Layout/NavigationRail.vue')['default']
+    NavigationRailNavItem: typeof import('./src/components/Layout/NavigationRailNavItem.vue')['default']
     NetworkGraph: typeof import('./src/components/Topology/NetworkGraph.vue')['default']
     NodeInfoTable: typeof import('./src/components/NodeStatus/NodeInfoTable.vue')['default']
     NoFocusMsg: typeof import('./src/components/Topology/NoFocusMsg.vue')['default']
