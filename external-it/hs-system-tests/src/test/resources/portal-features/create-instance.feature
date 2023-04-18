@@ -11,20 +11,20 @@ Feature: Administrator can create new instance
     And the IT Administrator gets success snackbar message 'Cloud instance created.'
     And the IT Administrator sees an instance 'CLOUD-T484' in the list
     Then the IT Administrator opens 'Details' for the instance
-    And the IT Administrator sees 'themself' as a single user for the instance
+    And the IT Administrator sees 'ADMIN' as a single user for the instance
 
   @TestCaseKey=CLOUD-T487
   Scenario: IT Administrator adds BTO instance with name and assign it on another email
     Given a IT Administrator clicks on '+ADD INSTANCE' button
     When the IT Administrator fills 'CLOUD-T487' in 'Instance name'
     Then and selects 'Someone else' as option for 'Assign this instance to:'
-    And set assigned user email as 'okta@extra.testuser'
+    And set assigned user email as 'OKTA_USER'
     And the IT Administrator clicks on 'ADD INSTANCE' button
     Then the IT Administrator is brought back to the OpenNMS Cloud page
     And the IT Administrator gets success snackbar message 'Cloud instance created.'
     And the IT Administrator sees an instance 'CLOUD-T487' in the list
     Then the IT Administrator opens 'Details' for the instance
-    And the IT Administrator sees 'okta@extra.testuser' as a single user for the instance
+    And the IT Administrator sees 'OKTA_USER' as a single user for the instance
 
   @TestCaseKey=CLOUD-T489
   Scenario: IT Administrator cancels adding a BTO instance
@@ -89,11 +89,11 @@ Feature: Administrator can create new instance
     And set assigned user email as 'email@domain'
     And the IT Administrator clicks on 'ADD INSTANCE' button
     But an error message 'Invalid email format.' appears for 'Email address' field
-    Then set assigned user email as 'okta@extra.testuser'
+    Then set assigned user email as 'OKTA_USER'
     And the 'error message' for 'Email address' is no longer displayed
     And the IT Administrator clicks on 'ADD INSTANCE' button
     Then the IT Administrator is brought back to the OpenNMS Cloud page
     And the IT Administrator gets success snackbar message 'Cloud instance created.'
     And the IT Administrator sees an instance 'CLOUD-T494' in the list
     Then the IT Administrator opens 'Details' for the instance
-    And the IT Administrator sees 'okta@extra.testuser' as a single user for the instance
+    And the IT Administrator sees 'OKTA_USER' as a single user for the instance

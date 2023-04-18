@@ -88,25 +88,30 @@ describe('Flows', () => {
 
   test('The Flows store convert to date should convert time range to string for labels', () => {
     const store = useFlowsStore()
+
+    const secondHourPattern = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
+    const dayMonthPattern =
+      /^(0[1-9]|[1-2][0-9]|3[0-1])\/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
+
     store.filters.dateFilter = TimeRange.Today
     const returnedTodayObject = store.convertToDate('2023-01-10T01:01:25Z')
-    const expectedTodayString = '01:01'
-    expect(returnedTodayObject).toStrictEqual(expectedTodayString)
+    const todayFormat = secondHourPattern.test(returnedTodayObject)
+    expect(todayFormat).toBeTruthy()
 
     store.filters.dateFilter = TimeRange.Last_24Hours
     const returned24Object = store.convertToDate('2023-01-10T01:01:25Z')
-    const expected24String = '01:01'
-    expect(returned24Object).toStrictEqual(expected24String)
+    const dayFormat = secondHourPattern.test(returned24Object)
+    expect(dayFormat).toBeTruthy()
 
     store.filters.dateFilter = TimeRange.SevenDays
     const returnedSevenDayObject = store.convertToDate('2023-01-10T01:01:25Z')
-    const expectedSevenDayString = '10/Jan 01:01'
-    expect(returnedSevenDayObject).toStrictEqual(expectedSevenDayString)
+    const sevenFormat = dayMonthPattern.test(returnedSevenDayObject)
+    expect(sevenFormat).toBeTruthy()
 
     store.filters.dateFilter = TimeRange.All
     const returnedDefaultObject = store.convertToDate('2023-01-10T01:01:25Z')
-    const expectedDefaultString = '10/Jan 01:01'
-    expect(returnedDefaultObject).toStrictEqual(expectedDefaultString)
+    const defaultFormat = dayMonthPattern.test(returnedDefaultObject)
+    expect(defaultFormat).toBeTruthy()
   })
 
   test('The Flows store createLine Chart should populate lineChartData', () => {

@@ -32,21 +32,22 @@ package org.opennms.horizon.systemtests.steps.portal;
 import com.codeborne.selenide.Selenide;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
 import org.opennms.horizon.systemtests.pages.portal.PortalLoginPage;
 
 public class PortalLoginSteps {
 
     @Given("Open Portal page")
     public void openPortalPage() {
-        Selenide.open("https://dev.cloud.opennms.com/");
+        Selenide.open(SecretsStorage.portalHost);
     }
 
     @Then("Login to Portal")
     public void loginToTheWebInterfaceWithProvidedAnd() {
         PortalLoginPage.closeCookieHeader();
-        PortalLoginPage.setUsername(System.getProperty("portal_user.email"));
+        PortalLoginPage.setUsername(SecretsStorage.adminUserEmail);
         PortalLoginPage.clickNext();
-        PortalLoginPage.setPassword(System.getProperty("portal_user.password"));
+        PortalLoginPage.setPassword(SecretsStorage.adminUserPassword);
         PortalLoginPage.clickSignIn();
     }
 }

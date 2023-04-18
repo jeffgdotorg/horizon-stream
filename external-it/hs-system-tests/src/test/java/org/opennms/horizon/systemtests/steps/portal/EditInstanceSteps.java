@@ -30,6 +30,7 @@
 package org.opennms.horizon.systemtests.steps.portal;
 
 import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
 import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
 
 public class EditInstanceSteps {
@@ -37,8 +38,10 @@ public class EditInstanceSteps {
     @Then("the IT Administrator sees {string} as a single user for the instance")
     public void instanceHasASingleUser(String email) {
         EditInstancePage.verifyNumberOfUsers(1);
-        if (email.equals("themself")) {
-            email = System.getProperty("portal_user.email");
+        if (email.equals("ADMIN")) {
+            email = SecretsStorage.adminUserEmail;
+        } else if (email.equals("OKTA_USER")) {
+            email = SecretsStorage.oktaUserEmail;
         }
         EditInstancePage.verifyUserEmailInTable(email);
     }

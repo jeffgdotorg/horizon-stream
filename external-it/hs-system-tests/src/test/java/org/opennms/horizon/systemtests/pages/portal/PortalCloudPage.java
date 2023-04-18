@@ -64,6 +64,7 @@ public class PortalCloudPage {
         logInBtn.shouldBe(Condition.enabled).click();
     }
 
+
     public static void clickDetailsForFirstInstance() {
         detailsBtn.shouldBe(Condition.enabled).click();
     }

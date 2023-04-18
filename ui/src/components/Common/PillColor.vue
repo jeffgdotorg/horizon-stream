@@ -1,25 +1,23 @@
 <template>
   <span
-    v-if="severity"
-    class="severity-status"
-    :class="[`${severity.toLowerCase()}-color`]"
-    data-test="severity-status"
-    >{{ severity }}</span
+    :class="['pill-type', `${type?.toLowerCase()}-color`]"
+    data-test="pill-type"
+    >{{ type }}</span
   >
 </template>
 
 <script lang="ts" setup>
 defineProps<{
-  severity?: string
+  type?: string
 }>()
 </script>
 
 <style lang="scss" scoped>
 @use '@featherds/styles/mixins/typography';
 @use '@/styles/vars.scss';
-@use '@/styles/_severities';
+@use '@/styles/pillColor.scss';
 
-.severity-status {
+.pill-type {
   @include typography.title();
   display: inline-block;
   font-size: 0.8rem;

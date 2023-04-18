@@ -12,7 +12,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     lineDatasets: [{} as any],
     topApplications: [] as FlowsApplicationSummaries[],
     tableChartOptions: {},
-    totalFlows: '1,957',
+    totalFlows: 0,
     filters: {
       dateFilter: TimeRange.Today,
       traffic: {
@@ -21,6 +21,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       dataStyle: {
         selectedItem: 'table'
       },
+      steps: 2000000,
       //Application AutoComplete
       applications: [] as IAutocompleteItemType[],
       selectedApplications: [],
@@ -57,39 +58,15 @@ export const useFlowsStore = defineStore('flowsStore', {
   }),
   actions: {
     async getDatasets() {
-      const flowsQueries = useflowsQueries()
-      const requestData = {
-        count: 10,
-        step: 2000000,
-        timeRange: this.getTimeRange(this.filters.dateFilter),
-        applications: this.filters.selectedApplications.map((app: any) => app.value)
-      } as RequestCriteriaInput
+      const requestData = this.getRequestData()
 
-      //Get Table Data
-      this.applications.isTableLoading = true
-      const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
-      this.tableDatasets = [
-        ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
-      ]
-      this.applications.isTableLoading = false
-
-      //Get Line Graph Data
-      this.applications.isLineLoading = true
-      const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
-      this.lineDatasets = applicationsLineData.value?.findApplicationSeries
-        ? [...flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[])]
-        : []
-      this.applications.isLineLoading = false
+      await this.getTableDataset(requestData)
+      await this.getLineDataset(requestData)
     },
     async getApplications() {
       const flowsQueries = useflowsQueries()
-      const requestData = {
-        count: 50,
-        step: 2000000,
-        timeRange: this.getTimeRange(this.filters.dateFilter)
-      } as RequestCriteriaInput
+      const requestData = this.getRequestData(50, undefined, [], [])
 
-      //Get Applications Data
       const applications = (await flowsQueries.getApplications(requestData)) || []
       const applicationsAutocompleteObject = applications.value?.findApplications?.map((item: string) => ({
         _text: item.toUpperCase(),
@@ -97,29 +74,48 @@ export const useFlowsStore = defineStore('flowsStore', {
       })) as IAutocompleteItemType[]
       this.filters.applications = applicationsAutocompleteObject
     },
+    async getExporters() {
+      const flowsQueries = useflowsQueries()
+      const requestData = this.getRequestData(50, undefined, [], [])
 
+      const exporters = (await flowsQueries.getExporters(requestData)) || []
+      const exportersAutocompleteObject = exporters.value?.findExporters?.map((item: any) => ({
+        _text: item.node.nodeLabel.toUpperCase(),
+        value: { nodeId: item.node.id as number, ipInterfaceId: item.ipInterface.id as number }
+      })) as IAutocompleteItemType[]
+      this.filters.exporters = exportersAutocompleteObject
+    },
+    async getTableDataset(requestData: RequestCriteriaInput) {
+      const flowsQueries = useflowsQueries()
+      this.applications.isTableLoading = true
+      const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
+      this.tableDatasets = [
+        ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
+      ]
+      this.applications.isTableLoading = false
+    },
+    async getLineDataset(requestData: RequestCriteriaInput) {
+      const flowsQueries = useflowsQueries()
+      this.applications.isLineLoading = true
+      const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
+      this.lineDatasets = applicationsLineData.value?.findApplicationSeries
+        ? [...flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[])]
+        : []
+      this.applications.isLineLoading = false
+
+      //Get Total Flows
+      this.totalFlows = applicationsLineData.value?.findApplicationSeries?.length || 0
+    },
+    getRequestData(count = 10, step?: number, exporter?: object[], applications?: string[]) {
+      return {
+        count: count,
+        step: step || this.filters.steps,
+        exporter: exporter || this.filters.selectedExporters.map((exp: any) => exp.value),
+        timeRange: this.getTimeRange(this.filters.dateFilter),
+        applications: applications || this.filters.selectedApplications.map((app: any) => app.value)
+      } as RequestCriteriaInput
+    },
     createTableChartData() {
-      if (this.tableDatasets) {
-        this.exporters.tableChartData = {
-          labels: this.tableDatasets.map((row) => row.label),
-          datasets: [
-            {
-              label: 'Inbound',
-              data: this.tableDatasets.map((row) => row.bytesIn),
-              barThickness: 13,
-              backgroundColor: '#0043A4',
-              hidden: this.filters.traffic.selectedItem === 'outbound'
-            },
-            {
-              label: 'Outbound',
-              data: this.tableDatasets.map((row) => row.bytesOut),
-              barThickness: 13,
-              backgroundColor: '#EE7D00',
-              hidden: this.filters.traffic.selectedItem === 'inbound'
-            }
-          ]
-        }
-      }
       if (this.tableDatasets) {
         this.applications.tableChartData = {
           labels: this.tableDatasets.map((row) => row.label),
@@ -162,10 +158,10 @@ export const useFlowsStore = defineStore('flowsStore', {
           })
         }
         this.applications.lineChartData = datasetArr
-        this.exporters.lineChartData = datasetArr
       }
     },
     async updateCharts() {
+      await this.getExporters()
       await this.getApplications()
       await this.getDatasets()
       this.createCharts()
@@ -289,11 +285,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     },
     async getApplicationDataset() {
       const flowsQueries = useflowsQueries()
-      const requestData = {
-        count: 10,
-        step: 2000000,
-        timeRange: this.getTimeRange(TimeRange.Last_24Hours)
-      } as RequestCriteriaInput
+      const requestData = this.getRequestData(10, 2000000, [], [])
 
       const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
       this.topApplications = [
