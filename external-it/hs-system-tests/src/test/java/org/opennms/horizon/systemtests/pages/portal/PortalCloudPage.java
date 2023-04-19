@@ -46,6 +46,7 @@ public class PortalCloudPage {
     private static final SelenideElement detailsBtn = $("#cloud-instances-row-details-0");
     private static final SelenideElement searchInstanceInp = $("#cloud-instances-search");
     private static final SelenideElement shadedBackground = $("div.backdrop");
+    private static final SelenideElement spinner = $(".spinner");
 
     public static void verifyThatUserLoggedIn() {
         profileIcon.shouldBe(Condition.visible, Duration.ofMinutes(1));
@@ -70,6 +71,7 @@ public class PortalCloudPage {
 
     public static void setFilter(String pattern) {
         searchInstanceInp.shouldBe(Condition.enabled).setValue(pattern);
+        spinner.shouldBe(Condition.appear).shouldBe(Condition.disappear, Duration.ofMinutes(1));
     }
 
     public static void mainPageIsNotCoveredByPopups() {

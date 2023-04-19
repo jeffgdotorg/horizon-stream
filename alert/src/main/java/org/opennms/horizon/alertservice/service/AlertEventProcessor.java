@@ -59,7 +59,6 @@ import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -158,6 +157,10 @@ public class AlertEventProcessor {
         boolean thresholdMet = true;
         if (thresholding) {
             if (!AlertType.CLEAR.equals(alertData.type())) {
+                // TODO: (Quote from Jose) We will have to add an option to auto close if rate is no longer met - that will be post FMA.
+                // If we don't wish to use SQL, this can be done by passing the ThresholdedEvent to the AlertEngine,
+                // using the tick() method to check for expiredEvents.
+                // In AlertEngine, need id, tenant, expiryDate. Save in a TreeMap sorted by expiryDate.
                 saveThresholdEvent(event.getUei(), alertData, event);
                 thresholdMet = isThresholdMet(alertData, event.getTenantId());
             }
