@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import BasicContextMenu from '@/components/Common/BasicContextMenu.vue'
+import HoverMenu from '@/components/Common/HoverMenu.vue'
 
 let wrapper: any
 
@@ -10,9 +10,9 @@ const mock = {
   }
 }
 
-describe('BasicContextMenu', () => {
+describe('HoverMenu', () => {
   beforeAll(() => {
-    wrapper = mount(BasicContextMenu, {
+    wrapper = mount(HoverMenu, {
       propsData: {
         items: [mock]
       }
@@ -27,7 +27,7 @@ describe('BasicContextMenu', () => {
   })
 
   test('should have an item in the list', async () => {
-    await wrapper.get('[data-test="context-menu-icon"]').trigger('mouseover')
+    await wrapper.get('[data-test="hover-menu-icon"]').trigger('mouseover')
 
     const item = wrapper.find('[data-test="edit"]')
     expect(item.text()).toEqual('edit')
@@ -37,7 +37,7 @@ describe('BasicContextMenu', () => {
   test.skip('should call the handler method when click', async () => {
     const spy = vi.spyOn(mock, 'handler')
 
-    await wrapper.get('[data-test="context-menu-icon"]').trigger('mouseover')
+    await wrapper.get('[data-test="hover-menu-icon"]').trigger('mouseover')
 
     const item = wrapper.find('[data-test="edit"]')
     await item.trigger('click')

@@ -1,9 +1,12 @@
 <template>
-  <span
-    :class="['pill-type', `${type?.toLowerCase()}-color`]"
-    data-test="pill-type"
-    >{{ type }}</span
-  >
+  <div class="pill-color-wrapper">
+    <span
+      :class="['pill-type', `${type?.toLowerCase()}-color`]"
+      data-test="pill-type"
+    >
+      {{ type }}
+    </span>
+  </div>
 </template>
 
 <script lang="ts" setup>

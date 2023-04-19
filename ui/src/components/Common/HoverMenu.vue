@@ -16,17 +16,19 @@
       - configurable: could be expanded later if needed
  -->
 <template>
-  <div class="context-menu">
+  <div
+    class="hover-menu-wrapper"
+    ref="contextMenuIconRef"
+  >
     <FeatherIcon
       :icon="icon.MoreVert"
-      class="context-menu-icon"
-      ref="contextMenuIconRef"
-      data-test="context-menu-icon"
+      class="hover-menu-icon"
+      data-test="hover-menu-icon"
     />
     <ul
-      class="context-menu-list"
+      class="hover-menu-list"
       :style="{ top: `${contextMenuListPos.top}px`, left: `${contextMenuListPos.left}px` }"
-      data-test="context-menu-list"
+      data-test="hover-menu-list"
     >
       <li
         v-for="item in items"
@@ -50,12 +52,9 @@ const props = defineProps({
     type: Array as PropType<ContextMenuItem[]>,
     default: () => []
   },
-  icon: {
-    type: Object,
-    default: () => ({
-      width: 1.5,
-      height: 1.5
-    })
+  iconSize: {
+    type: Number,
+    default: 1.5
   },
   listPosition: {
     type: String,
@@ -63,9 +62,7 @@ const props = defineProps({
   }
 })
 
-const propsIconWidth = ref(`${props.icon.width}rem`)
-const propsIconHeight = ref(`${props.icon.height}rem`)
-
+const propsIconSize = ref(` ${props.iconSize}rem`)
 const contextMenuIconRef = ref(null)
 const contextMenuIconSize = reactive(useElementSize(contextMenuIconRef))
 const contextMenuListPos = reactive({ top: 0, left: 0 })
@@ -90,28 +87,28 @@ const icon = markRaw({
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/elevation';
 
-.context-menu {
+.hover-menu-wrapper {
   position: relative;
-  display: inline-block;
 }
 
-.context-menu-icon {
-  width: v-bind(propsIconWidth);
-  height: v-bind(propsIconHeight);
+.hover-menu-icon {
+  width: v-bind(propsIconSize);
+  height: v-bind(propsIconSize);
   &:hover {
     cursor: pointer;
-    & + .context-menu-list {
+    & + .hover-menu-list {
       display: block;
     }
   }
 }
 
-.context-menu-list {
+.hover-menu-list {
   position: absolute;
   display: none;
   padding: var(variables.$spacing-s) var(variables.$spacing-m);
   box-shadow: var(variables.$shadow-1);
   @include elevation.elevation(2);
+  text-align: left;
   &:hover {
     display: block;
   }
