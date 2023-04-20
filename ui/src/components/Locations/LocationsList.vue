@@ -1,22 +1,42 @@
 <template>
   <div class="locations-list-wrapper">
-    <HeadlineSection text="Locations">
+    <HeadlineSection
+      text="locations"
+      data-test="headline"
+    >
       <template #infos>
-        <CountColor :count="items.length" />
+        <CountColor
+          :count="items?.length"
+          data-test="count"
+        />
       </template>
       <template #actions>
-        <FeatherIcon :icon="icon.Help" />
+        <FeatherIcon
+          :icon="icon.Help"
+          data-test="icon-help"
+        />
       </template>
     </HeadlineSection>
     <div class="locations-list">
       <div class="header">
-        <div class="name">Name</div>
-        <div class="status">Status</div>
+        <div
+          class="name"
+          data-test="name"
+        >
+          Name
+        </div>
+        <div
+          class="status"
+          data-test="status"
+        >
+          Status
+        </div>
       </div>
       <LocationsCard
         v-for="(item, index) in items"
         :key="index"
         :item="item"
+        data-test="card"
       />
     </div>
   </div>
@@ -46,22 +66,22 @@ const icon = markRaw({
   padding: var(variables.$spacing-m) var(variables.$spacing-s);
   background: var(variables.$surface);
   border-radius: vars.$border-radius-s;
-}
 
-.header {
-  display: flex;
-  align-items: center;
-  gap: var(variables.$spacing-s);
-  padding: var(variables.$spacing-xs) var(variables.$spacing-s);
-  background-color: var(variables.$background);
-  > * {
-    &:nth-child(1) {
-      width: 40%;
-    }
-    &:nth-child(2) {
-      width: 30%;
-      display: flex;
-      justify-content: center;
+  .header {
+    display: flex;
+    align-items: center;
+    gap: var(variables.$spacing-s);
+    padding: var(variables.$spacing-xs) var(variables.$spacing-s);
+    background-color: var(variables.$background);
+    > * {
+      &:nth-child(1) {
+        width: 40%;
+      }
+      &:nth-child(2) {
+        width: 30%;
+        display: flex;
+        justify-content: center;
+      }
     }
   }
 }

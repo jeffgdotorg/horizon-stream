@@ -1,20 +1,28 @@
 <template>
   <div class="locations-card-wrapper selected">
     <div class="name">
-      <ButtonText :label="item.location" />
+      <ButtonText
+        :label="item.location"
+        data-test="name"
+      />
     </div>
     <PillColor
       :type="item.status"
       class="status"
+      data-test="status"
     />
     <div class="expiry">
       <FeatherIcon
         :icon="iconExpiry.image"
         :viewBox="setViewBox(iconExpiry.image)"
+        data-test="icon-expiry"
       />
     </div>
     <div class="context-menu">
-      <HoverMenu :items="item.contextMenu" />
+      <HoverMenu
+        :items="item.contextMenu"
+        data-test="context-menu"
+      />
     </div>
   </div>
 </template>

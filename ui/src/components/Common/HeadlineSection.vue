@@ -3,15 +3,15 @@
     <div class="section-headline">
       <div
         class="headline"
-        data-test="section-headline"
+        data-test="headline"
       >
         {{ text }}
       </div>
-      <div data-test="infos-slot"><slot name="infos" /></div>
+      <div data-test="infos"><slot name="infos" /></div>
     </div>
     <div
-      class="section-actions"
-      data-test="actions-slot"
+      class="actions"
+      data-test="actions"
     >
       <slot name="actions" />
     </div>
@@ -36,14 +36,16 @@ defineProps({
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(variables.$spacing-m);
-}
 
-.section-headline {
-  display: flex;
-  align-items: center;
-}
-.headline {
-  @include typography.headline3();
-  margin-right: var(variables.$spacing-s);
+  .section-headline {
+    display: flex;
+    align-items: center;
+  }
+
+  .headline {
+    @include typography.headline3();
+    margin-right: var(variables.$spacing-s);
+    text-transform: capitalize;
+  }
 }
 </style>

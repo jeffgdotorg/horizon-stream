@@ -1,9 +1,8 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <PageHeadline
+      <HeadlinePage
         text="Locations"
-        class="page-headline"
         data-test="locations-headline"
       />
       <div><AppliancesNotificationsCtrl data-test="locations-notification-ctrl" /></div>
@@ -54,17 +53,7 @@ import LocationsList from '@/components/Locations/LocationsList.vue'
 
 const locationsStore = useLocationsStore()
 
-// const locationsList = computed(() => locationsStore.locationsList)
-const locationsList = [
-  {
-    location: 'Default',
-    status: 'WARNING',
-    contextMenu: [
-      { label: 'edit', handler: () => ({}) },
-      { label: 'delete', handler: () => ({}) }
-    ]
-  }
-]
+const locationsList = computed(() => locationsStore.locationsList)
 
 onMounted(async () => {
   await locationsStore.fetchLocations()
