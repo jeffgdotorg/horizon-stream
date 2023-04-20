@@ -1,6 +1,6 @@
 <template>
   <div
-    class="conut-color"
+    class="count-color"
     data-test="count-color"
   >
     <div>{{ count }}</div>
@@ -14,7 +14,7 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-.total-flows {
+.count-color {
   background-color: rgba(0, 102, 109, 0.12);
   color: #00666d;
   padding: 4px 8px;

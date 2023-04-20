@@ -19,7 +19,6 @@
           Location
         </FeatherButton>
         <hr />
-        <!-- search input -->
         <FeatherInput
           @update:model-value="searchLocationListener"
           label="Search Location"
@@ -31,16 +30,7 @@
             <FeatherIcon :icon="icons.Search" />
           </template>
         </FeatherInput>
-        <!-- existing locations list -->
-        <!-- to be replaced by location card -->
-        <ul>
-          <li
-            v-for="{ id, location } in locationsList"
-            :key="id"
-          >
-            {{ location }}
-          </li>
-        </ul>
+        <LocationsList :items="locationsList" />
       </div>
       <div class="content-right">
         <!-- minions list of a location -->
@@ -60,10 +50,21 @@
 import Add from '@featherds/icon/action/Add'
 import Search from '@featherds/icon/action/Search'
 import { useLocationsStore } from '@/store/Views/locationsStore'
+import LocationsList from '@/components/Locations/LocationsList.vue'
 
 const locationsStore = useLocationsStore()
 
-const locationsList = computed(() => locationsStore.locationsList)
+// const locationsList = computed(() => locationsStore.locationsList)
+const locationsList = [
+  {
+    location: 'Default',
+    status: 'WARNING',
+    contextMenu: [
+      { label: 'edit', handler: () => ({}) },
+      { label: 'delete', handler: () => ({}) }
+    ]
+  }
+]
 
 onMounted(async () => {
   await locationsStore.fetchLocations()
