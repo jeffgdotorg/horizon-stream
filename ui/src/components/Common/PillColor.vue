@@ -1,18 +1,28 @@
 <template>
   <div class="pill-color-wrapper">
     <span
-      :class="['pill-type', `${type?.toLowerCase()}-color`]"
+      :class="['pill-type', `${item.type?.toLowerCase()}-color`]"
       data-test="pill-type"
     >
-      {{ type }}
+      {{ item.label || item.type }}
     </span>
   </div>
 </template>
 
 <script lang="ts" setup>
-defineProps<{
-  type?: string
-}>()
+import { PropType } from 'vue'
+
+type Pill = {
+  type: string
+  label?: string
+}
+
+defineProps({
+  item: {
+    type: Object as PropType<Pill>,
+    required: true
+  }
+})
 </script>
 
 <style lang="scss" scoped>
