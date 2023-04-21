@@ -1,22 +1,28 @@
 <template>
-  <div class="locations-card-wrapper">
+  <div class="locations-card-wrapper selected">
     <div class="name">
-      <ButtonText :label="item.location" />
+      <ButtonText
+        :label="item.location"
+        data-test="name"
+      />
     </div>
     <PillColor
       :type="item.status"
       class="status"
+      data-test="status"
     />
     <div class="expiry">
-      <!-- TODO: to be used when icon avail in FDS -->
-      <!-- <FeatherIcon
-        :icon="Expiry"
-        class="icon"
-      /> -->
-      <Icon :icon="iconExpiry" />
+      <FeatherIcon
+        :icon="iconExpiry.image"
+        :viewBox="setViewBox(iconExpiry.image)"
+        data-test="icon-expiry"
+      />
     </div>
     <div class="context-menu">
-      <HoverMenu :items="item.contextMenu" />
+      <HoverMenu
+        :items="item.contextMenu"
+        data-test="context-menu"
+      />
     </div>
   </div>
 </template>
@@ -24,6 +30,7 @@
 <script lang="ts" setup>
 import Expiry from '@/assets/placeholder.svg'
 import { IIcon } from '@/types'
+import { setViewBox } from '@/components/utils'
 
 defineProps({
   item: {
@@ -43,24 +50,29 @@ const iconExpiry: IIcon = {
   display: flex;
   align-items: center;
   gap: var(variables.$spacing-s);
+  padding: 0 var(variables.$spacing-s);
 }
 
 .name {
-  flex-grow: 3;
+  width: 40%;
 }
 .status {
+  width: 30%;
   display: flex;
-  flex-grow: 2;
   justify-content: center;
 }
 .expiry {
+  width: 15%;
   display: flex;
-  flex-grow: 1;
   justify-content: center;
 }
 .context-menu {
+  width: 7%;
   display: flex;
-  flex-grow: 0.5;
   justify-content: flex-end;
+}
+
+.selected {
+  background-color: var(variables.$shade-4);
 }
 </style>

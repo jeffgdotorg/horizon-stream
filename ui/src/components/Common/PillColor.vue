@@ -10,9 +10,9 @@
 </template>
 
 <script lang="ts" setup>
-defineProps<{
-  type?: string
-}>()
+defineProps({
+  type: { type: String, required: true }
+})
 </script>
 
 <style lang="scss" scoped>

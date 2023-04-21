@@ -89,6 +89,7 @@ const icon = markRaw({
 
 .hover-menu-wrapper {
   position: relative;
+  margin-top: 4px;
 }
 
 .hover-menu-icon {
