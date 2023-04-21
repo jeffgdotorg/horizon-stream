@@ -115,9 +115,9 @@ const node = reactive({ ...defaultDevice })
 
 const locationsList = ref()
 const addNode = async () => {
-  const { data } = await locationsQueries.fetchLocations()
+  const locations = await locationsQueries.fetchLocations()
 
-  locationsList.value = data.value?.findAllLocations || []
+  locationsList.value = locations?.data?.value?.findAllLocations || []
 
   openModal()
 }
