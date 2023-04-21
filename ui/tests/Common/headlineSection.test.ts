@@ -32,16 +32,20 @@ describe('HeadLineSection', () => {
   it('should have rendered the slots', () => {
     wrapper = shallowMount(HeadlineSection, {
       slots: {
-        infos: '<div>some infos</div>',
-        actions: '<div>some actions</div>'
+        left: '<div>left content</div>',
+        middle: '<div>middle content</div>',
+        right: '<div>right content</div>'
       },
       attachTo: document.body
     })
 
-    let slot = wrapper.get('[data-test="infos"]')
-    expect(slot.html()).toContain('some infos')
+    let slot = wrapper.get('[data-test="left"]')
+    expect(slot.html()).toContain('left content')
 
-    slot = wrapper.get('[data-test="actions"]')
-    expect(slot.html()).toContain('some actions')
+    slot = wrapper.get('[data-test="middle"]')
+    expect(slot.html()).toContain('middle content')
+
+    slot = wrapper.get('[data-test="right"]')
+    expect(slot.html()).toContain('right content')
   })
 })

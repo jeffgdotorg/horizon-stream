@@ -4,15 +4,15 @@
       text="locations"
       data-test="headline"
     >
-      <template #infos>
+      <template #left>
         <CountColor
           :count="items?.length"
           data-test="count"
         />
       </template>
-      <template #actions>
+      <template #right>
         <FeatherIcon
-          :icon="icon.Help"
+          :icon="icons.Help"
           data-test="icon-help"
         />
       </template>
@@ -38,7 +38,7 @@
           :key="index"
           data-test="card"
         >
-          <LocationsCard :item="item as Record<string, any>" />
+          <LocationsCard :item="item" />
         </li>
       </ul>
     </div>
@@ -56,7 +56,7 @@ defineProps({
   }
 })
 
-const icon = markRaw({
+const icons = markRaw({
   Help
 })
 </script>

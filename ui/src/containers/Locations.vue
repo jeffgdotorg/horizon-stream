@@ -19,7 +19,7 @@
         </FeatherButton>
         <hr />
         <FeatherInput
-          @update:model-value="searchLocationListener"
+          @update:model-value="searchLocationsListener"
           label="Search Location"
           type="search"
           class="search-location-input"
@@ -37,15 +37,7 @@
         <!--  card list -->
         <!-- OR -->
         <!-- location add form -->
-        <HeadlineSection text="Default" />
-        <ul class="locations-list">
-          <li
-            v-for="location in locationsList"
-            :key="location.id"
-          >
-            <LocationsMinionsCard :item="location" />
-          </li>
-        </ul>
+        <LocationsMinionsList :minions="minionsList" />
 
         <!--  inputs, actions -->
         <FooterSection
@@ -60,6 +52,7 @@
 <script lang="ts" setup>
 import Add from '@featherds/icon/action/Add'
 import Search from '@featherds/icon/action/Search'
+import Help from '@featherds/icon/action/Help'
 import { useLocationsStore } from '@/store/Views/locationsStore'
 import LocationsList from '@/components/Locations/LocationsList.vue'
 
@@ -68,52 +61,26 @@ const btns = {
   cancel: { label: 'cancel', handler: () => ({}) }
 }
 
-const items = [
-  {
-    id: 1,
-    location: 'minion0',
-    version: 'v.0.0.0',
-    latency: '000m',
-    status: 'UP',
-    utillization: '00%',
-    ip: '000.000.000.000',
-    contextMenu: [
-      { label: 'edit', handler: () => ({}) },
-      { label: 'delete', handler: () => ({}) }
-    ]
-  },
-  {
-    id: 2,
-    location: 'minion9',
-    version: 'v.9.9.9',
-    latency: '999m',
-    status: 'DOWN',
-    utillization: '99%',
-    ip: '999.999.999.999',
-    contextMenu: [
-      { label: 'edit', handler: () => ({}) },
-      { label: 'delete', handler: () => ({}) }
-    ]
-  }
-]
-
 const locationsStore = useLocationsStore()
 
-const locationsList = computed(() => items) //locationsStore.locationsList)
+const locationsList = computed(() => locationsStore.locationsList)
+const minionsList = computed(() => locationsStore.minionsList)
 
 onMounted(async () => {
   await locationsStore.fetchLocations()
+  await locationsStore.fetchMinions()
 })
 
 const addLocation = () => ({})
 
-const searchLocationListener = (val: string | number | undefined) => {
-  locationsStore.searchLocation(val as string)
+const searchLocationsListener = (val: string | number | undefined) => {
+  locationsStore.searchLocations(val as string)
 }
 
 const icons = markRaw({
   Add,
-  Search
+  Search,
+  Help
 })
 </script>
 

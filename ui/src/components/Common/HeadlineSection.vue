@@ -1,19 +1,28 @@
 <template>
-  <div class="section-wrapper">
-    <div class="section-headline">
+  <div class="headline-section">
+    <div
+      class="left"
+      data-test="left"
+    >
       <div
         class="headline"
         data-test="headline"
       >
         {{ text }}
       </div>
-      <div data-test="infos"><slot name="infos" /></div>
+      <slot name="left" />
     </div>
     <div
-      class="actions"
-      data-test="actions"
+      class="middle"
+      data-test="middle"
     >
-      <slot name="actions" />
+      <slot name="middle" />
+    </div>
+    <div
+      class="right"
+      data-test="right"
+    >
+      <slot name="right" />
     </div>
   </div>
 </template>
@@ -31,21 +40,37 @@ defineProps({
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
 
-.section-wrapper {
+.headline-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(variables.$spacing-m);
+  gap: 5%;
 
-  .section-headline {
+  .headline {
+    display: flex;
+    @include typography.headline3();
+    margin-right: var(variables.$spacing-s);
+    text-transform: capitalize;
+  }
+
+  .left {
+    width: 40%;
     display: flex;
     align-items: center;
   }
 
-  .headline {
-    @include typography.headline3();
-    margin-right: var(variables.$spacing-s);
-    text-transform: capitalize;
+  .middle {
+    width: 30%;
+    display: flex;
+    align-items: center;
+  }
+
+  .right {
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>
