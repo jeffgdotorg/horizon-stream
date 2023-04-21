@@ -7,9 +7,13 @@ export const useLocationsStore = defineStore('locationsStore', () => {
   const locationsQueries = useLocationsQueries()
 
   const fetchLocations = async () => {
-    const { data } = await locationsQueries.fetchLocations()
+    try {
+      const locations = await locationsQueries.fetchLocations()
 
-    locationsList.value = data.value?.findAllLocations || []
+      locationsList.value = locations?.data?.value?.findAllLocations || []
+    } catch (err) {
+      locationsList.value = []
+    }
   }
 
   const searchLocation = async (searchTerm = '') => {
