@@ -7,7 +7,7 @@ describe('PillColor', () => {
   beforeAll(() => {
     wrapper = mount(PillColor, {
       props: {
-        type: 'CRITICAL'
+        item: { type: 'CRITICAL' }
       }
     })
   })
