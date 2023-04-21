@@ -35,8 +35,8 @@ const props = defineProps({
 
 const statusPill =
   props.item.status === 'UP'
-    ? { type: Severity.Normal, label: props.item.status }
-    : { type: Severity.Critical, label: props.item.status }
+    ? { style: Severity.Normal, label: props.item.status }
+    : { style: Severity.Critical, label: props.item.status }
 </script>
 
 <style lang="scss" scoped>

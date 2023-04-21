@@ -1,10 +1,10 @@
 <template>
   <div class="pill-color-wrapper">
     <span
-      :class="['pill-type', `${item.type?.toLowerCase()}-color`]"
+      :class="['pill-type', `${item.style?.toLowerCase()}-color`]"
       data-test="pill-type"
     >
-      {{ item.label || item.type }}
+      {{ item.label || item.style }}
     </span>
   </div>
 </template>
@@ -13,7 +13,7 @@
 import { PropType } from 'vue'
 
 type Pill = {
-  type: string
+  style: string
   label?: string
 }
 

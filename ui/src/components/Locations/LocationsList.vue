@@ -32,12 +32,15 @@
           Status
         </div>
       </div>
-      <LocationsCard
-        v-for="(item, index) in items"
-        :key="index"
-        :item="item"
-        data-test="card"
-      />
+      <ul>
+        <li
+          v-for="(item, index) in items"
+          :key="index"
+          data-test="card"
+        >
+          <LocationsCard :item="item as Record<string, any>" />
+        </li>
+      </ul>
     </div>
   </div>
 </template>

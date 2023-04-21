@@ -38,7 +38,7 @@
         <!-- OR -->
         <!-- location add form -->
         <HeadlineSection text="Default" />
-        <ul>
+        <ul class="locations-list">
           <li
             v-for="location in locationsList"
             :key="location.id"
@@ -118,5 +118,17 @@ const icons = markRaw({
 </script>
 
 <style lang="scss" scoped>
+@use '@featherds/styles/themes/variables';
 @use '@/styles/layout/headlineTwoColumns';
+
+.content-right {
+  .locations-list {
+    > li {
+      margin-bottom: var(variables.$spacing-xs);
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
 </style>

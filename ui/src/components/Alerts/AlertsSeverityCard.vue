@@ -67,7 +67,7 @@ const props = defineProps<{
   timeRange?: TimeRange
 }>()
 
-const pillColor = { type: props.severity as string }
+const pillColor = { style: props.severity as string }
 
 const count = ref()
 onMounted(async () => {
