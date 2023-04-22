@@ -13,7 +13,7 @@
       <template #middle>
         <FeatherInput
           @update:model-value="searchMinionsListener"
-          label="Search Minions"
+          label="Search Minion"
           type="search"
           class="search-minions-input"
           data-test="search-input"
@@ -31,7 +31,10 @@
         />
       </template>
     </HeadlineSection>
-    <ul class="minions-list">
+    <ul
+      v-if="minions?.length"
+      class="minions-list"
+    >
       <li
         v-for="minion in minions"
         :key="minion.id"
@@ -39,6 +42,11 @@
         <LocationsMinionsCard :item="minion" />
       </li>
     </ul>
+    <EmptyList
+      v-else
+      :content="emptyListContent"
+      data-test="empty-list"
+    />
   </div>
 </template>
 
@@ -61,6 +69,10 @@ const searchMinionsListener = (val: string | number | undefined) => {
   locationsStore.searchMinions(val as string)
 }
 
+const emptyListContent = {
+  msg: 'No minions found.'
+}
+
 const icons = markRaw({
   Help,
   Search
@@ -70,8 +82,10 @@ const icons = markRaw({
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@/styles/vars.scss';
+@use '@/styles/mixins.scss';
 
 .minions-list-wrapper {
+  min-width: 520px;
   padding: var(variables.$spacing-m) var(variables.$spacing-s);
   background: var(variables.$surface);
   border-radius: vars.$border-radius-s;
@@ -80,6 +94,15 @@ const icons = markRaw({
     width: 100%;
     :deep(.feather-input-sub-text) {
       display: none;
+    }
+  }
+
+  .minions-list {
+    > li {
+      margin-bottom: var(variables.$spacing-s);
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 }

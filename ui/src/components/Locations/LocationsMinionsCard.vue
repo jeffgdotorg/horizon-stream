@@ -2,18 +2,68 @@
   <div class="minions-card-wrapper">
     <div class="header-content">
       <div class="header">
-        <div class="name">{{ item.name }}</div>
-        <div class="latency">Latency</div>
-        <div class="status">Status</div>
-        <div class="utilization">Utilization</div>
-        <div class="ip">IPv4</div>
+        <div
+          class="name"
+          data-test="header-name"
+        >
+          {{ item.name }}
+        </div>
+        <div
+          class="latency"
+          data-test="header-latency"
+        >
+          Latency
+        </div>
+        <div
+          class="status"
+          data-test="header-status"
+        >
+          Status
+        </div>
+        <div
+          class="utilization"
+          data-test="header-utilization"
+        >
+          Utilization
+        </div>
+        <div
+          class="ip"
+          data-test="header-ip"
+        >
+          IPv4
+        </div>
       </div>
       <div class="content">
-        <div class="version">{{ item.version }}</div>
-        <div class="latency">{{ item.latency }}</div>
-        <div class="status"><PillColor :item="statusPill" /></div>
-        <div class="utilization">{{ item.utillization }}</div>
-        <div class="ip">{{ item.ip }}</div>
+        <div
+          class="version"
+          data-test="content-version"
+        >
+          {{ item.version }}
+        </div>
+        <div
+          class="latency"
+          data-test="content-latency"
+        >
+          {{ item.latency }}
+        </div>
+        <div
+          class="status"
+          data-test="content-status"
+        >
+          <PillColor :item="statusPill" />
+        </div>
+        <div
+          class="utilization"
+          data-test="content-utilization"
+        >
+          {{ item.utillization }}
+        </div>
+        <div
+          class="ip"
+          data-test="content-ip"
+        >
+          {{ item.ip }}
+        </div>
       </div>
     </div>
     <HoverMenu

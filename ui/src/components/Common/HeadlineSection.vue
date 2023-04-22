@@ -61,13 +61,13 @@ defineProps({
   }
 
   .middle {
-    width: 30%;
+    width: 35%;
     display: flex;
     align-items: center;
   }
 
   .right {
-    width: 20%;
+    width: 15%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
