@@ -59,7 +59,7 @@ defineProps({
     display: flex;
     align-items: center;
   }
-
+  
   .middle {
     width: 35%;
     display: flex;

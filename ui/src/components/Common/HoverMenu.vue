@@ -1,6 +1,6 @@
 <!-- 
   It display an icon, once hover, presenting a list of actionable items
-
+  
   Props:
     - items: actionable item list
       - default: empty list

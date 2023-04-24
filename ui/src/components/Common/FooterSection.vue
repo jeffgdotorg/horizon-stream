@@ -3,15 +3,18 @@
     <hr />
     <div class="actions">
       <FeatherButton
-        @click="cancel.handler"
+        v-if="cancel"
+        @click="cancel.cb"
         secondary
         data-test="cancel-button"
         >{{ cancel.label || 'cancel' }}</FeatherButton
       >
       <ButtonWithSpinner
+        v-if="save"
         :type="save.type || 'submit'"
         primary
-        :isFetching="save.isFetching"
+        :isFetching="saveIsFetching"
+        :disabled="saveIsDisabled"
         data-test="save-button"
       >
         {{ save.label || 'save' }}
@@ -21,26 +24,24 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue'
 import { fncVoid } from '@/types'
+// import { ComputedRef } from 'vue'
 
-type Action = {
+type Btn = {
   label?: string
-  handler?: fncVoid
+  cb?: fncVoid
   type?: string
   isFetching?: boolean
+  // isDisabled?: ComputedRef<boolean>
 }
 
-defineProps({
-  save: {
-    type: Object as PropType<Action>,
-    required: true
-  },
-  cancel: {
-    type: Object as PropType<Action>,
-    required: true
-  }
-})
+const props = defineProps<{
+  save?: Btn
+  cancel?: Btn
+}>()
+
+const saveIsFetching = false //computed(() => props.save?.isFetching?.value)
+const saveIsDisabled = false //computed(() => props.save?.isDisabled?.value)
 </script>
 
 <style lang="scss" scoped>

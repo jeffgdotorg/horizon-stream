@@ -29,21 +29,14 @@
             <FeatherIcon :icon="icons.Search" />
           </template>
         </FeatherInput>
-        <LocationsList :items="locationsList" />
+        <!-- <LocationsList :items="locationsList" /> -->
       </div>
       <div class="content-right">
-        <!-- minions list of a location -->
-        <!--  header -->
-        <!--  card list -->
-        <!-- OR -->
-        <!-- location add form -->
-        <LocationsMinionsList :minions="minionsList" />
-
-        <!--  inputs, actions -->
-        <FooterSection
-          :save="btns.save"
-          :cancel="btns.cancel"
+        <LocationsAddForm
+          v-if="isAddingLocation"
+          data-test="location-add-form"
         />
+        <!-- edit location form -->
       </div>
     </div>
   </div>
@@ -71,7 +64,10 @@ onMounted(async () => {
   await locationsStore.fetchMinions()
 })
 
-const addLocation = () => ({})
+const isAddingLocation = ref(false)
+const addLocation = () => {
+  isAddingLocation.value = true
+}
 
 const searchLocationsListener = (val: string | number | undefined) => {
   locationsStore.searchLocations(val as string)
@@ -87,14 +83,20 @@ const icons = markRaw({
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@/styles/layout/headlineTwoColumns';
+@use '@/styles/mediaQueriesMixins.scss';
 
-.content-right {
-  .locations-list {
-    > li {
-      margin-bottom: var(variables.$spacing-xs);
-      &:last-child {
-        margin-bottom: 0;
-      }
+.content-left {
+  .search-location-input {
+    width: 100%;
+
+    @include mediaQueriesMixins.screen-sm {
+      width: 49%;
+    }
+    @include mediaQueriesMixins.screen-md {
+      width: 100%;
+    }
+    @include mediaQueriesMixins.screen-xl {
+      width: 50%;
     }
   }
 }
