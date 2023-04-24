@@ -32,7 +32,10 @@
         <!-- <LocationsList :items="locationsList" /> -->
       </div>
       <div class="content-right">
-        <LocationsAddForm v-if="isAddingLocation" />
+        <LocationsAddForm
+          v-if="isAddingLocation"
+          data-test="location-add-form"
+        />
         <!-- edit location form -->
       </div>
     </div>

@@ -5,7 +5,10 @@
       novalidate
       class="locations-add-form"
     >
-      <HeadlineSection text="Add Location" />
+      <HeadlineSection
+        text="Add Location"
+        data-test="headline"
+      />
       <div class="inputs">
         <div class="row">
           <FeatherInput
@@ -14,6 +17,7 @@
             :schema="nameV"
             required
             class="input-name"
+            data-test="input-name"
           >
             <template #pre> <FeatherIcon :icon="icons.Location" /> </template
           ></FeatherInput>
@@ -23,6 +27,7 @@
             label="Longitude (optional)"
             v-model="inputs.longitude"
             class="input-longitude"
+            data-test="input-longitude"
           >
             <template #pre> <FeatherIcon :icon="icons.placeholder" /> </template
           ></FeatherInput>
@@ -30,12 +35,16 @@
             label="Latitude (optional)"
             v-model="inputs.latitude"
             class="input-latitude"
+            data-test="input-latitude"
           >
             <template #pre> <FeatherIcon :icon="icons.placeholder" /> </template
           ></FeatherInput>
         </div>
       </div>
-      <FooterSection :save="saveBtn" />
+      <FooterSection
+        :save="saveBtn"
+        data-test="save-button"
+      />
     </form>
   </div>
 </template>
