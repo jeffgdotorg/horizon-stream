@@ -1,26 +1,30 @@
 <template>
   <button
-    :type="type"
+    @click="btnProps.cb(btnProps.cbArgs.id)"
+    :type="btnProps.type as ButtonHTMLAttributes['type'] || 'button'"
     class="button-text"
     data-test="button-text"
   >
-    <span>{{ label }}</span>
+    <span>{{ btnProps.label }}</span>
   </button>
 </template>
 
 <script lang="ts" setup>
 import { PropType, ButtonHTMLAttributes } from 'vue'
+import { fncVoid, fncArgVoid } from '@/types'
 
-defineProps({
-  label: {
-    type: String,
-    required: true
-  },
-  type: {
-    type: String as PropType<ButtonHTMLAttributes['type']>,
-    default: 'button'
+type ButtonText = {
+  label: string
+  type?: string
+  cb: fncArgVoid
+  cbArgs: {
+    id: number
   }
-})
+}
+
+defineProps<{
+  btnProps: ButtonText
+}>()
 </script>
 
 <style lang="scss" scoped>

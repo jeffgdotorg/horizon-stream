@@ -29,14 +29,17 @@
             <FeatherIcon :icon="icons.Search" />
           </template>
         </FeatherInput>
-        <!-- <LocationsList :items="locationsList" /> -->
+        <LocationsList :items="locationsList" />
       </div>
       <div class="content-right">
         <LocationsAddForm
           v-if="isAddingLocation"
           data-test="location-add-form"
         />
-        <!-- edit location form -->
+        <LocationsEditForm
+          v-if="selectedLocationId"
+          :id="selectedLocationId"
+        />
       </div>
     </div>
   </div>
@@ -50,16 +53,18 @@ import LocationsList from '@/components/Locations/LocationsList.vue'
 
 const locationsStore = useLocationsStore()
 
-const locationsList = computed(() => locationsStore.locationsList)
-
 onMounted(async () => {
   await locationsStore.fetchLocations()
 })
+
+const locationsList = computed(() => locationsStore.locationsList)
 
 const isAddingLocation = ref(false)
 const addLocation = () => {
   isAddingLocation.value = true
 }
+
+const selectedLocationId = computed(() => locationsStore.selectedLocationId)
 
 const searchLocationListener = (val: string | number | undefined) => {
   locationsStore.searchLocation(val as string)

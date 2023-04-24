@@ -3,6 +3,7 @@ import { useLocationsQueries } from '../Queries/locationsQueries'
 
 export const useLocationsStore = defineStore('locationsStore', () => {
   const locationsList = ref()
+  const selectedLocationId = ref()
 
   const locationsQueries = useLocationsQueries()
 
@@ -22,9 +23,15 @@ export const useLocationsStore = defineStore('locationsStore', () => {
     locationsList.value = data.value?.searchLocation || []
   }
 
+  const selectLocation = (id: number) => {
+    selectedLocationId.value = id
+  }
+
   return {
     locationsList,
     fetchLocations,
-    searchLocation
+    searchLocation,
+    selectedLocationId,
+    selectLocation
   }
 })

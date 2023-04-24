@@ -2,7 +2,7 @@
   <div class="locations-card-wrapper selected">
     <div class="name">
       <ButtonText
-        :label="item.location"
+        :btn-props="buttonProps"
         data-test="name"
       />
     </div>
@@ -29,15 +29,26 @@
 
 <script lang="ts" setup>
 import Expiry from '@/assets/placeholder.svg'
-import { IIcon } from '@/types'
+import { IIcon, fncVoid } from '@/types'
 import { setViewBox } from '@/components/utils'
+import { useLocationsStore } from '@/store/Views/locationsStore'
 
-defineProps({
+const props = defineProps({
   item: {
     type: Object,
     required: true
   }
 })
+
+const locationsStore = useLocationsStore()
+const buttonProps = {
+  label: props.item.location,
+  cb: locationsStore.selectLocation,
+  cbArgs: {
+    id: props.item.id
+  }
+}
+
 const iconExpiry: IIcon = {
   image: Expiry
 }
