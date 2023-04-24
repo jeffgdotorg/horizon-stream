@@ -30,12 +30,12 @@ describe('LocationsAddForm', () => {
     expect(elem.exists()).toBeTruthy()
   })
 
-  test('Should have a, input latitude', () => {
+  test('Should have an input latitude', () => {
     const elem = wrapper.get('[data-test="input-latitude"]')
     expect(elem.exists()).toBeTruthy()
   })
 
-  test('Should have a, input latitude', () => {
+  test('Should have a save button', () => {
     const elem = wrapper.get('[data-test="save-button"]')
     expect(elem.exists()).toBeTruthy()
   })
