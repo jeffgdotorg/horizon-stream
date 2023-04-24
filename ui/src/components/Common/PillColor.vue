@@ -1,17 +1,47 @@
+<!-- 
+  Component props structure:
+    item: {
+      style: 'CRITICAL',
+      label: '99%' // optional: to display 99% as label inside the pill if present, instead of `CRITICAL`
+    }
+
+  The class names are based on the `severity` types of the BE graphql schema.
+    enum Severity {
+      CLEARED
+      CRITICAL
+      INDETERMINATE
+      MAJOR
+      MINOR
+      NORMAL
+      SEVERITY_UNDEFINED
+      UNRECOGNIZED
+      WARNING
+    }
+ -->
 <template>
   <div class="pill-color-wrapper">
     <span
-      :class="['pill-type', `${type?.toLowerCase()}-color`]"
-      data-test="pill-type"
+      :class="['pill-style', `${item.style?.toLowerCase()}-color`]"
+      data-test="pill-style"
     >
-      {{ type }}
+      {{ item.label || item.style }}
     </span>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { PropType } from 'vue'
+
+type Pill = {
+  style: string
+  label?: string
+}
+
 defineProps({
-  type: { type: String, required: true }
+  item: {
+    type: Object as PropType<Pill>,
+    required: true
+  }
 })
 </script>
 
@@ -20,7 +50,7 @@ defineProps({
 @use '@/styles/vars.scss';
 @use '@/styles/pillColor.scss';
 
-.pill-type {
+.pill-style {
   @include typography.title();
   display: inline-block;
   font-size: 0.8rem;

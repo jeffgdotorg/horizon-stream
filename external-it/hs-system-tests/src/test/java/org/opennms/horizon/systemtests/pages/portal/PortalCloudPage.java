@@ -29,17 +29,22 @@
 
 package org.opennms.horizon.systemtests.pages.portal;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
 import java.time.Duration;
 
+import static com.codeborne.selenide.Condition.appear;
+import static com.codeborne.selenide.Condition.disappear;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.hidden;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 public class PortalCloudPage {
 
-    private static final SelenideElement headerTxt = $("section h1");
+    private static final SelenideElement headerTxt = $("#header");
     private static final SelenideElement profileIcon = $("button.profile-circle");
     private static final SelenideElement addInstanceBtn = $("#cloud-add-instance-button");
     private static final SelenideElement instanceTable = $("table.condensed  tbody");
@@ -48,34 +53,40 @@ public class PortalCloudPage {
     private static final SelenideElement searchInstanceInp = $("#cloud-instances-search");
     private static final SelenideElement shadedBackground = $("div.backdrop");
     private static final SelenideElement spinner = $(".spinner");
+    private static final SelenideElement noDataTxt = $("h3.empty-view");
+    private static final SelenideElement secondRow = $("#cloud-instances-row-details-1");
 
     public static void verifyMainPageHeader() {
-        headerTxt.shouldBe(Condition.visible, Duration.ofMinutes(1)).shouldHave(Condition.text("OpenNMS Cloud"));
+        headerTxt.shouldBe(visible, Duration.ofMinutes(1)).shouldHave(text("OpenNMS Cloud"));
     }
 
     public static void clickAddInstance() {
-        addInstanceBtn.shouldBe(Condition.enabled, Duration.ofSeconds(20)).click();
+        addInstanceBtn.shouldBe(enabled, Duration.ofSeconds(20)).click();
     }
 
     public static void instantShouldBePresentedInTable(String instanceName) {
-        instanceTable.find(byText(instanceName)).shouldBe(Condition.visible);
+        instanceTable.find(byText(instanceName)).shouldBe(visible);
+    }
+
+    public static void searchShowsNothingFound() {
+        noDataTxt.shouldBe(visible, text("No results found."));
     }
 
     public static void clickLogInForFirstInstance() {
-        logInBtn.shouldBe(Condition.enabled).click();
+        logInBtn.shouldBe(enabled).click();
     }
 
-
     public static void clickDetailsForFirstInstance() {
-        detailsBtn.shouldBe(Condition.enabled).click();
+        detailsBtn.shouldBe(enabled).click();
     }
 
     public static void setFilter(String pattern) {
-        searchInstanceInp.shouldBe(Condition.enabled).setValue(pattern);
-        spinner.shouldBe(Condition.appear).shouldBe(Condition.disappear, Duration.ofMinutes(1));
+        searchInstanceInp.shouldBe(enabled, Duration.ofSeconds(8)).setValue("").sendKeys(pattern);
+        spinner.shouldBe(appear).shouldBe(disappear, Duration.ofMinutes(1));
+        secondRow.shouldBe(hidden); // temporary crutch for case when our instance isn't at 1st place and after search we need time to wait when others will be hidden
     }
 
     public static void mainPageIsNotCoveredByPopups() {
-        shadedBackground.shouldBe(Condition.hidden);
+        shadedBackground.shouldBe(hidden);
     }
 }

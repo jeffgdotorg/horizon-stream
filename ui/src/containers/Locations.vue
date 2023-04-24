@@ -48,16 +48,24 @@
 <script lang="ts" setup>
 import Add from '@featherds/icon/action/Add'
 import Search from '@featherds/icon/action/Search'
+import Help from '@featherds/icon/action/Help'
 import { useLocationsStore } from '@/store/Views/locationsStore'
 import LocationsList from '@/components/Locations/LocationsList.vue'
 
+const btns = {
+  save: { label: 'save', handler: () => ({}) },
+  cancel: { label: 'cancel', handler: () => ({}) }
+}
+
 const locationsStore = useLocationsStore()
+
+const locationsList = computed(() => locationsStore.locationsList)
+const minionsList = computed(() => locationsStore.minionsList)
 
 onMounted(async () => {
   await locationsStore.fetchLocations()
+  await locationsStore.fetchMinions()
 })
-
-const locationsList = computed(() => locationsStore.locationsList)
 
 const isAddingLocation = ref(false)
 const addLocation = () => {
@@ -67,16 +75,18 @@ const addLocation = () => {
 const selectedLocationId = computed(() => locationsStore.selectedLocationId)
 
 const searchLocationListener = (val: string | number | undefined) => {
-  locationsStore.searchLocation(val as string)
+  locationsStore.searchLocations(val as string)
 }
 
 const icons = markRaw({
   Add,
-  Search
+  Search,
+  Help
 })
 </script>
 
 <style lang="scss" scoped>
+@use '@featherds/styles/themes/variables';
 @use '@/styles/layout/headlineTwoColumns';
 @use '@/styles/mediaQueriesMixins.scss';
 

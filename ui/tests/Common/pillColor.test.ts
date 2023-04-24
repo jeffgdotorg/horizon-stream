@@ -1,13 +1,13 @@
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import PillColor from '@/components/Common/PillColor.vue'
 
 let wrapper: any
 
 describe('PillColor', () => {
   beforeAll(() => {
-    wrapper = mount(PillColor, {
+    wrapper = shallowMount(PillColor, {
       props: {
-        type: 'CRITICAL'
+        item: { type: 'CRITICAL' }
       }
     })
   })
@@ -17,7 +17,7 @@ describe('PillColor', () => {
   })
 
   test('Should have a pill color', () => {
-    const elem = wrapper.get('[data-test="pill-type"]')
+    const elem = wrapper.get('[data-test="pill-style"]')
     expect(elem.exists()).toBeTruthy()
   })
 })

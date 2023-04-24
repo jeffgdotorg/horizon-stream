@@ -38,6 +38,11 @@ import static org.opennms.horizon.systemtests.CucumberHooks.INSTANCES;
 
 public class AddNewInstanceSteps {
 
+    @Then("'Add a Cloud instance' is visible")
+    public void checkPopupState() {
+        AddNewInstancePopup.waitPopupIsDisplayed(true);
+    }
+
     @Then("the IT Administrator fills {string} in 'Instance name'")
     public void setInstanceName(String instanceName) {
         if (instanceName.startsWith("random")) {

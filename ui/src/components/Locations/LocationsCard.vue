@@ -7,7 +7,7 @@
       />
     </div>
     <PillColor
-      :type="item.status"
+      :item="statusPill"
       class="status"
       data-test="status"
     />
@@ -29,7 +29,8 @@
 
 <script lang="ts" setup>
 import Expiry from '@/assets/placeholder.svg'
-import { IIcon, fncVoid } from '@/types'
+import { IIcon } from '@/types'
+import { Severity } from '@/types/graphql'
 import { setViewBox } from '@/components/utils'
 import { useLocationsStore } from '@/store/Views/locationsStore'
 
@@ -48,6 +49,11 @@ const buttonProps = {
     id: props.item.id
   }
 }
+
+const statusPill =
+  props.item.status === 'UP'
+    ? { style: Severity.Normal, label: props.item.status }
+    : { style: Severity.Critical, label: props.item.status }
 
 const iconExpiry: IIcon = {
   image: Expiry

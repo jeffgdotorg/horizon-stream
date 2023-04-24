@@ -3,6 +3,7 @@ import { useLocationsQueries } from '../Queries/locationsQueries'
 
 export const useLocationsStore = defineStore('locationsStore', () => {
   const locationsList = ref()
+  const minionsList = ref()
   const selectedLocationId = ref()
 
   const locationsQueries = useLocationsQueries()
@@ -17,10 +18,56 @@ export const useLocationsStore = defineStore('locationsStore', () => {
     }
   }
 
-  const searchLocation = async (searchTerm = '') => {
-    const { data } = await locationsQueries.searchLocation(searchTerm)
+  const searchLocations = async (searchTerm = '') => {
+    try {
+      const locations = await locationsQueries.searchLocation(searchTerm)
 
-    locationsList.value = data.value?.searchLocation || []
+      locationsList.value = locations?.data?.value?.searchLocation || []
+    } catch (err) {
+      locationsList.value = []
+    }
+  }
+
+  const fetchMinions = async () => {
+    try {
+      // const minions = await locationsQueries.fetchMinions()
+      // minionsList.value = minions?.data?.value?.findAllMinions || []
+      minionsList.value = [
+        {
+          id: 1,
+          name: 'minion0',
+          version: 'v.0.0.0',
+          latency: '000m',
+          status: 'UP',
+          utillization: '00%',
+          ip: '000.000.000.000',
+          contextMenu: [
+            { label: 'edit', handler: () => ({}) },
+            { label: 'delete', handler: () => ({}) }
+          ]
+        },
+        {
+          id: 2,
+          name: 'minion9',
+          version: 'v.9.9.9',
+          latency: '999m',
+          status: 'DOWN',
+          utillization: '99%',
+          ip: '999.999.999.999',
+          contextMenu: [
+            { label: 'edit', handler: () => ({}) },
+            { label: 'delete', handler: () => ({}) }
+          ]
+        }
+      ]
+    } catch (err) {
+      minionsList.value = []
+    }
+  }
+
+  const searchMinions = async (searchTerm = '') => {
+    // const minions = await locationsQueries.searchMinion(searchTerm)
+    // minionsList.value = minions?.data?.value?.searchLocation || []
   }
 
   const selectLocation = (id: number) => {
@@ -30,8 +77,11 @@ export const useLocationsStore = defineStore('locationsStore', () => {
   return {
     locationsList,
     fetchLocations,
-    searchLocation,
     selectedLocationId,
-    selectLocation
+    selectLocation,
+    searchLocations,
+    minionsList,
+    fetchMinions,
+    searchMinions
   }
 })

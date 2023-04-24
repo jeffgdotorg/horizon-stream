@@ -19,16 +19,6 @@
       >
         {{ save.label || 'save' }}
       </ButtonWithSpinner>
-      <!-- <ButtonWithSpinner
-        v-if="save"
-        :type="save.type || 'submit'"
-        primary
-        :isFetching="save.isFetching"
-        :disabled="saveIsDisabled"
-        data-test="save-button"
-      >
-        {{ save.label || 'save' }}
-      </ButtonWithSpinner> -->
     </div>
   </div>
 </template>
@@ -56,9 +46,11 @@ const saveIsDisabled = false //computed(() => props.save?.isDisabled?.value)
 
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
+
 .footer-section-wrapper {
   margin-top: var(variables.$spacing-l);
 }
+
 .actions {
   display: flex;
   justify-content: flex-end;

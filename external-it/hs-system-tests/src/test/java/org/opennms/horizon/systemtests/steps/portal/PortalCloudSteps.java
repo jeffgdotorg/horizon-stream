@@ -59,6 +59,15 @@ public class PortalCloudSteps {
         PortalCloudPage.instantShouldBePresentedInTable(instanceName);
     }
 
+    @Then("the IT Administrator doesn't see an instance {string} in the list")
+    public void checkThatInstanceIsAbsent(String instanceName) {
+        if (instanceName.startsWith("random")) {
+            instanceName = INSTANCES.get(0);
+        }
+        PortalCloudPage.setFilter(instanceName);
+        PortalCloudPage.searchShowsNothingFound();
+    }
+
     @Then("the IT Administrator opens 'Details' for the instance")
     public void openDetailsForTheInstance() {
         PortalCloudPage.clickDetailsForFirstInstance();
@@ -67,6 +76,7 @@ public class PortalCloudSteps {
     @Then("the IT Administrator is brought back to the OpenNMS Cloud page")
     public void thePageIsNotCoveredByAnyPopup() {
         PortalCloudPage.mainPageIsNotCoveredByPopups();
+        PortalCloudPage.verifyMainPageHeader();
     }
 
     @Then("click on 'Log in' button for the instance")
