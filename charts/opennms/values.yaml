@@ -196,6 +196,20 @@ OpenNMS:
         Cpu: 100m
         Memory: 250Mi
     PrivateRepoEnabled: false
+  MinionCertificateManager:
+    ServiceName: opennms-minion-certificate-manager
+    Image: opennms/horizon-stream-minion-certificate-manager
+    ImagePullPolicy: IfNotPresent
+    Replicas: 1
+    Port: 8990
+    Resources:
+      Limits:
+        Cpu: "1"
+        Memory: 500Mi
+      Requests:
+        Cpu: 100m
+        Memory: 250Mi
+    PrivateRepoEnabled: false
 Postgres:
   ServiceName: postgres
   Image: postgres:14.5-alpine

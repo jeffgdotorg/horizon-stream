@@ -34,6 +34,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
@@ -41,10 +42,17 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class EditInstancePage {
 
-    public static final ElementsCollection usersRow = $$("tbody tr");
-    public static final SelenideElement usersTable = $("tbody");
-    public static final SelenideElement deleteInstanceBtn = $("#delete-btn-cloud-instance");
-    public static final SelenideElement instanceUrlTxt = $("#cloud-details-instance-url");
+    private static final SelenideElement titleTxt = $("div.header-container");
+    private static final SelenideElement header = $("h2");
+    private static final ElementsCollection usersRow = $$("tbody tr");
+    private static final SelenideElement usersTable = $("tbody");
+    private static final SelenideElement deleteInstanceBtn = $("#delete-btn-cloud-instance");
+    private static final SelenideElement editNameBtn = $("#edit-btn-cloud-instance");
+    private static final SelenideElement instanceUrlTxt = $("#cloud-details-instance-url");
+
+    public static void verifyPageTitle() {
+        titleTxt.shouldHave(text("Cloud Instance Details"));
+    }
 
     public static void verifyNumberOfUsers(int count) {
         usersRow.shouldHave(CollectionCondition.size(count));
@@ -62,7 +70,15 @@ public class EditInstancePage {
         deleteInstanceBtn.shouldBe(enabled).click();
     }
 
+    public static void clickEditNameBtn() {
+        editNameBtn.shouldBe(enabled).click();
+    }
+
     public static void clickOnInstanceUrl() {
         instanceUrlTxt.shouldBe(enabled).click();
+    }
+
+    public static void verifyInstanceName(String instanceName) {
+        header.shouldHave(text("Instance Name: " + instanceName));
     }
 }

@@ -41,4 +41,25 @@ public class EditInstanceSteps {
         String userEmail = TestDataStorage.mapUserToEmail(email);
         EditInstancePage.verifyUserEmailInTable(userEmail);
     }
+
+    @Then("click on 'DELETE INSTANCE' button")
+    public void clickDeleteInstanceBtn() {
+        EditInstancePage.clickDeleteInstance();
+    }
+
+    @Then("the IT Administrator sees the 'Cloud Instance Details' page for the {string} instance")
+    public void checkWeAreOnDetailsPage(String instanceName) {
+        EditInstancePage.verifyPageTitle();
+        EditInstancePage.verifyInstanceName(instanceName);
+    }
+
+    @Then("click on the instance 'URL' link")
+    public void clickOnUrl() {
+        EditInstancePage.clickOnInstanceUrl();
+    }
+
+    @Then("click on 'edit' for instance name")
+    public void clickOnEditInstanceName() {
+        EditInstancePage.clickEditNameBtn();
+    }
 }

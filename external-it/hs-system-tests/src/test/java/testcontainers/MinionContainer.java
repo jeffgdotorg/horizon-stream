@@ -2,12 +2,14 @@ package testcontainers;
 
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.InternetProtocol;
+import org.opennms.horizon.systemtests.CucumberHooks;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.time.Duration;
 import java.util.List;
 
+import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 import static org.testcontainers.containers.Network.SHARED;
 
 public class MinionContainer extends GenericContainer<MinionContainer> {
@@ -57,6 +59,12 @@ public class MinionContainer extends GenericContainer<MinionContainer> {
         this.gatewayHost = gatewayHost;
         this.minionId = minionId.toUpperCase();
         this.minionLocation = minionLocation;
+    }
+
+    public static void createNewOne(String minionId, String minionLocation) {
+        MinionContainer minionContainer = new MinionContainer(CucumberHooks.gatewayHost, minionId, minionLocation);
+        minionContainer.start();
+        MINIONS.add(minionContainer);
     }
 
     public String getUdpPortBinding(int portNumber) {

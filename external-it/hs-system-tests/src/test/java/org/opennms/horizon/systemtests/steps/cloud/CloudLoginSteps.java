@@ -7,6 +7,11 @@ import org.opennms.horizon.systemtests.utils.TestDataStorage;
 
 public class CloudLoginSteps {
 
+    @Then("Cloud login page appears")
+    public void checkPopupIsVisible() {
+        CloudLoginPage.checkPageTitle();
+    }
+
     @Then("set email address as {string}")
     public void setEmail(String email) {
         String userEmail = TestDataStorage.mapUserToEmail(email);

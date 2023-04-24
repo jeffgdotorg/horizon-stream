@@ -11,5 +11,4 @@ public class CloudAuthErrorSteps {
         CloudAuthErrorPage.verifyAuthError(userEmail);
         CloudAuthErrorPage.logout();
     }
-
 }

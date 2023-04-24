@@ -11,16 +11,20 @@ import org.opennms.horizon.systemtests.pages.portal.AddNewInstancePopup;
 import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
 import org.opennms.horizon.systemtests.pages.portal.PortalCloudPage;
 import org.opennms.horizon.systemtests.pages.portal.PortalLoginPage;
+import org.testcontainers.containers.GenericContainer;
 import testcontainers.MinionContainer;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CucumberHooks {
     public static final List<MinionContainer> MINIONS = new ArrayList<>();
     public static final List<String> INSTANCES = new ArrayList<>();
     public static String instanceUrl;
+    public static String gatewayHost;
+    private static String minionPrefix = "Default_Minion-";
     public static PortalApi portalApi = new PortalApi();
 
     @Before("@cloud")
@@ -45,16 +49,18 @@ public class CucumberHooks {
         AddNewInstancePopup.setInstanceName(instanceName);
         AddNewInstancePopup.clickSubmitBtn();
 
+        PortalCloudPage.mainPageIsNotCoveredByPopups();
         PortalCloudPage.setFilter(instanceName);
         PortalCloudPage.clickDetailsForFirstInstance();
         String instanceUrl = EditInstancePage.getInstanceUrl();
         CucumberHooks.instanceUrl = instanceUrl;
+        CucumberHooks.gatewayHost = instanceUrl
+            .replace("https://", "")
+            .replace("tnnt", "minion");
 
         MinionContainer minionContainer = new MinionContainer(
-            instanceUrl
-                .replace("https://", "")
-                .replace("tnnt", "minion"),
-            "Minion-" + timeCode,
+            gatewayHost,
+            minionPrefix + timeCode,
             "location-" + timeCode
         );
 
@@ -72,6 +78,17 @@ public class CucumberHooks {
     @After("@cloud")
     public static void tearDownCloud() {
         Selenide.open(instanceUrl);
+
+        Stream<MinionContainer> aDefault = MINIONS.stream().dropWhile(container -> !container.minionId.startsWith(minionPrefix));
+        aDefault.forEach(GenericContainer::stop);
+
+        if (MINIONS.isEmpty()) {
+            long timeCode = Instant.now().toEpochMilli();
+            MinionContainer.createNewOne(
+                minionPrefix + timeCode,
+                "location-" + timeCode
+            );
+        }
     }
 
     @Before("@portal")
@@ -92,6 +109,7 @@ public class CucumberHooks {
     @After("@portal")
     public static void returnToPortalMainPage() {
         Selenide.open(SecretsStorage.portalHost + "/cloud");
+        PortalCloudPage.verifyMainPageHeader();
         INSTANCES.clear();
     }
 
