@@ -32,6 +32,13 @@ describe('Locations', () => {
     expect(elem.exists()).toBeTruthy()
   })
 
+  test('Should open the location add form', async () => {
+    await wrapper.get('[data-test="add-location-btn"]').trigger('click')
+
+    const elem = wrapper.get('[data-test="location-add-form"]')
+    expect(elem.exists()).toBeTruthy()
+  })
+
   test('Should have a location search input', () => {
     const elem = wrapper.get('[data-test="search-input"]')
     expect(elem.exists()).toBeTruthy()
