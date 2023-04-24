@@ -29,17 +29,11 @@
             <FeatherIcon :icon="icons.Search" />
           </template>
         </FeatherInput>
-        <LocationsList :items="locationsList" />
+        <!-- <LocationsList :items="locationsList" /> -->
       </div>
       <div class="content-right">
-        <!-- minions list of a location -->
-        <!--  header -->
-        <!--  card list -->
-        <!-- OR -->
-        <!-- location add form -->
-        <!--  header -->
-        <!--  inputs, actions -->
-        <!--  footer: cancel, save -->
+        <LocationsAddForm v-if="isAddingLocation" />
+        <!-- edit location form -->
       </div>
     </div>
   </div>
@@ -59,7 +53,10 @@ onMounted(async () => {
   await locationsStore.fetchLocations()
 })
 
-const addLocation = () => ({})
+const isAddingLocation = ref(false)
+const addLocation = () => {
+  isAddingLocation.value = true
+}
 
 const searchLocationListener = (val: string | number | undefined) => {
   locationsStore.searchLocation(val as string)
@@ -73,4 +70,21 @@ const icons = markRaw({
 
 <style lang="scss" scoped>
 @use '@/styles/layout/headlineTwoColumns';
+@use '@/styles/mediaQueriesMixins.scss';
+
+.content-left {
+  .search-location-input {
+    width: 100%;
+
+    @include mediaQueriesMixins.screen-sm {
+      width: 49%;
+    }
+    @include mediaQueriesMixins.screen-md {
+      width: 100%;
+    }
+    @include mediaQueriesMixins.screen-xl {
+      width: 50%;
+    }
+  }
+}
 </style>

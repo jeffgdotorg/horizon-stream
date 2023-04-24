@@ -1,6 +1,6 @@
 <!-- 
   It display an icon, once hover, presenting a list of actionable items
-
+  
   Props:
     - items: actionable item list
       - default: empty list
@@ -110,6 +110,7 @@ const icon = markRaw({
   box-shadow: var(variables.$shadow-1);
   @include elevation.elevation(2);
   text-align: left;
+  z-index: var(variables.$zindex-tooltip);
   &:hover {
     display: block;
   }
