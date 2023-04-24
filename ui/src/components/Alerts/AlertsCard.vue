@@ -23,7 +23,7 @@
             class="severity"
             data-test="severity"
           >
-            <PillColor :type="alert.severity" />
+            <PillColor :item="pillColor" />
           </div>
           <div
             class="cause headline"
@@ -82,9 +82,11 @@ import { IAlert } from '@/types/alerts'
 
 const emits = defineEmits(['alert-selected'])
 
-defineProps<{
+const props = defineProps<{
   alert: IAlert
 }>()
+
+const pillColor = { style: props.alert.severity as string }
 
 const alertSelectedHandler = (databaseId: number) => {
   emits('alert-selected', databaseId)

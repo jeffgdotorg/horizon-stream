@@ -4,15 +4,15 @@
       text="locations"
       data-test="headline"
     >
-      <template #infos>
+      <template #left>
         <CountColor
           :count="items?.length"
           data-test="count"
         />
       </template>
-      <template #actions>
+      <template #right>
         <FeatherIcon
-          :icon="icon.Help"
+          :icon="icons.Help"
           data-test="icon-help"
         />
       </template>
@@ -32,12 +32,15 @@
           Status
         </div>
       </div>
-      <LocationsCard
-        v-for="(item, index) in items"
-        :key="index"
-        :item="item"
-        data-test="card"
-      />
+      <ul>
+        <li
+          v-for="(item, index) in items"
+          :key="index"
+          data-test="card"
+        >
+          <LocationsCard :item="item" />
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -53,7 +56,7 @@ defineProps({
   }
 })
 
-const icon = markRaw({
+const icons = markRaw({
   Help
 })
 </script>

@@ -19,7 +19,7 @@
         </FeatherButton>
         <hr />
         <FeatherInput
-          @update:model-value="searchLocationListener"
+          @update:model-value="searchLocationsListener"
           label="Search Location"
           type="search"
           class="search-location-input"
@@ -45,15 +45,23 @@
 <script lang="ts" setup>
 import Add from '@featherds/icon/action/Add'
 import Search from '@featherds/icon/action/Search'
+import Help from '@featherds/icon/action/Help'
 import { useLocationsStore } from '@/store/Views/locationsStore'
 import LocationsList from '@/components/Locations/LocationsList.vue'
+
+const btns = {
+  save: { label: 'save', handler: () => ({}) },
+  cancel: { label: 'cancel', handler: () => ({}) }
+}
 
 const locationsStore = useLocationsStore()
 
 const locationsList = computed(() => locationsStore.locationsList)
+const minionsList = computed(() => locationsStore.minionsList)
 
 onMounted(async () => {
   await locationsStore.fetchLocations()
+  await locationsStore.fetchMinions()
 })
 
 const isAddingLocation = ref(false)
@@ -61,17 +69,19 @@ const addLocation = () => {
   isAddingLocation.value = true
 }
 
-const searchLocationListener = (val: string | number | undefined) => {
-  locationsStore.searchLocation(val as string)
+const searchLocationsListener = (val: string | number | undefined) => {
+  locationsStore.searchLocations(val as string)
 }
 
 const icons = markRaw({
   Add,
-  Search
+  Search,
+  Help
 })
 </script>
 
 <style lang="scss" scoped>
+@use '@featherds/styles/themes/variables';
 @use '@/styles/layout/headlineTwoColumns';
 @use '@/styles/mediaQueriesMixins.scss';
 

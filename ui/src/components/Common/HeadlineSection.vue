@@ -39,28 +39,33 @@ defineProps({
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
+
 .headline-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(variables.$spacing-m);
   gap: 5%;
+
   .headline {
     display: flex;
     @include typography.headline3();
     margin-right: var(variables.$spacing-s);
     text-transform: capitalize;
   }
+
   .left {
     width: 40%;
     display: flex;
     align-items: center;
   }
+  
   .middle {
     width: 35%;
     display: flex;
     align-items: center;
   }
+
   .right {
     width: 15%;
     display: flex;
