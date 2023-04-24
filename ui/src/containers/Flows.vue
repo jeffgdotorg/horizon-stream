@@ -14,16 +14,29 @@
       >
       </TextRadioButtons>
       <div class="filters-divider"></div>
-      <FeatherAutocomplete
-        class="filter-autocomplete"
-        label="Filter Exporters"
-        type="multi"
-        v-model="flowsStore.filters.selectedExporters"
-        :loading="flowsStore.filters.isExportersLoading"
-        :results="flowsStore.filters.filteredExporters"
-        @search="flowsStore.exportersAutoCompleteSearch"
-        @update:model-value="flowsStore.updateChartData"
-      ></FeatherAutocomplete>
+      <div class="exporter-section">
+        <FeatherAutocomplete
+          class="filter-autocomplete"
+          label="Filter Exporters"
+          type="multi"
+          v-model="flowsStore.filters.selectedExporters"
+          :loading="flowsStore.filters.isExportersLoading"
+          :results="flowsStore.filters.filteredExporters"
+          @search="flowsStore.exportersAutoCompleteSearch"
+          @update:model-value="flowsStore.updateChartData"
+        ></FeatherAutocomplete>
+        <FeatherButton
+          @click="toggleDrawer"
+          icon="Help"
+        >
+          <FeatherIcon
+            class="utility-icon"
+            :icon="HelpIcon"
+          >
+          </FeatherIcon>
+        </FeatherButton>
+      </div>
+
       <div class="filters-divider"></div>
       <FeatherAutocomplete
         class="filter-autocomplete"
@@ -44,7 +57,15 @@
           <div class="total-flows">{{ flowsStore.totalFlows }}</div>
         </div>
         <div class="utilitys">
-          <FeatherButton icon="Download">
+          <FeatherButton
+            icon="Download"
+            @click="
+              flowsStore.filters.dataStyle.selectedItem === 'table'
+                ? downloadTableChartApplications('TableChartApplications')
+                : downloadLineChartApplications('LineChartApplications')
+            "
+            :disabled="!hasData"
+          >
             <FeatherIcon
               class="utility-icon"
               :icon="Download"
@@ -103,6 +124,7 @@
       <TableChart
         v-if="flowsStore.filters.dataStyle.selectedItem === 'table' && hasData"
         :id="'tableChartApplications'"
+        ref="tableChartApplications"
         :selected-filter-range="flowsStore.filters.dateFilter"
         :chart-data="flowsStore.applications.tableChartData"
         :table-data="flowsStore.applications.tableData"
@@ -110,6 +132,7 @@
       <LineChart
         v-if="flowsStore.filters.dataStyle.selectedItem === 'line' && hasData"
         :id="'lineChartApplications'"
+        ref="lineChartApplications"
         :selected-filter-range="flowsStore.filters.dateFilter"
         :chart-data="flowsStore.applications.lineChartData"
         :table-data="flowsStore.applications.tableData"
@@ -119,6 +142,29 @@
       </div>
     </div>
   </div>
+  <FeatherDrawer
+    :modelValue="isDrawerOpen"
+    @update:modelValue="toggleDrawer"
+    :labels="{ close: 'close', title: 'Flows' }"
+  >
+    <!-- This will be removed in the next iteration of design -->
+    <div class="exporter-drawer">
+      <h2>Flows</h2>
+      <p>Flows are summaries of network traffic sent by network devices (switches, routers, and so on).</p>
+      <br />
+      <p>
+        By default, the Flows page displays graphs showing the top ten exporters, applications, and conversations for
+        the network devices that you are monitoring. You can filter on the following attributes to customize the
+        information displayed:
+      </p>
+      <br />
+      <ul>
+        <li>Time period (current calendar day, last 24 hours, last 7 days)</li>
+        <li>Exporters (devices configured to export flow reports)</li>
+        <li>Applications (monitored protocols)</li>
+      </ul>
+    </div>
+  </FeatherDrawer>
 </template>
 
 <script setup lang="ts">
@@ -126,7 +172,9 @@ import { useFlowsStore } from '@/store/Views/flowsStore'
 import { FeatherRadioObject } from '@/types'
 import { TimeRange } from '@/types/graphql'
 import Download from '@featherds/icon/action/DownloadFile'
+import HelpIcon from '@featherds/icon/action/Help'
 import Refresh from '@featherds/icon/navigation/Refresh'
+import { FeatherDrawer } from '@featherds/drawer'
 const flowsStore = useFlowsStore()
 
 const hasData = computed(() => {
@@ -135,6 +183,16 @@ const hasData = computed(() => {
   }
   return false
 })
+
+const lineChartApplications = ref()
+const downloadLineChartApplications = (fileName: string) => {
+  lineChartApplications.value.downloadChart(fileName)
+}
+
+const tableChartApplications = ref()
+const downloadTableChartApplications = (fileName: string) => {
+  tableChartApplications.value.downloadChart(fileName)
+}
 
 const trafficRadios = ref([
   { name: 'Total', value: 'total' },
@@ -156,6 +214,11 @@ const timeOptions = ref([
   { value: TimeRange.Last_24Hours, name: '24H' },
   { value: TimeRange.SevenDays, name: '7D' }
 ])
+
+const isDrawerOpen = ref(false)
+const toggleDrawer = () => {
+  isDrawerOpen.value = !isDrawerOpen.value
+}
 
 onUnmounted(() => flowsStore.$reset)
 </script>
@@ -253,6 +316,13 @@ onUnmounted(() => flowsStore.$reset)
     }
   }
 }
+.exporter-section {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+}
 .total-container {
   display: flex;
   gap: var(variables.$spacing-s);
@@ -266,6 +336,15 @@ onUnmounted(() => flowsStore.$reset)
     color: #00666d;
     padding: 4px 8px;
     border-radius: 4px;
+  }
+}
+.exporter-drawer {
+  max-width: 531px;
+  margin: var(variables.$spacing-xl) var(variables.$spacing-l);
+
+  li {
+    list-style-type: disc;
+    margin-left: var(variables.$spacing-l);
   }
 }
 </style>
