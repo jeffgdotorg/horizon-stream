@@ -1,4 +1,15 @@
 <template>
+  <FeatherAutocomplete
+    v-if="hasData"
+    class="exporters-filter"
+    :label="dashboardText.TopApplications.filterLabel"
+    type="single"
+    v-model="flowsStore.filters.selectedExporterTopApplication"
+    :loading="flowsStore.filters.isExportersLoading"
+    :results="flowsStore.filters.filteredExporters"
+    @search="flowsStore.exportersAutoCompleteSearch"
+    @update:model-value="flowsStore.getApplicationDataset"
+  ></FeatherAutocomplete>
   <div class="flows">
     <div
       v-if="hasData"
@@ -27,13 +38,11 @@
 import { map, sum, sortBy } from 'lodash'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import useTheme from '@/composables/useTheme'
-import { useMediaQuery } from '@vueuse/core'
 import { PolarArea } from 'vue-chartjs'
 import dashboardText from '@/components/Dashboard/dashboard.text'
 import PolarChart from '@/assets/PolarChart.svg'
 import PolarChartDark from '@/assets/PolarChart-dark.svg'
 
-const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 const { onThemeChange, isDark } = useTheme()
 const flowsStore = useFlowsStore()
 const constGraph = ref()
@@ -64,16 +73,12 @@ const buildData = () => {
   }
 }
 
-watchEffect(() => {
-  buildData()
-})
-
 const config = {
   responsive: true,
-  aspectRatio: 1.4,
+  aspectRatio: 1.5,
   plugins: {
     legend: {
-      display: isLargeScreen.value,
+      display: true,
       align: 'center',
       position: 'right',
       labels: {
@@ -93,8 +98,30 @@ const config = {
 }
 constGraph.value = config
 
+watchEffect(() => {
+  buildData()
+})
+
 onThemeChange(() => {
   config.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
   constGraph.value = { ...config }
 })
+
+onMounted(async () => {
+  flowsStore.filters.selectedExporterTopApplication = undefined
+})
+
+onUnmounted(() => flowsStore.$reset)
 </script>
+
+<style scoped lang="scss">
+@use '@/styles/mediaQueriesMixins.scss';
+
+.exporters-filter {
+  width: 100%;
+  @include mediaQueriesMixins.screen-md {
+    width: 50%;
+    margin-left: auto;
+  }
+}
+</style>

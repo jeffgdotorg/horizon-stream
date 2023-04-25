@@ -47,6 +47,7 @@ const redirect = (route: string) => {
 
 onMounted(async () => {
   await flowsStore.getApplicationDataset()
+  await flowsStore.getExporters()
 })
 </script>
 
