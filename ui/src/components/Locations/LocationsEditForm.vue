@@ -8,7 +8,16 @@
       <HeadlineSection
         :text="selectedLocation.location"
         data-test="headline"
-      />
+      >
+        <template #right>
+          <FeatherButton icon="placeholder">
+            <FeatherIcon :icon="placeholder"> </FeatherIcon>
+          </FeatherButton>
+          <FeatherButton icon="Delete">
+            <FeatherIcon :icon="Delete"> </FeatherIcon>
+          </FeatherButton>
+        </template>
+      </HeadlineSection>
       <div class="inputs">
         <div class="row">
           <FeatherInput
@@ -41,6 +50,44 @@
           ></FeatherInput>
         </div>
       </div>
+      <div class="row">
+        <div class="box api-key">
+          <div class="top">
+            <label for="apiKey">API Key:</label>
+            <span id="apiKey">ABCD1234@#$%</span>
+          </div>
+          <ButtonText :btn-props="generateKeyBtn">
+            <template #pre
+              ><FeatherIcon
+                :icon="ContentCopy"
+                aria-hidden="true"
+                focusable="false"
+                class="icon-pre"
+            /></template>
+          </ButtonText>
+        </div>
+        <div class="box download-credentials">
+          <div class="top">
+            <div>Location Credentials File Bundle</div>
+            <div>4/24/2023 - 00:00</div>
+          </div>
+          <ButtonText :btn-props="downloadCredentials">
+            <template #pre
+              ><FeatherIcon
+                :icon="DownloadFile"
+                aria-hidden="true"
+                focusable="false"
+                class="icon-pre"
+            /></template>
+          </ButtonText>
+        </div>
+      </div>
+      <div class="row mt-m">
+        <InstructionsStepper
+          :text-button="instructions.textButton"
+          :step-lists="instructions.stepLists"
+        />
+      </div>
       <FooterSection
         :save="saveBtn"
         data-test="save-button"
@@ -51,6 +98,9 @@
 
 <script setup lang="ts">
 import Location from '@featherds/icon/action/Location'
+import ContentCopy from '@featherds/icon/action/ContentCopy'
+import DownloadFile from '@featherds/icon/action/DownloadFile'
+import Delete from '@featherds/icon/action/Delete'
 import placeholder from '@/assets/placeholder.svg'
 import { string } from 'yup'
 import { useForm } from '@featherds/input-helper'
@@ -82,6 +132,44 @@ const onSubmit = () => {
   console.log('call api endpoint to save form...', inputs)
 }
 
+const generateKeyBtn = {
+  label: 'generate key',
+  cb: () => ({}),
+  textTransform: 'uppercase'
+}
+
+const downloadCredentials = {
+  label: 'ready to download',
+  cb: () => ({}),
+  textTransform: 'uppercase'
+}
+
+const instructions = {
+  textButton: 'Needd instructions for minion deployment at this location?',
+  stepLists: [
+    {
+      title: 'Step 1 heading',
+      items: [
+        'Enter configuration commands, one per line. End with CNTL/Z',
+        'Router-Dallas(config)#logging 192.168.0.30',
+        'Router-Dallas(config)#service timestamps debug datetime localtime show-timezone'
+      ]
+    },
+    {
+      title: 'Step 2 heading',
+      items: ['Instruction 2...', 'Instruction 2a...', 'Instruction 2b...']
+    },
+    {
+      title: 'Step 3 heading',
+      items: ['Instruction 3...', 'Instruction 3a...', 'Instruction 3b...']
+    },
+    {
+      title: 'Step 4 heading',
+      items: ['Instruction 4...', 'Instruction 4a...', 'Instruction 4b...']
+    }
+  ]
+}
+
 const saveBtn = {
   label: 'Add Location',
   cb: () => ({})
@@ -90,6 +178,9 @@ const saveBtn = {
 
 const icons = markRaw({
   Location,
+  ContentCopy,
+  DownloadFile,
+  Delete,
   placeholder
 })
 </script>
@@ -98,8 +189,9 @@ const icons = markRaw({
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mixins.scss';
 @use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
 
-.locations-add-form-wrapper {
+.locations-edit-form-wrapper {
   @include mixins.wrapper-on-background();
 
   .row {
@@ -130,6 +222,36 @@ const icons = markRaw({
       > * {
         width: 49%;
       }
+    }
+  }
+
+  .row.box {
+    margin-bottom: var(variables.$spacing-m);
+  }
+
+  .box {
+    padding: var(variables.$spacing-s) var(variables.$spacing-l);
+    background: var(variables.$shade-4);
+    border-radius: vars.$border-radius-xs;
+    > .top {
+      margin-bottom: var(variables.$spacing-s);
+    }
+    &.api-key {
+      > .top > label {
+        margin-right: var(variables.$spacing-xs);
+      }
+    }
+    &.download-credentials {
+      > .top {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+    .icon-pre {
+      margin-right: var(variables.$spacing-s);
+    }
+    .icon-post {
+      margin-left: var(variables.$spacing-l);
     }
   }
 }
