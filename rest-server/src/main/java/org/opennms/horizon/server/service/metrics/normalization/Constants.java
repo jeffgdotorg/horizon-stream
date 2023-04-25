@@ -31,6 +31,9 @@ package org.opennms.horizon.server.service.metrics.normalization;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
     public static final String AZURE_MONITOR_TYPE = "AZURE";
@@ -51,6 +54,7 @@ public final class Constants {
     // Total Network
     public static final String TOTAL_NETWORK_BYTES_IN = "total_network_bytes_in";
     public static final String TOTAL_NETWORK_BYTES_OUT = "total_network_bytes_out";
-    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_IN = "query=sum(rate(ifHCInOctets[1h])*3600)";
-    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_OUT = "query=sum(rate(ifHCOutOctets[1h])*3600)";
+
+    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_IN = "query=network_in_total_bytes[24h]";
+    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_OUT = "query=network_out_total_bytes[24h]";
 }

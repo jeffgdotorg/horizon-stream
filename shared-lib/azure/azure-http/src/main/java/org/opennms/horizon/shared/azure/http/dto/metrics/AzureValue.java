@@ -64,6 +64,11 @@ public class AzureValue {
                 return t1.compareTo(t2);
             });
 
+            System.out.println("Metric: " + metricName);
+            for (AzureDatum datum : data) {
+                System.out.println("ts - " + datum.getTimeStamp() + ", val - " + datum.getValue());
+            }
+
             // for now getting last value as it is most recent
             AzureDatum datum = data.get(data.size() - 1);
 

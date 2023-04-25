@@ -115,13 +115,13 @@ public class TSDBMetricsService {
             long end = System.currentTimeMillis() / 1000L;
             long start = end - getDuration(timeRange, timeRangeUnit).orElse(Duration.ofHours(24)).getSeconds();
             String rangeQuerySuffix = "&start=" + start + "&end=" + end +
-                "&step=1h";
+                "&step=2m";
             if (TOTAL_NETWORK_BYTES_IN.equals(name)) {
                 String rangeQuery = QUERY_FOR_TOTAL_NETWORK_BYTES_IN + rangeQuerySuffix;
-                return getRangeMetrics(tenantId, rangeQuery);
+                return getMetrics(tenantId, rangeQuery);
             }
             String rangeQuery = QUERY_FOR_TOTAL_NETWORK_BYTES_OUT + rangeQuerySuffix;
-            return getRangeMetrics(tenantId, rangeQuery);
+            return getMetrics(tenantId, rangeQuery);
         }
         //in the case of minion echo, there is no node information
         Optional<NodeDTO> nodeOpt = getNode(env, metricLabels);
