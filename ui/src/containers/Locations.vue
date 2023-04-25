@@ -32,12 +32,16 @@
         <LocationsList :items="locationsList" />
       </div>
       <div class="content-right">
+        <LocationsMinionsList
+          v-if="locationsStore.displayType === DisplayType.LIST"
+          :minions="minionsList"
+        />
         <LocationsAddForm
-          v-if="isAddingLocation"
+          v-if="locationsStore.displayType === DisplayType.ADD"
           data-test="location-add-form"
         />
         <LocationsEditForm
-          v-if="selectedLocationId"
+          v-if="locationsStore.displayType === DisplayType.EDIT"
           :id="selectedLocationId"
         />
       </div>
@@ -51,11 +55,7 @@ import Search from '@featherds/icon/action/Search'
 import Help from '@featherds/icon/action/Help'
 import { useLocationsStore } from '@/store/Views/locationsStore'
 import LocationsList from '@/components/Locations/LocationsList.vue'
-
-const btns = {
-  save: { label: 'save', handler: () => ({}) },
-  cancel: { label: 'cancel', handler: () => ({}) }
-}
+import { DisplayType } from '@/types/locations.d'
 
 const locationsStore = useLocationsStore()
 
@@ -67,9 +67,8 @@ onMounted(async () => {
   await locationsStore.fetchMinions()
 })
 
-const isAddingLocation = ref(false)
 const addLocation = () => {
-  isAddingLocation.value = true
+  locationsStore.setDisplayType(DisplayType.ADD)
 }
 
 const selectedLocationId = computed(() => locationsStore.selectedLocationId)
@@ -89,19 +88,19 @@ const icons = markRaw({
 @use '@featherds/styles/themes/variables';
 @use '@/styles/layout/headlineTwoColumns';
 @use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
 
-.content-left {
-  .search-location-input {
-    width: 100%;
-
-    @include mediaQueriesMixins.screen-sm {
-      width: 49%;
-    }
-    @include mediaQueriesMixins.screen-md {
+.wrapper {
+  .content-left {
+    .search-location-input {
       width: 100%;
-    }
-    @include mediaQueriesMixins.screen-xl {
-      width: 50%;
+
+      @include mediaQueriesMixins.screen-md {
+        width: 100%;
+      }
+      @include mediaQueriesMixins.screen-xl {
+        width: 50%;
+      }
     }
   }
 }

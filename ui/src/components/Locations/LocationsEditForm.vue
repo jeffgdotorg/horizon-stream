@@ -33,6 +33,16 @@
         </div>
         <div class="row">
           <FeatherInput
+            label="Address (optional)"
+            v-model="inputs.address"
+            class="input-address"
+            data-test="input-address"
+          >
+            <template #pre> <FeatherIcon :icon="icons.placeholder" /> </template
+          ></FeatherInput>
+        </div>
+        <div class="row">
+          <FeatherInput
             label="Longitude (optional)"
             v-model="inputs.longitude"
             class="input-longitude"
@@ -90,6 +100,7 @@
       </div>
       <FooterSection
         :save="saveBtn"
+        :cancel="cancelBtn"
         data-test="save-button"
       />
     </form>
@@ -116,9 +127,10 @@ const locationsStore = useLocationsStore()
 const selectedLocation = computed(() => locationsStore.locationsList.filter((l: LocationType) => l.id === props.id)[0])
 
 const inputs = reactive({
-  name: selectedLocation.value.location,
-  longitude: '',
-  latitude: ''
+  name: '', //selectedLocation.value.location,
+  address: '', //selectedLocation.value.address,
+  longitude: '', //selectedLocation.value.longitude
+  latitude: '' //selectedLocation.value.latitude
 })
 
 const form = useForm()
@@ -171,10 +183,22 @@ const instructions = {
 }
 
 const saveBtn = {
-  label: 'Add Location',
+  label: 'Save Location',
   cb: () => ({})
   // isDisabled: computed(() => !inputs.name)
 }
+
+const cancelBtn = {
+  cb: locationsStore.setDisplayType
+}
+
+onMounted(() => {
+  form.clearErrors()
+})
+
+onUnmounted(() => {
+  locationsStore.selectLocation(undefined)
+})
 
 const icons = markRaw({
   Location,
@@ -209,7 +233,7 @@ const icons = markRaw({
     }
 
     @include mediaQueriesMixins.screen-sm {
-      > * {
+      > *:not(.input-address) {
         width: 49%;
       }
     }
@@ -219,7 +243,7 @@ const icons = markRaw({
       }
     }
     @include mediaQueriesMixins.screen-lg {
-      > * {
+      > *:not(.input-address) {
         width: 49%;
       }
     }

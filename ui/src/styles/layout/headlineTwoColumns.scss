@@ -24,11 +24,20 @@
 }
 
 .content-left {
-  width: 33%;
+  width: 100%;
 }
 
 .content-right {
-  width: 66%;
+  width: 100%;
+}
+
+@include mediaQueriesMixins.screen-md {
+  .content-left{
+    width:33%;
+  }
+  .content-right {
+    width: 66%;
+  }
 }
 
 .footer {

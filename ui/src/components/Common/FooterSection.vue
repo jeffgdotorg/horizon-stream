@@ -4,7 +4,7 @@
     <div class="actions">
       <FeatherButton
         v-if="cancel"
-        @click="cancel.cb"
+        @click="cancel.cb(DisplayType.LIST)"
         secondary
         data-test="cancel-button"
         >{{ cancel.label || 'cancel' }}</FeatherButton
@@ -24,12 +24,13 @@
 </template>
 
 <script setup lang="ts">
-import { fncVoid } from '@/types'
+import { fncVoid, fncArgVoid } from '@/types'
+import { DisplayType } from '@/types/locations.d'
 // import { ComputedRef } from 'vue'
 
 type Btn = {
   label?: string
-  cb?: fncVoid
+  cb: fncVoid | fncArgVoid
   type?: string
   isFetching?: boolean
   // isDisabled?: ComputedRef<boolean>

@@ -59,7 +59,7 @@ defineProps({
     display: flex;
     align-items: center;
   }
-  
+
   .middle {
     width: 35%;
     display: flex;
@@ -71,6 +71,10 @@ defineProps({
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    :deep(.feather-icon) {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
   }
 }
 </style>

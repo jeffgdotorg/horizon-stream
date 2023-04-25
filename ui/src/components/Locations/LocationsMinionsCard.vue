@@ -44,7 +44,7 @@
           class="latency"
           data-test="content-latency"
         >
-          {{ item.latency }}
+          <PillColor :item="latencyPill" />
         </div>
         <div
           class="status"
@@ -62,7 +62,7 @@
           class="ip"
           data-test="content-ip"
         >
-          {{ item.ip }}
+          <PillColor :item="ipPill" />
         </div>
       </div>
     </div>
@@ -83,10 +83,27 @@ const props = defineProps({
   }
 })
 
-const statusPill =
-  props.item.status === 'UP'
-    ? { style: Severity.Normal, label: props.item.status }
-    : { style: Severity.Critical, label: props.item.status }
+const statusPill = {
+  label: props.item.status,
+  style: props.item.status === 'UP' ? Severity.Normal : Severity.Critical
+}
+
+const latencyThreshold = (latency: number) => {
+  let type = Severity.Warning
+
+  if (latency < 200) type = Severity.Normal
+  else if (latency > 500) type = Severity.Critical
+
+  return type
+}
+const latencyPill = {
+  label: props.item.latency,
+  style: latencyThreshold(props.item.latency.match(/\d+/g))
+}
+const ipPill = {
+  label: props.item.ip,
+  style: Severity.Cleared
+}
 </script>
 
 <style lang="scss" scoped>
@@ -102,7 +119,7 @@ const statusPill =
   padding: var(variables.$spacing-s);
 
   .header-content {
-    width: 93%;
+    width: 96%;
 
     .header,
     .content {

@@ -16,7 +16,7 @@ import { ButtonHTMLAttributes } from 'vue'
 import { fncArgVoid } from '@/types'
 
 type ButtonText = {
-  label: string
+  label: string | undefined
   type?: string
   cb: fncArgVoid
   cbArgs?: {
