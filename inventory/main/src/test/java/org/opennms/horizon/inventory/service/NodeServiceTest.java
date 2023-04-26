@@ -53,6 +53,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
+import org.opennms.horizon.inventory.component.TagPublisher;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
@@ -79,6 +80,7 @@ public class NodeServiceTest {
     private IpInterfaceRepository mockIpInterfaceRepository;
     private ConfigUpdateService mockConfigUpdateService;
     private TagService tagService;
+    private TagPublisher mockTagPublisher;
     private final String tenantID = "test-tenant";
 
     @BeforeEach
@@ -89,6 +91,7 @@ public class NodeServiceTest {
         mockIpInterfaceRepository = mock(IpInterfaceRepository.class);
         mockConfigUpdateService = mock(ConfigUpdateService.class);
         tagService = mock(TagService.class);
+        mockTagPublisher = mock(TagPublisher.class);
 
 
         nodeService = new NodeService(mockNodeRepository,
@@ -100,7 +103,8 @@ public class NodeServiceTest {
             mock(ScannerTaskSetService.class),
             mock(TaskSetPublisher.class),
             tagService,
-            nodeMapper);
+            nodeMapper,
+            mockTagPublisher);
 
         Node node = new Node();
         doReturn(node).when(mockNodeRepository).save(any(node.getClass()));
