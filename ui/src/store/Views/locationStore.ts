@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
-import { useLocationsQueries } from '../Queries/locationsQueries'
+import { useLocationQueries } from '../Queries/locationQueries'
 
-export const useLocationsStore = defineStore('locationsStore', () => {
+export const useLocationStore = defineStore('locationStore', () => {
   const locationsList = ref()
   const minionsList = ref()
 
-  const locationsQueries = useLocationsQueries()
+  const locationQueries = useLocationQueries()
 
   const fetchLocations = async () => {
     try {
-      const locations = await locationsQueries.fetchLocations()
+      const locations = await locationQueries.fetchLocations()
 
       locationsList.value = locations?.data?.value?.findAllLocations || []
     } catch (err) {
@@ -19,7 +19,7 @@ export const useLocationsStore = defineStore('locationsStore', () => {
 
   const searchLocations = async (searchTerm = '') => {
     try {
-      const locations = await locationsQueries.searchLocation(searchTerm)
+      const locations = await locationQueries.searchLocation(searchTerm)
 
       locationsList.value = locations?.data?.value?.searchLocation || []
     } catch (err) {
@@ -29,7 +29,7 @@ export const useLocationsStore = defineStore('locationsStore', () => {
 
   const fetchMinions = async () => {
     try {
-      // const minions = await locationsQueries.fetchMinions()
+      // const minions = await locationQueries.fetchMinions()
       // minionsList.value = minions?.data?.value?.findAllMinions || []
       minionsList.value = [
         {
@@ -65,7 +65,7 @@ export const useLocationsStore = defineStore('locationsStore', () => {
   }
 
   const searchMinions = async (searchTerm = '') => {
-    // const minions = await locationsQueries.searchMinion(searchTerm)
+    // const minions = await locationQueries.searchMinion(searchTerm)
     // minionsList.value = minions?.data?.value?.searchLocation || []
   }
 

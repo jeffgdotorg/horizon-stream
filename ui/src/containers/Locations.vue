@@ -46,7 +46,7 @@
 import Add from '@featherds/icon/action/Add'
 import Search from '@featherds/icon/action/Search'
 import Help from '@featherds/icon/action/Help'
-import { useLocationsStore } from '@/store/Views/locationsStore'
+import { useLocationStore } from '@/store/Views/locationStore'
 import LocationsList from '@/components/Locations/LocationsList.vue'
 
 const btns = {
@@ -54,14 +54,14 @@ const btns = {
   cancel: { label: 'cancel', handler: () => ({}) }
 }
 
-const locationsStore = useLocationsStore()
+const locationStore = useLocationStore()
 
-const locationsList = computed(() => locationsStore.locationsList)
-const minionsList = computed(() => locationsStore.minionsList)
+const locationsList = computed(() => locationStore.locationsList)
+const minionsList = computed(() => locationStore.minionsList)
 
 onMounted(async () => {
-  await locationsStore.fetchLocations()
-  await locationsStore.fetchMinions()
+  await locationStore.fetchLocations()
+  await locationStore.fetchMinions()
 })
 
 const isAddingLocation = ref(false)
@@ -70,7 +70,7 @@ const addLocation = () => {
 }
 
 const searchLocationsListener = (val: string | number | undefined) => {
-  locationsStore.searchLocations(val as string)
+  locationStore.searchLocations(val as string)
 }
 
 const icons = markRaw({

@@ -11,6 +11,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Base64String: any;
   Instant: any;
   Json: any;
   Long: any;
@@ -86,6 +87,12 @@ export type AzureActiveDiscoveryCreateInput = {
   name?: InputMaybe<Scalars['String']>;
   subscriptionId?: InputMaybe<Scalars['String']>;
   tags?: InputMaybe<Array<InputMaybe<TagCreateInput>>>;
+};
+
+export type CertificateResponse = {
+  __typename?: 'CertificateResponse';
+  certificate?: Maybe<Scalars['Base64String']>;
+  password?: Maybe<Scalars['String']>;
 };
 
 export type CountAlertResponse = {
@@ -257,8 +264,10 @@ export type Mutation = {
   clearAlert?: Maybe<AlertResponse>;
   createAzureActiveDiscovery?: Maybe<AzureActiveDiscovery>;
   createIcmpActiveDiscovery?: Maybe<IcmpActiveDiscovery>;
+  createLocation?: Maybe<Location>;
   createMonitorPolicy?: Maybe<MonitorPolicy>;
   deleteAlert?: Maybe<DeleteAlertResponse>;
+  deleteLocation?: Maybe<Scalars['Boolean']>;
   deleteMinion?: Maybe<Scalars['Boolean']>;
   deleteNode?: Maybe<Scalars['Boolean']>;
   discoveryByNodeIds?: Maybe<Scalars['Boolean']>;
@@ -267,6 +276,7 @@ export type Mutation = {
   savePagerDutyConfig?: Maybe<Scalars['Boolean']>;
   togglePassiveDiscovery?: Maybe<PassiveDiscoveryToggle>;
   unacknowledgeAlert?: Maybe<AlertResponse>;
+  updateLocation?: Maybe<Location>;
   upsertPassiveDiscovery?: Maybe<PassiveDiscovery>;
 };
 
@@ -308,6 +318,12 @@ export type MutationCreateIcmpActiveDiscoveryArgs = {
 
 
 /** Mutation root */
+export type MutationCreateLocationArgs = {
+  location?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Mutation root */
 export type MutationCreateMonitorPolicyArgs = {
   policy?: InputMaybe<MonitorPolicyInput>;
 };
@@ -316,6 +332,12 @@ export type MutationCreateMonitorPolicyArgs = {
 /** Mutation root */
 export type MutationDeleteAlertArgs = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+
+/** Mutation root */
+export type MutationDeleteLocationArgs = {
+  id: Scalars['Long'];
 };
 
 
@@ -364,6 +386,13 @@ export type MutationTogglePassiveDiscoveryArgs = {
 /** Mutation root */
 export type MutationUnacknowledgeAlertArgs = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+
+/** Mutation root */
+export type MutationUpdateLocationArgs = {
+  id?: InputMaybe<Scalars['Long']>;
+  location?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -490,6 +519,7 @@ export type Query = {
   findMinionById?: Maybe<Minion>;
   findMonitorPolicyById?: Maybe<MonitorPolicy>;
   findNodeById?: Maybe<Node>;
+  getMinionCertificate?: Maybe<CertificateResponse>;
   icmpActiveDiscoveryById?: Maybe<IcmpActiveDiscovery>;
   listActiveDiscovery?: Maybe<Array<Maybe<ActiveDiscovery>>>;
   listIcmpActiveDiscovery?: Maybe<Array<Maybe<IcmpActiveDiscovery>>>;
@@ -593,6 +623,12 @@ export type QueryFindMonitorPolicyByIdArgs = {
 /** Query root */
 export type QueryFindNodeByIdArgs = {
   id?: InputMaybe<Scalars['Long']>;
+};
+
+
+/** Query root */
+export type QueryGetMinionCertificateArgs = {
+  location?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -908,6 +944,28 @@ export type FindExportersQueryVariables = Exact<{
 
 export type FindExportersQuery = { __typename?: 'Query', findExporters?: Array<{ __typename?: 'Exporter', node?: { __typename?: 'Node', id: any, nodeLabel?: string }, ipInterface?: { __typename?: 'IpInterface', id: any, ipAddress?: string } }> };
 
+export type CreateLocationMutationVariables = Exact<{
+  location: Scalars['String'];
+}>;
+
+
+export type CreateLocationMutation = { __typename?: 'Mutation', createLocation?: { __typename?: 'Location', id: any, location?: string, tenantId?: string } };
+
+export type UpdateLocationMutationVariables = Exact<{
+  id: Scalars['Long'];
+  location: Scalars['String'];
+}>;
+
+
+export type UpdateLocationMutation = { __typename?: 'Mutation', updateLocation?: { __typename?: 'Location', id: any, location?: string, tenantId?: string } };
+
+export type DeleteLocationMutationVariables = Exact<{
+  id: Scalars['Long'];
+}>;
+
+
+export type DeleteLocationMutation = { __typename?: 'Mutation', deleteLocation?: boolean };
+
 export type LocationsPartsFragment = { __typename?: 'Query', findAllLocations?: Array<{ __typename?: 'Location', id: any, location?: string }> };
 
 export type LocationsListQueryVariables = Exact<{ [key: string]: never; }>;
@@ -1197,6 +1255,9 @@ export const FindApplicationSeriesDocument = {"kind":"Document","definitions":[{
 export const FindApplicationSummariesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"findApplicationSummaries"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requestCriteria"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestCriteriaInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findApplicationSummaries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestCriteria"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requestCriteria"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"bytesIn"}},{"kind":"Field","name":{"kind":"Name","value":"bytesOut"}}]}}]}}]} as unknown as DocumentNode<FindApplicationSummariesQuery, FindApplicationSummariesQueryVariables>;
 export const FindApplicationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"findApplications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requestCriteria"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestCriteriaInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findApplications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestCriteria"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requestCriteria"}}}]}]}}]} as unknown as DocumentNode<FindApplicationsQuery, FindApplicationsQueryVariables>;
 export const FindExportersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"findExporters"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requestCriteria"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestCriteriaInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findExporters"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestCriteria"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requestCriteria"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nodeLabel"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ipInterface"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}}]}}]}}]}}]} as unknown as DocumentNode<FindExportersQuery, FindExportersQueryVariables>;
+export const CreateLocationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateLocation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"location"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createLocation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"location"},"value":{"kind":"Variable","name":{"kind":"Name","value":"location"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"tenantId"}}]}}]}}]} as unknown as DocumentNode<CreateLocationMutation, CreateLocationMutationVariables>;
+export const UpdateLocationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateLocation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"location"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateLocation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"location"},"value":{"kind":"Variable","name":{"kind":"Name","value":"location"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"tenantId"}}]}}]}}]} as unknown as DocumentNode<UpdateLocationMutation, UpdateLocationMutationVariables>;
+export const DeleteLocationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteLocation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteLocation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteLocationMutation, DeleteLocationMutationVariables>;
 export const LocationsListDocument = {"kind":"Document", "definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LocationsList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LocationsParts"}}]}},...LocationsPartsFragmentDoc.definitions]} as unknown as DocumentNode<LocationsListQuery, LocationsListQueryVariables>;
 export const SearchLocationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchLocation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchLocation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"searchTerm"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"location"}}]}}]}}]} as unknown as DocumentNode<SearchLocationQuery, SearchLocationQueryVariables>;
 export const DeleteMinionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMinion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMinion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMinionMutation, DeleteMinionMutationVariables>;

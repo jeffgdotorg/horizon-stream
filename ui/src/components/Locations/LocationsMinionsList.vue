@@ -54,7 +54,7 @@
 import HeadlineSection from '@/components/Common/HeadlineSection.vue'
 import Help from '@featherds/icon/action/Help'
 import Search from '@featherds/icon/action/Search'
-import { useLocationsStore } from '@/store/Views/locationsStore'
+import { useLocationStore } from '@/store/Views/locationStore'
 
 defineProps({
   minions: {
@@ -63,10 +63,10 @@ defineProps({
   }
 })
 
-const locationsStore = useLocationsStore()
+const locationStore = useLocationStore()
 
 const searchMinionsListener = (val: string | number | undefined) => {
-  locationsStore.searchMinions(val as string)
+  locationStore.searchMinions(val as string)
 }
 
 const emptyListContent = {
