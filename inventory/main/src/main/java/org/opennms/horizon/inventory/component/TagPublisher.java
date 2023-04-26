@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.model.Tag;
 import org.opennms.horizon.inventory.repository.TagRepository;
 import org.opennms.horizon.shared.common.tag.proto.Operation;
@@ -45,7 +46,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
@@ -57,7 +57,7 @@ public class TagPublisher {
     private final TagRepository tagRepository;
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
-    public TagPublisher(TagRepository tagRepository, @Qualifier("kafkaProducerTemplate") KafkaTemplate<String, byte[]> kafkaTemplate) {
+    public TagPublisher(TagRepository tagRepository, @Qualifier("byteArrayTemplate") KafkaTemplate<String, byte[]> kafkaTemplate) {
         this.tagRepository = tagRepository;
         this.kafkaTemplate = kafkaTemplate;
     }
@@ -78,7 +78,7 @@ public class TagPublisher {
             .setTenantId(t.getTenantId())
             .setTagName(t.getName())
             .setOperation(operation)
-            .addAllNodeId(t.getNodes().stream().map(n->n.getId()).toList())
+            .addAllNodeId(t.getNodes().stream().map(Node::getId).toList())
             .build()).collect(Collectors.toList());
         return TagOperationList.newBuilder()
             .addAllTags(topList).build();
