@@ -24,6 +24,16 @@
         </div>
         <div class="row">
           <FeatherInput
+            label="Address (optional)"
+            v-model="inputs.address"
+            class="input-address"
+            data-test="input-address"
+          >
+            <template #pre> <FeatherIcon :icon="icons.placeholder" /> </template
+          ></FeatherInput>
+        </div>
+        <div class="row">
+          <FeatherInput
             label="Longitude (optional)"
             v-model="inputs.longitude"
             class="input-longitude"
@@ -43,6 +53,7 @@
       </div>
       <FooterSection
         :save="saveBtn"
+        :cancel="cancelBtn"
         data-test="save-button"
       />
     </form>
@@ -54,9 +65,14 @@ import Location from '@featherds/icon/action/Location'
 import placeholder from '@/assets/placeholder.svg'
 import { string } from 'yup'
 import { useForm } from '@featherds/input-helper'
+import { useLocationsStore } from '@/store/Views/locationsStore'
+import { DisplayType } from '@/types/locations.d'
+
+const locationsStore = useLocationsStore()
 
 const inputs = reactive({
   name: '',
+  address: '',
   longitude: '',
   latitude: ''
 })
@@ -73,10 +89,21 @@ const onSubmit = () => {
 }
 
 const saveBtn = {
-  label: 'Add Location',
-  cb: () => ({})
+  label: 'Save Location',
+  callback: () => ({})
   // isDisabled: computed(() => !inputs.name)
 }
+
+const cancelBtn = {
+  callback: locationsStore.setDisplayType,
+  callbackArgs: {
+    type: DisplayType.LIST
+  }
+}
+
+onMounted(() => {
+  form.clearErrors()
+})
 
 const icons = markRaw({
   Location,
@@ -90,7 +117,7 @@ const icons = markRaw({
 @use '@/styles/mediaQueriesMixins.scss';
 
 .locations-add-form-wrapper {
-  @include mixins.wrapper-on-background();
+  @include mixins.wrapper-on-background;
 
   .row {
     display: flex;
@@ -107,7 +134,7 @@ const icons = markRaw({
     }
 
     @include mediaQueriesMixins.screen-sm {
-      > * {
+      > *:not(.input-address) {
         width: 49%;
       }
     }
@@ -117,7 +144,7 @@ const icons = markRaw({
       }
     }
     @include mediaQueriesMixins.screen-lg {
-      > * {
+      > *:not(.input-address) {
         width: 49%;
       }
     }
