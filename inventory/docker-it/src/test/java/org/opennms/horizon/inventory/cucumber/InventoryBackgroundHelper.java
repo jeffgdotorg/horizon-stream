@@ -61,7 +61,7 @@ import lombok.Getter;
 @Getter
 public class InventoryBackgroundHelper {
     private static final Logger LOG = LoggerFactory.getLogger(InventoryBackgroundHelper.class);
-    private static final int DEADLINE_DURATION = 30;
+    private static final int DEADLINE_DURATION = 60;
     private static final String LOCALHOST = "localhost";
     private Integer externalGrpcPort;
     private String kafkaBootstrapUrl;
