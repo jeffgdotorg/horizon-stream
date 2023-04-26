@@ -97,8 +97,11 @@ public class PassiveDiscoveryService {
             throw new InventoryRuntimeException("Passive discovery not found for id: " + id);
         }
 
-        validateDiscovery(tenantId, request);
+        if (!request.getLocation().equals(discoveryOpt.get().getLocation())) {
+            validateDiscovery(tenantId, request);
+        }
         validateSnmpPorts(request);
+        validateCommunityStrings(request);
 
         PassiveDiscovery discovery = discoveryOpt.get();
         mapper.updateFromDto(request, discovery);
@@ -156,6 +159,23 @@ public class PassiveDiscoveryService {
                 String message = String.format("SNMP port is not in range [%d,%d] with value: %d",
                     Constants.SNMP_PORT_MIN, Constants.SNMP_PORT_MAX, port);
                 throw new InventoryRuntimeException(message);
+            }
+        }
+    }
+
+    private void validateCommunityStrings(PassiveDiscoveryUpsertDTO passiveDiscovery) {
+        String snmpCommunities = "";
+        for (String snmpCommunity: passiveDiscovery.getCommunitiesList()){
+            snmpCommunities += snmpCommunity.replace(",","") + " "; // As be requirement on HS-1332
+        }
+        if (snmpCommunities.length() > 128) {
+            throw new InventoryRuntimeException("Snmp communities string is too long");
+        }
+        for (byte b:snmpCommunities.getBytes()){
+            char c = (char) b;
+            log.info("b="+b+" c="+c);
+            if (c > 127){
+                throw new InventoryRuntimeException("All characters must be 7bit ascii");
             }
         }
     }
