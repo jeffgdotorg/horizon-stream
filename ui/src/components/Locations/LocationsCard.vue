@@ -1,8 +1,11 @@
 <template>
-  <div class="locations-card-wrapper selected">
+  <div
+    class="locations-card-wrapper"
+    :class="{ selected: selectedCard }"
+  >
     <div class="name">
       <ButtonText
-        :label="item.location"
+        :button="buttonProps"
         data-test="name"
       />
     </div>
@@ -31,19 +34,30 @@
 import Expiry from '@/assets/placeholder.svg'
 import { IIcon } from '@/types'
 import { Severity } from '@/types/graphql'
+import { LocationTemp } from '@/types/locations.d'
 import { setViewBox } from '@/components/utils'
+import { useLocationsStore } from '@/store/Views/locationsStore'
 
-const props = defineProps({
-  item: {
-    type: Object,
-    required: true
+const props = defineProps<{
+  item: LocationTemp
+}>()
+
+const locationsStore = useLocationsStore()
+
+const selectedCard = computed(() => locationsStore.selectedLocationId === props.item.id)
+
+const buttonProps = {
+  label: props.item.location,
+  callback: locationsStore.selectLocation,
+  callbackArgs: {
+    id: props.item.id
   }
-})
+}
 
-const statusPill =
-  props.item.status === 'UP'
-    ? { style: Severity.Normal, label: props.item.status }
-    : { style: Severity.Critical, label: props.item.status }
+const statusPill = {
+  label: props.item.status,
+  style: props.item.status === 'UP' ? Severity.Normal : Severity.Critical
+}
 
 const iconExpiry: IIcon = {
   image: Expiry

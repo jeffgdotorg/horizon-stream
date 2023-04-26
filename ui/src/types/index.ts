@@ -1,5 +1,6 @@
 import { SORT } from '@featherds/table'
 import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
+// import { ComputedRef } from 'vue'
 
 export * from './flows.d'
 export declare type fncVoid = () => void
@@ -68,4 +69,17 @@ export interface TagSelectItem {
 export interface ContextMenuItem {
   label: string
   handler: fncVoid
+}
+
+type CBArgs = {
+  id?: number | string | undefined
+  type?: string | undefined
+}
+export interface ButtonText {
+  label?: string
+  type?: string
+  callback: fncVoid | fncArgVoid
+  callbackArgs?: CBArgs
+  isFetching?: boolean
+  // isDisabled?: ComputedRef<boolean>
 }

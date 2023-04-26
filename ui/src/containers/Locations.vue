@@ -19,7 +19,7 @@
         </FeatherButton>
         <hr />
         <FeatherInput
-          @update:model-value="searchLocationsListener"
+          @update:model-value="searchLocationListener"
           label="Search Location"
           type="search"
           class="search-location-input"
@@ -29,14 +29,21 @@
             <FeatherIcon :icon="icons.Search" />
           </template>
         </FeatherInput>
-        <!-- <LocationsList :items="locationsList" /> -->
+        <LocationsList :items="locationsList" />
       </div>
       <div class="content-right">
+        <LocationsMinionsList
+          v-if="locationStore.displayType === DisplayType.LIST"
+          :minions="minionsList"
+        />
         <LocationsAddForm
-          v-if="isAddingLocation"
+          v-if="locationStore.displayType === DisplayType.ADD"
           data-test="location-add-form"
         />
-        <!-- edit location form -->
+        <LocationsEditForm
+          v-if="locationStore.displayType === DisplayType.EDIT"
+          :id="selectedLocationId"
+        />
       </div>
     </div>
   </div>
@@ -48,11 +55,7 @@ import Search from '@featherds/icon/action/Search'
 import Help from '@featherds/icon/action/Help'
 import { useLocationStore } from '@/store/Views/locationStore'
 import LocationsList from '@/components/Locations/LocationsList.vue'
-
-const btns = {
-  save: { label: 'save', handler: () => ({}) },
-  cancel: { label: 'cancel', handler: () => ({}) }
-}
+import { DisplayType } from '@/types/locations.d'
 
 const locationStore = useLocationStore()
 
@@ -64,12 +67,13 @@ onMounted(async () => {
   await locationStore.fetchMinions()
 })
 
-const isAddingLocation = ref(false)
 const addLocation = () => {
-  isAddingLocation.value = true
+  locationStore.setDisplayType(DisplayType.ADD)
 }
 
-const searchLocationsListener = (val: string | number | undefined) => {
+const selectedLocationId = computed(() => locationStore.selectedLocationId)
+
+const searchLocationListener = (val: string | number | undefined) => {
   locationStore.searchLocations(val as string)
 }
 
@@ -84,19 +88,19 @@ const icons = markRaw({
 @use '@featherds/styles/themes/variables';
 @use '@/styles/layout/headlineTwoColumns';
 @use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
 
-.content-left {
-  .search-location-input {
-    width: 100%;
-
-    @include mediaQueriesMixins.screen-sm {
-      width: 49%;
-    }
-    @include mediaQueriesMixins.screen-md {
+.wrapper {
+  .content-left {
+    .search-location-input {
       width: 100%;
-    }
-    @include mediaQueriesMixins.screen-xl {
-      width: 50%;
+
+      @include mediaQueriesMixins.screen-md {
+        width: 100%;
+      }
+      @include mediaQueriesMixins.screen-xl {
+        width: 50%;
+      }
     }
   }
 }

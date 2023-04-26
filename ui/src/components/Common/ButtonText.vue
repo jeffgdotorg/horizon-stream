@@ -1,26 +1,23 @@
 <template>
   <button
-    :type="type"
+    @click="button.callback(button.callbackArgs?.id)"
+    :type="button.type as ButtonHTMLAttributes['type'] || 'button'"
     class="button-text"
     data-test="button-text"
   >
-    <span>{{ label }}</span>
+    <slot name="pre" />
+    <span>{{ button.label }}</span>
+    <slot name="post" />
   </button>
 </template>
 
 <script lang="ts" setup>
-import { PropType, ButtonHTMLAttributes } from 'vue'
+import { ButtonHTMLAttributes } from 'vue'
+import { ButtonText } from '@/types'
 
-defineProps({
-  label: {
-    type: String,
-    required: true
-  },
-  type: {
-    type: String as PropType<ButtonHTMLAttributes['type']>,
-    default: 'button'
-  }
-})
+defineProps<{
+  button: ButtonText
+}>()
 </script>
 
 <style lang="scss" scoped>

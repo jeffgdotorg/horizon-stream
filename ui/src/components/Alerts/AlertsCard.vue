@@ -144,7 +144,7 @@ const checkCircleIcon = markRaw(CheckCircle)
   .name-node-type {
     width: 22%;
     .name {
-      @include mixins.truncate-text();
+      @include mixins.truncate-text;
     }
   }
 
@@ -156,7 +156,7 @@ const checkCircleIcon = markRaw(CheckCircle)
   .cause {
     width: 20%;
     > div {
-      @include mixins.truncate-text();
+      @include mixins.truncate-text;
     }
   }
 

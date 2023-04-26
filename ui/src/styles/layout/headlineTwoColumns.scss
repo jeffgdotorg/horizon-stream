@@ -24,11 +24,20 @@
 }
 
 .content-left {
-  flex-grow: 1;
+  width: 100%;
 }
 
 .content-right {
-  flex-grow: 2;
+  width: 100%;
+}
+
+@include mediaQueriesMixins.screen-md {
+  .content-left{
+    width:33%;
+  }
+  .content-right {
+    width: 66%;
+  }
 }
 
 .footer {

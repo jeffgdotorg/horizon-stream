@@ -1,7 +1,7 @@
 <template>
   <div class="minions-list-wrapper">
     <HeadlineSection
-      text="Default"
+      text="Minions"
       data-test="headline"
     >
       <template #left>
@@ -85,7 +85,6 @@ const icons = markRaw({
 @use '@/styles/mixins.scss';
 
 .minions-list-wrapper {
-  min-width: 520px;
   padding: var(variables.$spacing-m) var(variables.$spacing-s);
   background: var(variables.$surface);
   border-radius: vars.$border-radius-s;
