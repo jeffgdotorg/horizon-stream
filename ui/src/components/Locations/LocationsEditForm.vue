@@ -66,7 +66,7 @@
             <label for="apiKey">API Key:</label>
             <span id="apiKey">ABCD1234@#$%</span>
           </div>
-          <ButtonText :btn-props="generateKeyBtn">
+          <ButtonText :button="generateKeyBtn">
             <template #pre
               ><FeatherIcon
                 :icon="ContentCopy"
@@ -81,7 +81,7 @@
             <div>Location Credentials File Bundle</div>
             <div>4/24/2023 - 00:00</div>
           </div>
-          <ButtonText :btn-props="downloadCredentials">
+          <ButtonText :button="downloadCredentialsBtn">
             <template #pre
               ><FeatherIcon
                 :icon="DownloadFile"
@@ -116,6 +116,8 @@ import placeholder from '@/assets/placeholder.svg'
 import { string } from 'yup'
 import { useForm } from '@featherds/input-helper'
 import { Location as LocationType } from '@/types/graphql'
+import { ButtonText } from '@/types'
+import { DisplayType } from '@/types/locations.d'
 import { useLocationsStore } from '@/store/Views/locationsStore'
 
 const props = defineProps<{
@@ -144,20 +146,18 @@ const onSubmit = () => {
   console.log('call api endpoint to save form...', inputs)
 }
 
-const generateKeyBtn = {
-  label: 'generate key',
-  cb: () => ({}),
-  textTransform: 'uppercase'
+const generateKeyBtn: ButtonText = {
+  label: 'GENERATE KEY',
+  callback: () => ({})
 }
 
-const downloadCredentials = {
-  label: 'ready to download',
-  cb: () => ({}),
-  textTransform: 'uppercase'
+const downloadCredentialsBtn: ButtonText = {
+  label: 'READY TO DOWNLOAD',
+  callback: () => ({})
 }
 
 const instructions = {
-  textButton: 'Needd instructions for minion deployment at this location?',
+  textButton: 'Need instructions for minion deployment at this location?',
   stepLists: [
     {
       title: 'Step 1 heading',
@@ -184,12 +184,15 @@ const instructions = {
 
 const saveBtn = {
   label: 'Save Location',
-  cb: () => ({})
+  callback: () => ({})
   // isDisabled: computed(() => !inputs.name)
 }
 
 const cancelBtn = {
-  cb: locationsStore.setDisplayType
+  callback: locationsStore.setDisplayType,
+  callbackArgs: {
+    type: DisplayType.LIST
+  }
 }
 
 onMounted(() => {
@@ -216,7 +219,7 @@ const icons = markRaw({
 @use '@/styles/vars.scss';
 
 .locations-edit-form-wrapper {
-  @include mixins.wrapper-on-background();
+  @include mixins.wrapper-on-background;
 
   .row {
     display: flex;

@@ -5,7 +5,7 @@
   >
     <div class="name">
       <ButtonText
-        :btn-props="buttonProps"
+        :button="buttonProps"
         data-test="name"
       />
     </div>
@@ -48,8 +48,8 @@ const selectedCard = computed(() => locationsStore.selectedLocationId === props.
 
 const buttonProps = {
   label: props.item.location,
-  cb: locationsStore.selectLocation,
-  cbArgs: {
+  callback: locationsStore.selectLocation,
+  callbackArgs: {
     id: props.item.id
   }
 }

@@ -4,17 +4,18 @@
     <div class="actions">
       <FeatherButton
         v-if="cancel"
-        @click="cancel.cb(DisplayType.LIST)"
+        @click="cancel ? cancel.callback(cancel.callbackArgs?.type) : () => ({})"
         secondary
         data-test="cancel-button"
         >{{ cancel.label || 'cancel' }}</FeatherButton
       >
       <ButtonWithSpinner
         v-if="save"
+        @click="save ? save.callback(save.callbackArgs) : () => ({})"
         :type="save.type || 'submit'"
-        primary
         :isFetching="saveIsFetching"
         :disabled="saveIsDisabled"
+        primary
         data-test="save-button"
       >
         {{ save.label || 'save' }}
@@ -24,21 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import { fncVoid, fncArgVoid } from '@/types'
-import { DisplayType } from '@/types/locations.d'
-// import { ComputedRef } from 'vue'
-
-type Btn = {
-  label?: string
-  cb: fncVoid | fncArgVoid
-  type?: string
-  isFetching?: boolean
-  // isDisabled?: ComputedRef<boolean>
-}
+import { ButtonText } from '@/types'
 
 const props = defineProps<{
-  save?: Btn
-  cancel?: Btn
+  save?: ButtonText
+  cancel?: ButtonText
 }>()
 
 const saveIsFetching = false //computed(() => props.save?.isFetching?.value)

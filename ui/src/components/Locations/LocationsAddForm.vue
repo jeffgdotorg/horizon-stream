@@ -66,6 +66,7 @@ import placeholder from '@/assets/placeholder.svg'
 import { string } from 'yup'
 import { useForm } from '@featherds/input-helper'
 import { useLocationsStore } from '@/store/Views/locationsStore'
+import { DisplayType } from '@/types/locations.d'
 
 const locationsStore = useLocationsStore()
 
@@ -88,13 +89,16 @@ const onSubmit = () => {
 }
 
 const saveBtn = {
-  label: 'Add Location',
-  cb: () => ({})
+  label: 'Save Location',
+  callback: () => ({})
   // isDisabled: computed(() => !inputs.name)
 }
 
 const cancelBtn = {
-  cb: locationsStore.setDisplayType
+  callback: locationsStore.setDisplayType,
+  callbackArgs: {
+    type: DisplayType.LIST
+  }
 }
 
 onMounted(() => {
@@ -113,7 +117,7 @@ const icons = markRaw({
 @use '@/styles/mediaQueriesMixins.scss';
 
 .locations-add-form-wrapper {
-  @include mixins.wrapper-on-background();
+  @include mixins.wrapper-on-background;
 
   .row {
     display: flex;
