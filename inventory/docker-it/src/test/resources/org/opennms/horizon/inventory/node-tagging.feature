@@ -5,6 +5,7 @@ Feature: Node Tagging
     Given [Tags] Kafka Bootstrap URL in system property "kafka.bootstrap-servers"
     Given [Tags] Grpc TenantId "tenant-stream"
     Given [Tags] Create Grpc Connection for Inventory
+    Given [Common] Create "location" Location
 
   Scenario: Create new tags on node
     Given A new node

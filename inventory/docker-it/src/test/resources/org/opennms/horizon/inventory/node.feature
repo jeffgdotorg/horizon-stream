@@ -5,6 +5,7 @@ Feature: Node
     Given [Node] Kafka Bootstrap URL in system property "kafka.bootstrap-servers"
     Given [Node] Grpc TenantId "tenant-stream"
     Given [Node] Create Grpc Connection for Inventory
+    Given [Common] Create "Default" Location
 
   Scenario: Add a node and verify list nodes by node label search returns result
     Given a new node with label "node-label", ip address "127.0.0.1" and location "Default"

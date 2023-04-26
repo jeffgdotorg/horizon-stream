@@ -6,6 +6,8 @@ Feature: Inventory Processing
     Given MOCK Minion Gateway Base URL in system property "mock-minion-gateway.rest-url"
     Given Grpc TenantId "tenant-stream"
     Given Create Grpc Connection for Inventory
+    Given [Common] Create "MINION" Location
+    Given [Common] Create "MINION-2" Location
 
   Scenario: Send an Heartbeat Message to Inventory and verify Minion and location are added
     Given Minion at location "MINION" with system Id "MINION-TEST-1"

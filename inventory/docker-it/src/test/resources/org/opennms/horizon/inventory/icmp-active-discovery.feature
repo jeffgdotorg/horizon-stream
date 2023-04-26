@@ -6,6 +6,7 @@ Feature: Active Discovery
     Given MOCK Minion Gateway Base URL in system property "mock-minion-gateway.rest-url"
     Given Grpc TenantId "tenant-icmp-discovery"
     Given [ICMP Discovery] Create Grpc Connection for Inventory
+    Given [Common] Create "MINION" Location
 
 
   Scenario: Create Active discovery and verify task set is published

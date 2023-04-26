@@ -28,18 +28,9 @@
 
 package org.opennms.horizon.inventory.service;
 
-import java.net.InetAddress;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.stream.Collectors;
-
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.horizon.inventory.discovery.IcmpActiveDiscoveryDTO;
 import org.opennms.horizon.inventory.dto.MonitoredState;
@@ -48,6 +39,7 @@ import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
 import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.exception.EntityExistException;
+import org.opennms.horizon.inventory.exception.LocationNotFoundException;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -70,10 +62,17 @@ import org.opennms.taskset.contract.TaskDefinition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.net.InetAddress;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -88,7 +87,6 @@ public class NodeService {
     private final NodeRepository nodeRepository;
     private final MonitoringLocationRepository monitoringLocationRepository;
     private final IpInterfaceRepository ipInterfaceRepository;
-    private final ConfigUpdateService configUpdateService;
     private final CollectorTaskSetService collectorTaskSetService;
     private final MonitorTaskSetService monitorTaskSetService;
     private final ScannerTaskSetService scannerTaskSetService;
@@ -144,7 +142,7 @@ public class NodeService {
         }
     }
 
-    private MonitoringLocation saveMonitoringLocation(NodeCreateDTO request, String tenantId) {
+    private MonitoringLocation findMonitoringLocation(NodeCreateDTO request, String tenantId) throws LocationNotFoundException {
         String location = StringUtils.isEmpty(request.getLocation()) ? GrpcConstants.DEFAULT_LOCATION : request.getLocation();
         Optional<MonitoringLocation> found =
             monitoringLocationRepository.findByLocationAndTenantId(location, tenantId);
@@ -152,15 +150,7 @@ public class NodeService {
         if (found.isPresent()) {
             return found.get();
         } else {
-            MonitoringLocation newLocation = new MonitoringLocation();
-
-            newLocation.setTenantId(tenantId);
-            newLocation.setLocation(location);
-
-            MonitoringLocation saved = monitoringLocationRepository.save(newLocation);
-            // Asynchronously send config updates to Minion
-            configUpdateService.sendConfigUpdate(tenantId, saved.getLocation());
-            return saved;
+          throw new LocationNotFoundException("Location not found " + request.getLocation());
         }
     }
 
@@ -183,7 +173,7 @@ public class NodeService {
     }
 
     @Transactional
-    public Node createNode(NodeCreateDTO request, ScanType scanType, String tenantId) throws EntityExistException {
+    public Node createNode(NodeCreateDTO request, ScanType scanType, String tenantId) throws EntityExistException, LocationNotFoundException {
         if(request.hasManagementIp()) { //Do we really want to create a node without managed IP?
             Optional<IpInterface> ipInterfaceOpt = ipInterfaceRepository
                 .findByIpAddressAndLocationAndTenantId(InetAddressUtils.getInetAddress(request.getManagementIp()), request.getLocation(), tenantId);
@@ -193,7 +183,7 @@ public class NodeService {
                 throw new EntityExistException("IP address " + request.getManagementIp() + " already exists in the system and belong to device " + ipInterface.getNode().getNodeLabel());
             }
         }
-        MonitoringLocation monitoringLocation = saveMonitoringLocation(request, tenantId);
+        MonitoringLocation monitoringLocation = findMonitoringLocation(request, tenantId);
         Node node = saveNode(request, monitoringLocation, scanType, tenantId);
         saveIpInterfaces(request, node, tenantId);
 
@@ -235,16 +225,14 @@ public class NodeService {
     public List<TaskDefinition> getTasksForNode(Node node) {
         var tasks = new ArrayList<TaskDefinition>();
         scannerTaskSetService.getNodeScanTasks(node).ifPresent(tasks::add);
-        node.getIpInterfaces().forEach(ipInterface -> {
-            ipInterface.getMonitoredServices().forEach((ms) -> {
-                String serviceName = ms.getMonitoredServiceType().getServiceName();
-                var monitorType = MonitorType.valueOf(serviceName);
-                var monitorTask = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, node.getId(), null);
-                Optional.ofNullable(monitorTask).ifPresent(tasks::add);
-                var collectorTask = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, node.getId(), null);
-                Optional.ofNullable(collectorTask).ifPresent(tasks::add);
-            });
-        });
+        node.getIpInterfaces().forEach(ipInterface -> ipInterface.getMonitoredServices().forEach(ms -> {
+            String serviceName = ms.getMonitoredServiceType().getServiceName();
+            var monitorType = MonitorType.valueOf(serviceName);
+            var monitorTask = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, node.getId(), null);
+            Optional.ofNullable(monitorTask).ifPresent(tasks::add);
+            var collectorTask = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, node.getId(), null);
+            Optional.ofNullable(collectorTask).ifPresent(tasks::add);
+        }));
         return tasks;
     }
 

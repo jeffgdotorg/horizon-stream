@@ -28,16 +28,6 @@
 
 package org.opennms.horizon.inventory.component;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,11 +40,22 @@ import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.exception.EntityExistException;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
+import org.opennms.horizon.inventory.exception.LocationNotFoundException;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.discovery.PassiveDiscoveryService;
 import org.opennms.horizon.shared.events.EventConstants;
 import org.opennms.taskset.contract.ScanType;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class NodeMonitoringManagerTest {
@@ -88,7 +89,7 @@ class NodeMonitoringManagerTest {
     }
 
     @Test
-    void testReceiveEventAndCreateNewNode() throws EntityExistException {
+    void testReceiveEventAndCreateNewNode() throws EntityExistException, LocationNotFoundException {
         doReturn(node).when(nodeService).createNode(any(NodeCreateDTO.class), eq(ScanType.NODE_SCAN), eq(tenantId));
         ArgumentCaptor<NodeCreateDTO> argumentCaptor = ArgumentCaptor.forClass(NodeCreateDTO.class);
         consumer.receiveTrapEvent(event.toByteArray());
@@ -116,7 +117,7 @@ class NodeMonitoringManagerTest {
     }
 
     @Test
-    void testEntityExistException() throws EntityExistException {
+    void testEntityExistException() throws EntityExistException, LocationNotFoundException {
         doThrow(new EntityExistException("bad request")).when(nodeService).createNode(any(NodeCreateDTO.class), eq(ScanType.NODE_SCAN), eq(tenantId));
         ArgumentCaptor<NodeCreateDTO> argumentCaptor = ArgumentCaptor.forClass(NodeCreateDTO.class);
         consumer.receiveTrapEvent(event.toByteArray());

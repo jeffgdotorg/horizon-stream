@@ -27,16 +27,14 @@
  *******************************************************************************/
 package org.opennms.horizon.inventory.grpc;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.function.BiFunction;
-
+import com.google.protobuf.BoolValue;
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
+import com.google.rpc.Code;
+import io.grpc.Context;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -52,6 +50,7 @@ import org.opennms.horizon.inventory.dto.NodeIdList;
 import org.opennms.horizon.inventory.dto.NodeIdQuery;
 import org.opennms.horizon.inventory.dto.NodeList;
 import org.opennms.horizon.inventory.exception.EntityExistException;
+import org.opennms.horizon.inventory.exception.LocationNotFoundException;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.Node;
@@ -60,17 +59,17 @@ import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
 import org.opennms.taskset.contract.ScanType;
 
-import com.google.protobuf.BoolValue;
-import com.google.protobuf.Empty;
-import com.google.protobuf.Int64Value;
-import com.google.rpc.Code;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.function.BiFunction;
 
-import io.grpc.Context;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
-import io.grpc.stub.StreamObserver;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
-public class NodeGrpcServiceTest {
+class NodeGrpcServiceTest {
     private NodeService mockNodeService;
     private IpInterfaceService mockIpInterfaceService;
     private NodeMapper mockNodeMapper;
@@ -148,7 +147,7 @@ public class NodeGrpcServiceTest {
      * Verify the creation of a new node, and successful send of task updates.
      */
     @Test
-    void testCreateNodeNewValidManagementIpSuccessfulSendTasks() throws EntityExistException {
+    void testCreateNodeNewValidManagementIpSuccessfulSendTasks() throws EntityExistException, LocationNotFoundException {
         Runnable runnable = commonTestCreateNode();
 
         // Verify the lambda execution
@@ -160,7 +159,7 @@ public class NodeGrpcServiceTest {
      * Verify the creation of a new node with no management IP address
      */
     @Test
-    void testCreateNodeNoManagementIp() throws EntityExistException {
+    void testCreateNodeNoManagementIp() throws EntityExistException, LocationNotFoundException {
         //
         // Setup test data and interactions
         //
@@ -204,7 +203,7 @@ public class NodeGrpcServiceTest {
      * Verify the creation of a new node, and successful send of task updates.
      */
     @Test
-    void testCreateNodeEntityExistException() throws EntityExistException {
+    void testCreateNodeEntityExistException() throws EntityExistException, LocationNotFoundException {
         //
         // Setup test data and interactions
         //
@@ -681,7 +680,7 @@ public class NodeGrpcServiceTest {
 // Internals
 //----------------------------------------
 
-    private Runnable commonTestCreateNode() throws EntityExistException {
+    private Runnable commonTestCreateNode() throws EntityExistException, LocationNotFoundException {
         //
         // Setup test data and interactions
         //

@@ -5,6 +5,7 @@ Feature: Azure Active Discovery
     Given [Azure] Kafka Bootstrap URL in system property "kafka.bootstrap-servers"
     Given [Azure] Grpc TenantId "tenant-stream"
     Given [Azure] Create Grpc Connection for Inventory
+    Given [Common] Create "Default" Location
 
   Scenario: Create new azure active discovery
     Given Azure Test Active Discovery
