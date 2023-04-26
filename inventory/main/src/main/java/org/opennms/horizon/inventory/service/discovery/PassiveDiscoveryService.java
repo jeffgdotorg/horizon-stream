@@ -171,9 +171,8 @@ public class PassiveDiscoveryService {
         if (snmpCommunities.length() > 128) {
             throw new InventoryRuntimeException("Snmp communities string is too long");
         }
-        for (byte b:snmpCommunities.getBytes()){
+        for (byte b: snmpCommunities.getBytes()){
             char c = (char) b;
-            log.info("b="+b+" c="+c);
             if (c > 127){
                 throw new InventoryRuntimeException("All characters must be 7bit ascii");
             }
