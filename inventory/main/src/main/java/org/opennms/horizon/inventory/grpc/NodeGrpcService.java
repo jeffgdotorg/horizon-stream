@@ -79,6 +79,7 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
     public static final String INVALID_REQUEST_LOCATION_AND_IP_NOT_EMPTY_MSG = "Invalid Request Query, location/ipAddress can't be empty";
     public static final String TENANT_ID_IS_MISSING_MSG = "Tenant ID is missing";
     public static final String IP_ADDRESS_ALREADY_EXISTS_FOR_LOCATION_MSG = "Ip address already exists for location";
+    public static final String LOCATION_NOT_FOUND = "Location not found";
     public static final String EMPTY_TENANT_ID_MSG = "Tenant Id can't be empty";
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(NodeGrpcService.class);
@@ -119,7 +120,7 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
             } catch (LocationNotFoundException e) {
                 Status status = Status.newBuilder()
                     .setCode(Code.NOT_FOUND_VALUE)
-                    .setMessage(e.getMessage())
+                    .setMessage(LOCATION_NOT_FOUND)
                     .build();
                 responseObserver.onError(StatusProto.toStatusRuntimeException(status));
             }

@@ -231,6 +231,38 @@ class NodeGrpcServiceTest {
         verify(mockNodeService).createNode(testNodeCreateDTO, ScanType.NODE_SCAN, "x-tenant-id-x");
     }
 
+    /**
+     * Verify new node is not created if the location doesn't exist.
+     */
+    @Test
+    void testCreateNodeLocationNotFoundException() throws EntityExistException, LocationNotFoundException {
+        //
+        // Setup test data and interactions
+        //
+        testNodeCreateDTO =
+            NodeCreateDTO.newBuilder()
+                .setManagementIp("127.0.0.1")
+                .setLocation("x-location-x")
+                .build();
+
+        doThrow(new LocationNotFoundException("Location not found")).when(mockNodeService).createNode(testNodeCreateDTO, ScanType.NODE_SCAN, "x-tenant-id-x");
+        //
+        // Execute
+        //
+        target.createNode(testNodeCreateDTO, mockNodeDTOStreamObserver);
+
+        //
+        // Validate
+        //
+        var matcher =
+            new StatusRuntimeExceptionMatcher(
+                this::statusExceptionMatchesNotFoundValue,
+                NodeGrpcService.LOCATION_NOT_FOUND);
+
+        Mockito.verify(mockNodeDTOStreamObserver).onError(Mockito.argThat(matcher));
+        verify(mockNodeService).createNode(testNodeCreateDTO, ScanType.NODE_SCAN, "x-tenant-id-x");
+    }
+
 
     @Test
     void testListNodes() {
@@ -761,6 +793,16 @@ class NodeGrpcServiceTest {
 
     private boolean statusExceptionMatchesAlreadyExistsValue(Status status, Object expectedMessage) {
         if (status.getCode().value() == Code.ALREADY_EXISTS_VALUE) {
+            if (status.getDescription() != null) {
+                return status.getDescription().equals(expectedMessage);
+            }
+        }
+
+        return false;
+    }
+
+    private boolean statusExceptionMatchesNotFoundValue(Status status, Object expectedMessage) {
+        if (status.getCode().value() == Code.NOT_FOUND_VALUE) {
             if (status.getDescription() != null) {
                 return status.getDescription().equals(expectedMessage);
             }
