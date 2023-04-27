@@ -71,17 +71,7 @@ export interface ContextMenuItem {
   handler: fncVoid
 }
 
-// type CBArgs = {}
-/* type CBArgs = {
-  id?: number | string | undefined
-  type?: string | undefined
-  location?: string | undefined
-} */
-export interface ButtonCallbackArgs {
-  label?: string
+export interface IButtonTextIcon {
+  label: string | undefined
   type?: string
-  callback: fncVoid | fncArgVoid
-  callbackArgs?: { [key: string]: any }
-  isFetching?: boolean
-  // isDisabled?: ComputedRef<boolean>
 }

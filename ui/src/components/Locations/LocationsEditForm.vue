@@ -6,7 +6,7 @@
       class="locations-edit-form"
     >
       <HeadlineSection
-        :text="selectedLocation.location"
+        :text="formInputs.location"
         data-test="headline"
       >
         <template #right>
@@ -22,7 +22,7 @@
         <div class="row">
           <FeatherInput
             label="Location Name *"
-            v-model="inputs.name"
+            v-model="formInputs.location"
             :schema="nameV"
             required
             class="input-name"
@@ -34,7 +34,7 @@
         <div class="row">
           <FeatherInput
             label="Address (optional)"
-            v-model="inputs.address"
+            v-model="formInputs.address"
             class="input-address"
             data-test="input-address"
           >
@@ -44,7 +44,7 @@
         <div class="row">
           <FeatherInput
             label="Longitude (optional)"
-            v-model="inputs.longitude"
+            v-model="formInputs.longitude"
             class="input-longitude"
             data-test="input-longitude"
           >
@@ -52,7 +52,7 @@
           ></FeatherInput>
           <FeatherInput
             label="Latitude (optional)"
-            v-model="inputs.latitude"
+            v-model="formInputs.latitude"
             class="input-latitude"
             data-test="input-latitude"
           >
@@ -66,7 +66,10 @@
             <label for="apiKey">API Key:</label>
             <span id="apiKey">ABCD1234@#$%</span>
           </div>
-          <ButtonText :button="generateKeyBtn">
+          <ButtonTextIcon
+            @click="generateKey"
+            :item="generateKeyBtn"
+          >
             <template #pre
               ><FeatherIcon
                 :icon="ContentCopy"
@@ -74,14 +77,17 @@
                 focusable="false"
                 class="icon-pre"
             /></template>
-          </ButtonText>
+          </ButtonTextIcon>
         </div>
         <div class="box download-credentials">
           <div class="top">
             <div>Location Credentials File Bundle</div>
             <div>4/24/2023 - 00:00</div>
           </div>
-          <ButtonText :button="downloadCredentialsBtn">
+          <ButtonTextIcon
+            @click="downloadCredentials"
+            :item="downloadCredentialsBtn"
+          >
             <template #pre
               ><FeatherIcon
                 :icon="DownloadFile"
@@ -89,7 +95,7 @@
                 focusable="false"
                 class="icon-pre"
             /></template>
-          </ButtonText>
+          </ButtonTextIcon>
         </div>
       </div>
       <div class="row mt-m">
@@ -98,11 +104,23 @@
           :step-lists="instructions.stepLists"
         />
       </div>
-      <FooterSection
-        :save="saveBtn"
-        :cancel="cancelBtn"
-        data-test="save-button"
-      />
+      <FooterSection>
+        <template #buttons>
+          <FeatherButton
+            @click="locationStore.setDisplayType(DisplayType.LIST)"
+            secondary
+            data-test="cancel-button"
+            >cancel</FeatherButton
+          >
+          <ButtonWithSpinner
+            :isFetching="updateIsFetching"
+            type="submit"
+            primary
+            data-test="save-button"
+            >save</ButtonWithSpinner
+          >
+        </template>
+      </FooterSection>
     </form>
   </div>
 </template>
@@ -116,7 +134,7 @@ import placeholder from '@/assets/placeholder.svg'
 import { string } from 'yup'
 import { useForm } from '@featherds/input-helper'
 import { Location as LocationType } from '@/types/graphql'
-import { ButtonCallbackArgs } from '@/types'
+import { IButtonTextIcon } from '@/types'
 import { DisplayType } from '@/types/locations.d'
 import { useLocationStore } from '@/store/Views/locationStore'
 
@@ -126,35 +144,44 @@ const props = defineProps<{
 
 const locationStore = useLocationStore()
 
-const selectedLocation = computed(() => locationStore.locationsList.filter((l: LocationType) => l.id === props.id)[0])
+const formInputs = computed(() => {
+  const selectedLocation = locationStore.locationsList.filter((l: LocationType) => l.id === props.id)[0]
 
-const inputs = reactive({
-  name: '', //selectedLocation.value.location,
-  address: '', //selectedLocation.value.address,
-  longitude: '', //selectedLocation.value.longitude
-  latitude: '' //selectedLocation.value.latitude
+  return {
+    id: selectedLocation.id,
+    location: selectedLocation.location,
+    address: selectedLocation.address,
+    longitude: selectedLocation.longitude,
+    latitude: selectedLocation.latitude
+  }
 })
 
 const form = useForm()
 const nameV = string().required('Location name is required.')
 
-const onSubmit = () => {
-  const formInvalid = form.validate().length > 0 // array of errors
+const updateIsFetching = computed(() => locationStore.updateIsFetching)
+const onSubmit = async () => {
+  const isFormInvalid = form.validate().length > 0 // array of errors
 
-  if (formInvalid) return
+  if (isFormInvalid) return
 
-  console.log('call api endpoint to save form...', inputs)
+  const isFormUpdated = await locationStore.updateLocation(formInputs.value)
+
+  if (isFormUpdated) {
+    locationStore.setDisplayType(DisplayType.LIST)
+    form.clearErrors()
+  }
 }
 
-const generateKeyBtn: ButtonCallbackArgs = {
-  label: 'GENERATE KEY',
-  callback: () => ({})
+const generateKeyBtn: IButtonTextIcon = {
+  label: 'GENERATE KEY'
 }
+const generateKey = () => ({})
 
-const downloadCredentialsBtn: ButtonCallbackArgs = {
-  label: 'READY TO DOWNLOAD',
-  callback: () => ({})
+const downloadCredentialsBtn: IButtonTextIcon = {
+  label: 'READY TO DOWNLOAD'
 }
+const downloadCredentials = () => ({})
 
 const instructions = {
   textButton: 'Need instructions for minion deployment at this location?',
@@ -182,25 +209,9 @@ const instructions = {
   ]
 }
 
-const saveBtn = {
-  label: 'Save Location',
-  callback: () => ({})
-  // isDisabled: computed(() => !inputs.name)
-}
-
-const cancelBtn = {
-  callback: locationStore.setDisplayType,
-  callbackArgs: {
-    type: DisplayType.LIST
-  }
-}
-
-onMounted(() => {
-  form.clearErrors()
-})
-
 onUnmounted(() => {
   locationStore.selectLocation(undefined)
+  form.clearErrors()
 })
 
 const icons = markRaw({

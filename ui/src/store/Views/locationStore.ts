@@ -10,6 +10,7 @@ export const useLocationStore = defineStore('locationStore', () => {
   const displayType = ref(DisplayType.LIST)
 
   const saveIsFetching = ref()
+  const updateIsFetching = ref()
 
   const locationQueries = useLocationQueries()
   const locationMutations = useLocationMutations()
@@ -99,12 +100,26 @@ export const useLocationStore = defineStore('locationStore', () => {
     displayType.value = type
   }
 
-  const createLocation = async (name) => {
+  const createLocation = async (payload) => {
     saveIsFetching.value = true
 
-    const error = await locationMutations.createLocation(name)
+    const error = await locationMutations.createLocation(payload)
 
     saveIsFetching.value = false
+
+    if (!error.value) {
+      fetchLocations()
+    }
+
+    return !error.value
+  }
+
+  const updateLocation = async (payload) => {
+    updateIsFetching.value = true
+
+    const error = await locationMutations.updateLocation(payload)
+
+    updateIsFetching.value = false
 
     if (!error.value) {
       fetchLocations()
@@ -125,6 +140,8 @@ export const useLocationStore = defineStore('locationStore', () => {
     fetchMinions,
     searchMinions,
     createLocation,
-    saveIsFetching
+    saveIsFetching,
+    updateLocation,
+    updateIsFetching
   }
 })

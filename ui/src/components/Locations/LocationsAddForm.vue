@@ -13,7 +13,7 @@
         <div class="row">
           <FeatherInput
             label="Location Name *"
-            v-model="inputs.name"
+            v-model="formInputs.location"
             :schema="nameV"
             required
             class="input-name"
@@ -25,7 +25,7 @@
         <div class="row">
           <FeatherInput
             label="Address (optional)"
-            v-model="inputs.address"
+            v-model="formInputs.address"
             class="input-address"
             data-test="input-address"
           >
@@ -35,7 +35,7 @@
         <div class="row">
           <FeatherInput
             label="Longitude (optional)"
-            v-model="inputs.longitude"
+            v-model="formInputs.longitude"
             class="input-longitude"
             data-test="input-longitude"
           >
@@ -43,7 +43,7 @@
           ></FeatherInput>
           <FeatherInput
             label="Latitude (optional)"
-            v-model="inputs.latitude"
+            v-model="formInputs.latitude"
             class="input-latitude"
             data-test="input-latitude"
           >
@@ -81,7 +81,7 @@ import { useLocationStore } from '@/store/Views/locationStore'
 import { DisplayType } from '@/types/locations.d'
 
 const formDefault = {
-  name: '',
+  location: '',
   address: '',
   longitude: '',
   latitude: ''
@@ -89,25 +89,24 @@ const formDefault = {
 
 const locationStore = useLocationStore()
 
-const inputs = ref({ ...formDefault })
+const formInputs = ref({ ...formDefault })
 
 const form = useForm()
 const nameV = string().required('Location name is required.')
 
+const saveIsFetching = computed(() => locationStore.saveIsFetching)
 const onSubmit = async () => {
-  const formInvalid = form.validate().length > 0 // array of errors
+  const isFormInvalid = form.validate().length > 0 // array of errors
 
-  if (formInvalid) return
+  if (isFormInvalid) return
 
-  const formIsSaved = await locationStore.createLocation(inputs.value.name)
+  const isFormSaved = await locationStore.createLocation(formInputs.value)
 
-  if (formIsSaved) {
-    inputs.value = { ...formDefault }
+  if (isFormSaved) {
+    formInputs.value = { ...formDefault }
     form.clearErrors()
   }
 }
-
-const saveIsFetching = computed(() => locationStore.saveIsFetching)
 
 onMounted(() => {
   form.clearErrors()
