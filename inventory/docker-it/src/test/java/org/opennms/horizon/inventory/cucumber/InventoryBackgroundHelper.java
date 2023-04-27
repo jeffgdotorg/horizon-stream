@@ -35,6 +35,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -90,7 +91,7 @@ public class InventoryBackgroundHelper {
     public void kafkaBootstrapURLInSystemProperty(String systemPropertyName) {
         kafkaBootstrapUrl = System.getProperty(systemPropertyName);
         LOG.info("Using Kafka Bootstrap URL {}", kafkaBootstrapUrl);
-        if(kafkaConsumer == null) {
+        if(kafkaConsumer == null && StringUtils.isNotEmpty(kafkaBootstrapUrl)) {
             Properties consumerConfig = new Properties();
             consumerConfig.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapUrl);
             consumerConfig.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
