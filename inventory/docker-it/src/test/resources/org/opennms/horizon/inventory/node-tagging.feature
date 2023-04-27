@@ -8,7 +8,6 @@ Feature: Node Tagging
     Given [Tags] Create Grpc Connection for Inventory
     Given Kafka topic "tag-operation"
 
-  @Debug
   Scenario: Create new tags on node
     Given A new node
     When A GRPC request to create tags "tag1,tag2" for node
@@ -18,7 +17,6 @@ Feature: Node Tagging
       | ASSIGN_TAG | tenant-stream | tag1     |
       | ASSIGN_TAG | tenant-stream | tag2     |
 
-  @Debug
   Scenario: Create multiple tags on multiple nodes
     Given 2 new nodes
     When A GRPC request to create tags "tag1,tag2" for both nodes
@@ -56,7 +54,6 @@ Feature: Node Tagging
     When A GRPC request to fetch all tags for node with name like "xyz"
     Then The response should contain an empty list of tags
 
-  @Debug
   Scenario: Remove tags from node
     Given A new node with tags "tag1,tag2"
     When A GRPC request to remove tag "tag1" for node
@@ -64,6 +61,11 @@ Feature: Node Tagging
     Then Verify Kafka message with 1 node
       | action     | tenant_id     | tag_name |
       | REMOVE_TAG | tenant-stream | tag1     |
+    Then Delete the node
+    Then Verify Kafka message with 1 node
+      | action     | tenant_id     | tag_name |
+      | REMOVE_TAG | tenant-stream | tag2     |
+
 
   Scenario: Get a list of tags
     Given A new node with tags "tag1,tag2"

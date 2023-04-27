@@ -81,8 +81,7 @@ public class NodeTaggingStepDefinitions {
     private TagListDTO addedTagList;
     private TagListDTO fetchedTagList;
     private NodeList fetchedNodeList;
-    private String tagTopic;
-    private long timestamp;
+    private long tagMessageFilterTime;
 
     public NodeTaggingStepDefinitions(InventoryBackgroundHelper backgroundHelper) {
         this.backgroundHelper = backgroundHelper;
@@ -175,7 +174,7 @@ public class NodeTaggingStepDefinitions {
      */
     @When("A GRPC request to create tags {string} for node")
     public void aGRPCRequestToCreateTagsForNode(String tags) {
-        timestamp = System.currentTimeMillis();
+        tagMessageFilterTime = System.currentTimeMillis();
         String[] tagArray = tags.split(",");
         var tagServiceBlockingStub = backgroundHelper.getTagServiceBlockingStub();
         List<TagCreateDTO> tagCreateList = getTagCreateList(tagArray);
@@ -187,7 +186,7 @@ public class NodeTaggingStepDefinitions {
 
     @When("A GRPC request to create tags {string} for both nodes")
     public void aGRPCRequestToCreateTagsForBothNodes(String tags) {
-        timestamp = System.currentTimeMillis();
+        tagMessageFilterTime = System.currentTimeMillis();
         String[] tagArray = tags.split(",");
         var tagServiceBlockingStub = backgroundHelper.getTagServiceBlockingStub();
         List<TagCreateDTO> tagCreateList = getTagCreateList(tagArray);
@@ -213,7 +212,7 @@ public class NodeTaggingStepDefinitions {
 
     @When("A GRPC request to remove tag {string} for node")
     public void aGRPCRequestToRemoveTagForNode(String tag) {
-        timestamp = System.currentTimeMillis();
+        tagMessageFilterTime = System.currentTimeMillis();
         var tagServiceBlockingStub = backgroundHelper.getTagServiceBlockingStub();
         for (TagDTO tagDTO : addedTagList.getTagsList()) {
             if (tagDTO.getName().equals(tag)) {
@@ -374,7 +373,7 @@ public class NodeTaggingStepDefinitions {
             if(!records.isEmpty()) {
                 List<TagOperationList> tagOpList = new ArrayList<>();
                 for(ConsumerRecord<String, byte[]> r : records) {
-                    if (r.timestamp() > timestamp) {
+                    if (r.timestamp() > tagMessageFilterTime) {
                         tagOpList.add(TagOperationList.parseFrom(r.value()));
                     }
                 }
@@ -395,8 +394,13 @@ public class NodeTaggingStepDefinitions {
 
     @Given("Kafka topic {string}")
     public void kafkaTopic(String topic) {
-        tagTopic = topic;
         backgroundHelper.subscribeKafkaTopics(List.of(topic));
+    }
+
+    @Then("Delete the node")
+    public void deleteTheNode() {
+        tagMessageFilterTime = System.currentTimeMillis();
+        backgroundHelper.getNodeServiceBlockingStub().deleteNode(Int64Value.of(node1.getId()));
     }
 
     private void verifyKafkaMessage(List<Map<String, String>> data, List<TagOperationProto> result, List<Long> nodeIds) {
