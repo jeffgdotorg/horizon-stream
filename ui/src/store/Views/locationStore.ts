@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useLocationQueries } from '../Queries/locationQueries'
 import { DisplayType } from '@/types/locations.d'
+import { useLocationMutations } from '../Mutations/locationMutations'
 
 export const useLocationStore = defineStore('locationStore', () => {
   const locationsList = ref()
@@ -8,7 +9,10 @@ export const useLocationStore = defineStore('locationStore', () => {
   const selectedLocationId = ref()
   const displayType = ref(DisplayType.LIST)
 
+  const saveIsFetching = ref()
+
   const locationQueries = useLocationQueries()
+  const locationMutations = useLocationMutations()
 
   const fetchLocations = async () => {
     try {
@@ -95,6 +99,20 @@ export const useLocationStore = defineStore('locationStore', () => {
     displayType.value = type
   }
 
+  const createLocation = async (name) => {
+    saveIsFetching.value = true
+
+    const error = await locationMutations.createLocation(name)
+
+    saveIsFetching.value = false
+
+    if (!error.value) {
+      fetchLocations()
+    }
+
+    return !error.value
+  }
+
   return {
     displayType,
     setDisplayType,
@@ -105,6 +123,8 @@ export const useLocationStore = defineStore('locationStore', () => {
     searchLocations,
     minionsList,
     fetchMinions,
-    searchMinions
+    searchMinions,
+    createLocation,
+    saveIsFetching
   }
 })

@@ -1,5 +1,5 @@
 #create
-mutation CreateLocation($location: String!) {
+mutation CreateLocation($location: String) {
   createLocation(location: $location) {
     id
     location

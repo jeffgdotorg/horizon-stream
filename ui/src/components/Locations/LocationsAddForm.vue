@@ -51,11 +51,23 @@
           ></FeatherInput>
         </div>
       </div>
-      <FooterSection
-        :save="saveBtn"
-        :cancel="cancelBtn"
-        data-test="save-button"
-      />
+      <FooterSection>
+        <template #buttons>
+          <FeatherButton
+            @click="locationStore.setDisplayType(DisplayType.LIST)"
+            secondary
+            data-test="cancel-button"
+            >cancel</FeatherButton
+          >
+          <ButtonWithSpinner
+            :isFetching="saveIsFetching"
+            type="submit"
+            primary
+            data-test="save-button"
+            >save</ButtonWithSpinner
+          >
+        </template>
+      </FooterSection>
     </form>
   </div>
 </template>
@@ -68,38 +80,34 @@ import { useForm } from '@featherds/input-helper'
 import { useLocationStore } from '@/store/Views/locationStore'
 import { DisplayType } from '@/types/locations.d'
 
-const locationStore = useLocationStore()
-
-const inputs = reactive({
+const formDefault = {
   name: '',
   address: '',
   longitude: '',
   latitude: ''
-})
+}
+
+const locationStore = useLocationStore()
+
+const inputs = ref({ ...formDefault })
 
 const form = useForm()
 const nameV = string().required('Location name is required.')
 
-const onSubmit = () => {
+const onSubmit = async () => {
   const formInvalid = form.validate().length > 0 // array of errors
 
   if (formInvalid) return
 
-  console.log('call api endpoint to save form...')
-}
+  const formIsSaved = await locationStore.createLocation(inputs.value.name)
 
-const saveBtn = {
-  label: 'Save Location',
-  callback: () => ({})
-  // isDisabled: computed(() => !inputs.name)
-}
-
-const cancelBtn = {
-  callback: locationStore.setDisplayType,
-  callbackArgs: {
-    type: DisplayType.LIST
+  if (formIsSaved) {
+    inputs.value = { ...formDefault }
+    form.clearErrors()
   }
 }
+
+const saveIsFetching = computed(() => locationStore.saveIsFetching)
 
 onMounted(() => {
   form.clearErrors()
