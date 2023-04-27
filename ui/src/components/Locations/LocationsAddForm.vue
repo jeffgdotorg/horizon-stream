@@ -65,10 +65,10 @@ import Location from '@featherds/icon/action/Location'
 import placeholder from '@/assets/placeholder.svg'
 import { string } from 'yup'
 import { useForm } from '@featherds/input-helper'
-import { useLocationsStore } from '@/store/Views/locationsStore'
+import { useLocationStore } from '@/store/Views/locationStore'
 import { DisplayType } from '@/types/locations.d'
 
-const locationsStore = useLocationsStore()
+const locationStore = useLocationStore()
 
 const inputs = reactive({
   name: '',
@@ -95,7 +95,7 @@ const saveBtn = {
 }
 
 const cancelBtn = {
-  callback: locationsStore.setDisplayType,
+  callback: locationStore.setDisplayType,
   callbackArgs: {
     type: DisplayType.LIST
   }

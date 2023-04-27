@@ -116,17 +116,17 @@ import placeholder from '@/assets/placeholder.svg'
 import { string } from 'yup'
 import { useForm } from '@featherds/input-helper'
 import { Location as LocationType } from '@/types/graphql'
-import { ButtonText } from '@/types'
+import { ButtonCallbackArgs } from '@/types'
 import { DisplayType } from '@/types/locations.d'
-import { useLocationsStore } from '@/store/Views/locationsStore'
+import { useLocationStore } from '@/store/Views/locationStore'
 
 const props = defineProps<{
   id: number
 }>()
 
-const locationsStore = useLocationsStore()
+const locationStore = useLocationStore()
 
-const selectedLocation = computed(() => locationsStore.locationsList.filter((l: LocationType) => l.id === props.id)[0])
+const selectedLocation = computed(() => locationStore.locationsList.filter((l: LocationType) => l.id === props.id)[0])
 
 const inputs = reactive({
   name: '', //selectedLocation.value.location,
@@ -146,12 +146,12 @@ const onSubmit = () => {
   console.log('call api endpoint to save form...', inputs)
 }
 
-const generateKeyBtn: ButtonText = {
+const generateKeyBtn: ButtonCallbackArgs = {
   label: 'GENERATE KEY',
   callback: () => ({})
 }
 
-const downloadCredentialsBtn: ButtonText = {
+const downloadCredentialsBtn: ButtonCallbackArgs = {
   label: 'READY TO DOWNLOAD',
   callback: () => ({})
 }
@@ -189,7 +189,7 @@ const saveBtn = {
 }
 
 const cancelBtn = {
-  callback: locationsStore.setDisplayType,
+  callback: locationStore.setDisplayType,
   callbackArgs: {
     type: DisplayType.LIST
   }
@@ -200,7 +200,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  locationsStore.selectLocation(undefined)
+  locationStore.selectLocation(undefined)
 })
 
 const icons = markRaw({

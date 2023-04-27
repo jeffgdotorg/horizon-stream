@@ -75,7 +75,7 @@ type CBArgs = {
   id?: number | string | undefined
   type?: string | undefined
 }
-export interface ButtonText {
+export interface ButtonCallbackArgs {
   label?: string
   type?: string
   callback: fncVoid | fncArgVoid

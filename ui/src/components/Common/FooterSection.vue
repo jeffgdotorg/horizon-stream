@@ -25,11 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import { ButtonText } from '@/types'
+import { ButtonCallbackArgs } from '@/types'
 
 const props = defineProps<{
-  save?: ButtonText
-  cancel?: ButtonText
+  save?: ButtonCallbackArgs
+  cancel?: ButtonCallbackArgs
 }>()
 
 const saveIsFetching = false //computed(() => props.save?.isFetching?.value)

@@ -13,10 +13,10 @@
 
 <script lang="ts" setup>
 import { ButtonHTMLAttributes } from 'vue'
-import { ButtonText } from '@/types'
+import { ButtonCallbackArgs } from '@/types'
 
 defineProps<{
-  button: ButtonText
+  button: ButtonCallbackArgs
 }>()
 </script>
 

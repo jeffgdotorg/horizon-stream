@@ -36,19 +36,19 @@ import { IIcon } from '@/types'
 import { Severity } from '@/types/graphql'
 import { LocationTemp } from '@/types/locations.d'
 import { setViewBox } from '@/components/utils'
-import { useLocationsStore } from '@/store/Views/locationsStore'
+import { useLocationStore } from '@/store/Views/locationStore'
 
 const props = defineProps<{
   item: LocationTemp
 }>()
 
-const locationsStore = useLocationsStore()
+const locationStore = useLocationStore()
 
-const selectedCard = computed(() => locationsStore.selectedLocationId === props.item.id)
+const selectedCard = computed(() => locationStore.selectedLocationId === props.item.id)
 
 const buttonProps = {
   label: props.item.location,
-  callback: locationsStore.selectLocation,
+  callback: locationStore.selectLocation,
   callbackArgs: {
     id: props.item.id
   }

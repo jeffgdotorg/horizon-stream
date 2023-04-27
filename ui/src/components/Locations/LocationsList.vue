@@ -3,7 +3,7 @@
     <HeadlineSection
       text="locations"
       data-test="headline"
-      @click="locationsStore.setDisplayType(DisplayType.LIST)"
+      @click="locationStore.setDisplayType(DisplayType.LIST)"
     >
       <template #left>
         <CountColor
@@ -51,7 +51,7 @@ import HeadlineSection from '@/components/Common/HeadlineSection.vue'
 import Help from '@featherds/icon/action/Help'
 import { LocationTemp } from '@/types/locations.d'
 import { PropType } from 'vue'
-import { useLocationsStore } from '@/store/Views/locationsStore'
+import { useLocationStore } from '@/store/Views/locationStore'
 import { DisplayType } from '@/types/locations.d'
 
 defineProps({
@@ -61,7 +61,7 @@ defineProps({
   }
 })
 
-const locationsStore = useLocationsStore()
+const locationStore = useLocationStore()
 
 const icons = markRaw({
   Help
