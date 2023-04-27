@@ -28,24 +28,32 @@
 
 package org.opennms.horizon.server.service.metrics;
 
+import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.server.model.TimeRangeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_SCAN_TYPE;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.BW_IN_PERCENTAGE;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.BW_OUT_PERCENTAGE;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.NETWORK_IN_BITS;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.NETWORK_OUT_BITS;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_AZURE_TOTAL_NETWORK_IN_BITS;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_AZURE_TOTAL_NETWORK_OUT_BITS;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_BW_IN_UTIL_PERCENTAGE;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_BW_OUT_UTIL_PERCENTAGE;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_IN;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_OUT;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_IN_BITS;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_OUT_BITS;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_PREFIX;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.TOTAL_NETWORK_BYTES_IN;
@@ -54,7 +62,7 @@ import static org.opennms.horizon.server.service.metrics.normalization.Constants
 @Component
 public class QueryService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TSDBMetricsService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QueryService.class);
 
     public String getQueryString(String metricName, Map<String, String> labels) {
         Map<String, String> queryParams = new HashMap<>(labels);
@@ -68,7 +76,7 @@ public class QueryService {
             || BW_IN_PERCENTAGE.equals(metricName) || BW_OUT_PERCENTAGE.equals(metricName);
     }
 
-    public String getQueryString(String metricName, Map<String, String> labels,
+    public String getQueryString(Optional<NodeDTO> node, String metricName, Map<String, String> labels,
                                  Integer timeRange, TimeRangeUnit timeRangeUnit) {
 
         if (isRangeQuery(metricName)) {
@@ -80,26 +88,40 @@ public class QueryService {
                 "&step=2m";
             switch (metricName) {
                 case TOTAL_NETWORK_BYTES_IN:
-                    return QUERY_PREFIX + QUERY_FOR_TOTAL_NETWORK_BYTES_IN + rangeQuerySuffixForTotal;
+                    return QUERY_PREFIX + encode(QUERY_FOR_TOTAL_NETWORK_BYTES_IN) + rangeQuerySuffixForTotal;
                 case TOTAL_NETWORK_BYTES_OUT:
-                    return QUERY_PREFIX + QUERY_FOR_TOTAL_NETWORK_BYTES_OUT + rangeQuerySuffixForTotal;
+                    return QUERY_PREFIX + encode(QUERY_FOR_TOTAL_NETWORK_BYTES_OUT) + rangeQuerySuffixForTotal;
                 case NETWORK_IN_BITS:
-                    return QUERY_PREFIX + QUERY_FOR_TOTAL_NETWORK_BYTES_IN + rangeQuerySuffix;
+                    if (isAzureNode(node)) {
+                        return QUERY_PREFIX + encode(QUERY_FOR_AZURE_TOTAL_NETWORK_IN_BITS) + rangeQuerySuffix;
+                    } else {
+                        return QUERY_PREFIX + encode(QUERY_FOR_TOTAL_NETWORK_IN_BITS) + rangeQuerySuffix;
+                    }
                 case NETWORK_OUT_BITS:
-                    return QUERY_PREFIX + QUERY_FOR_TOTAL_NETWORK_OUT_BITS + rangeQuerySuffix;
+                    if (isAzureNode(node)) {
+                        return QUERY_PREFIX + encode(QUERY_FOR_AZURE_TOTAL_NETWORK_OUT_BITS) + rangeQuerySuffix;
+                    } else {
+                        return QUERY_PREFIX + encode(QUERY_FOR_TOTAL_NETWORK_OUT_BITS) + rangeQuerySuffix;
+                    }
                 case BW_IN_PERCENTAGE:
-                    return BW_IN_PERCENTAGE + QUERY_FOR_BW_IN_UTIL_PERCENTAGE + rangeQuerySuffix;
+                    if (isAzureNode(node)) {
+                        throw new RuntimeException("Operation not supported for Azure node: " + BW_IN_PERCENTAGE);
+                    }
+                    return QUERY_PREFIX + encode(QUERY_FOR_BW_IN_UTIL_PERCENTAGE) + rangeQuerySuffix;
                 case BW_OUT_PERCENTAGE:
-                    return BW_OUT_PERCENTAGE + QUERY_FOR_BW_OUT_UTIL_PERCENTAGE + rangeQuerySuffix;
-
+                    if (isAzureNode(node)) {
+                        throw new RuntimeException("Operation not supported for Azure node: " + BW_OUT_PERCENTAGE);
+                    }
+                    return QUERY_PREFIX + encode(QUERY_FOR_BW_OUT_UTIL_PERCENTAGE) + rangeQuerySuffix;
             }
         }
         String queryString = getQueryString(metricName, labels);
         return addTimeRange(timeRange, timeRangeUnit, queryString);
     }
 
+
     public String getQueryString(Map<String, String> queryParams) {
-        StringBuilder sb = new StringBuilder("query={");
+        StringBuilder sb = new StringBuilder(QUERY_PREFIX + "{");
 
         int index = 0;
         for (Map.Entry<String, String> param : queryParams.entrySet()) {
@@ -134,4 +156,15 @@ public class QueryService {
         return Optional.empty();
     }
 
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    }
+
+    private boolean isAzureNode(Optional<NodeDTO> node){
+        return isNodeScanType(node, AZURE_SCAN_TYPE);
+    }
+
+    private boolean isNodeScanType(Optional<NodeDTO> node, String scanType) {
+        return node.map(NodeDTO::getScanType).orElse("").equals(scanType);
+    }
 }

@@ -52,6 +52,9 @@ public final class Constants {
     public static final String QUERY_FOR_TOTAL_NETWORK_IN_BITS = "irate(ifHCInOctets[4m])*8";
     public static final String QUERY_FOR_TOTAL_NETWORK_OUT_BITS = "irate(ifHCOutOctets[4m])*8";
 
+    public static final String QUERY_FOR_AZURE_TOTAL_NETWORK_IN_BITS = "sum(sum_over_time(network_in_total_bytes[4m]))*8";
+    public static final String QUERY_FOR_AZURE_TOTAL_NETWORK_OUT_BITS = "sum(sum_over_time(network_out_total_bytes[4m]))*8";
+
     public static final String BW_IN_PERCENTAGE = "bw_util_network_in";
     public static final String BW_OUT_PERCENTAGE = "bw_util_network_out";
 
@@ -66,6 +69,19 @@ public final class Constants {
     // Total Network
     public static final String TOTAL_NETWORK_BYTES_IN = "total_network_bytes_in";
     public static final String TOTAL_NETWORK_BYTES_OUT = "total_network_bytes_out";
-    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_IN = "sum(rate(ifHCInOctets[1h])*3600)";
-    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_OUT = "sum(rate(ifHCOutOctets[1h])*3600)";
+    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_IN = """
+                sum(rate(ifHCInOctets[1h])*3600) or vector(0) +
+                sum(sum_over_time(network_in_total_bytes[1h])) or vector(0)
+                    unless
+                count(irate(ifHCInOctets[1h])) == 0 and
+                count(sum_over_time(network_in_total_bytes[1h])) == 0
+        """;
+
+    public static final String QUERY_FOR_TOTAL_NETWORK_BYTES_OUT = """
+                sum(rate(ifHCOutOctets[1h])*3600) or vector(0) +
+                sum(sum_over_time(network_out_total_bytes[1h])) or vector(0)
+                    unless
+                count(irate(ifHCOutOctets[1h])) == 0 and
+                count(sum_over_time(network_out_total_bytes[1h])) == 0
+        """;
 }

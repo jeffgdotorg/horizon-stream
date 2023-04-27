@@ -60,29 +60,28 @@ import static org.opennms.horizon.server.service.metrics.normalization.Constants
 @Service
 public class TSDBMetricsService {
 
+    private static final String QUERY_ENDPOINT = "/query";
+    private static final String QUERY_RANGE_ENDPOINT = "/query_range";
+
     private final ServerHeaderUtil headerUtil;
     private final MetricLabelUtils metricLabelUtils;
     private final QueryService queryService;
-    private final NormalizationService normalizationService;
     private final InventoryClient inventoryClient;
     private final WebClient tsdbQueryWebClient;
     private final WebClient tsdbrangeQueryWebClient;
-    private static final Logger LOG = LoggerFactory.getLogger(TSDBMetricsService.class);
 
     public TSDBMetricsService(ServerHeaderUtil headerUtil,
                               MetricLabelUtils metricLabelUtils,
                               QueryService queryService,
-                              NormalizationService normalizationService,
                               InventoryClient inventoryClient,
                               @Value("${tsdb.url}") String tsdbURL) {
 
         this.headerUtil = headerUtil;
         this.metricLabelUtils = metricLabelUtils;
         this.queryService = queryService;
-        this.normalizationService = normalizationService;
         this.inventoryClient = inventoryClient;
-        String tsdbQueryURL = tsdbURL + "/query";
-        String tsdbRangeQueryURL = tsdbURL + "/query_range";
+        String tsdbQueryURL = tsdbURL + QUERY_ENDPOINT;
+        String tsdbRangeQueryURL = tsdbURL + QUERY_RANGE_ENDPOINT;
         this.tsdbQueryWebClient = WebClient.builder()
             .baseUrl(tsdbQueryURL)
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -113,7 +112,7 @@ public class TSDBMetricsService {
         }
 
         String queryString = queryService
-            .getQueryString(name, metricLabels, timeRange, timeRangeUnit);
+            .getQueryString(nodeOpt, name, metricLabels, timeRange, timeRangeUnit);
 
         if (queryService.isRangeQuery(name)) {
             return getRangeMetrics(tenantId, queryString);
@@ -147,6 +146,7 @@ public class TSDBMetricsService {
     private Mono<TimeSeriesQueryResult> getRangeMetrics(String tenantId, String queryString) {
         return tsdbrangeQueryWebClient.post()
             .header("X-Scope-OrgID", tenantId)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .bodyValue(queryString)
             .retrieve()
             .bodyToMono(TimeSeriesQueryResult.class);
