@@ -166,7 +166,7 @@ public class PassiveDiscoveryService {
     private void validateCommunityStrings(PassiveDiscoveryUpsertDTO passiveDiscovery) {
         String snmpCommunities = "";
         for (String snmpCommunity: passiveDiscovery.getCommunitiesList()){
-            snmpCommunities += snmpCommunity.replace(",","") + " "; // As be requirement on HS-1332
+            snmpCommunities += snmpCommunity.replace(",","") + " ";
         }
         if (snmpCommunities.length() > 128) {
             throw new InventoryRuntimeException("Snmp communities string is too long");
