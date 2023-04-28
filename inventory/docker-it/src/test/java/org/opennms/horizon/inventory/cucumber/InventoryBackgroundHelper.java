@@ -36,6 +36,7 @@ import io.grpc.stub.MetadataUtils;
 import lombok.Getter;
 import org.opennms.horizon.inventory.discovery.IcmpActiveDiscoveryServiceGrpc;
 import org.opennms.horizon.inventory.dto.ActiveDiscoveryServiceGrpc;
+import org.opennms.horizon.inventory.dto.AddressServiceGrpc;
 import org.opennms.horizon.inventory.dto.AzureActiveDiscoveryServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringSystemServiceGrpc;
@@ -67,6 +68,7 @@ public class InventoryBackgroundHelper {
     private IcmpActiveDiscoveryServiceGrpc.IcmpActiveDiscoveryServiceBlockingStub icmpActiveDiscoveryServiceBlockingStub;
     private AzureActiveDiscoveryServiceGrpc.AzureActiveDiscoveryServiceBlockingStub azureActiveDiscoveryServiceBlockingStub;
     private PassiveDiscoveryServiceGrpc.PassiveDiscoveryServiceBlockingStub passiveDiscoveryServiceBlockingStub;
+    private AddressServiceGrpc.AddressServiceBlockingStub addressServiceBlockingStub;
 
     private final Map<String, String> grpcHeaders = new TreeMap<>();
 
@@ -111,6 +113,8 @@ public class InventoryBackgroundHelper {
         azureActiveDiscoveryServiceBlockingStub = AzureActiveDiscoveryServiceGrpc.newBlockingStub(managedChannel)
             .withInterceptors(prepareGrpcHeaderInterceptor()).withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
         passiveDiscoveryServiceBlockingStub = PassiveDiscoveryServiceGrpc.newBlockingStub(managedChannel)
+            .withInterceptors(prepareGrpcHeaderInterceptor()).withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
+        addressServiceBlockingStub = AddressServiceGrpc.newBlockingStub(managedChannel)
             .withInterceptors(prepareGrpcHeaderInterceptor()).withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
     }
 
