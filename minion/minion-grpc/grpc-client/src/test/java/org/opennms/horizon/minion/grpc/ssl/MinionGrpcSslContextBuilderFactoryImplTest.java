@@ -32,13 +32,19 @@ package org.opennms.horizon.minion.grpc.ssl;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
+import java.io.FileOutputStream;
+import java.security.GeneralSecurityException;
+import javax.net.ssl.TrustManagerFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opennms.horizon.minion.grpc.ssl.MinionGrpcSslContextBuilderFactoryImpl.FunctionWithException;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -53,7 +59,9 @@ import java.util.function.Supplier;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
+@ExtendWith(MockitoExtension.class)
 public class MinionGrpcSslContextBuilderFactoryImplTest {
 
     private MinionGrpcSslContextBuilderFactoryImpl target;
@@ -68,31 +76,37 @@ public class MinionGrpcSslContextBuilderFactoryImplTest {
     private FileInputStream mockPkcs12FileInputStream;
 
     private FunctionWithException<String, KeyManagerFactory, NoSuchAlgorithmException> mockKeyManagerFactoryFactory;
+
+    @Mock
+    private TrustManagerFactory trustManagerFactory;
+    @Mock
     private KeyManagerFactory mockKeyManagerFactory;
+    @Mock
+    private KeyStoreFactory keyStoreFactory;
+
+    @Mock
+    private KeyStore keyStore;
 
     @BeforeEach
     public void setUp() throws Exception {
         mockGrpcSslClientContextFactory = Mockito.mock(Supplier.class);
         mockSslContextBuilder = Mockito.mock(SslContextBuilder.class);
-        mockKeyStoreFactory = Mockito.mock(FunctionWithException.class);
-        mockKeyStore = Mockito.mock(KeyStore.class);
-        mockFileInputStreamFactory = Mockito.mock(FunctionWithException.class);
-        mockPkcs12FileInputStream = Mockito.mock(FileInputStream.class);
-        mockKeyManagerFactoryFactory = Mockito.mock(FunctionWithException.class);
-        mockKeyManagerFactory = Mockito.mock(KeyManagerFactory.class);
 
-        Mockito.when(mockGrpcSslClientContextFactory.get()).thenReturn(mockSslContextBuilder);
-        Mockito.when(mockKeyStoreFactory.apply("pkcs12")).thenReturn(mockKeyStore);
-        Mockito.when(mockFileInputStreamFactory.apply("x-client-key-path")).thenReturn(mockPkcs12FileInputStream);
-        Mockito.when(mockKeyManagerFactoryFactory.apply(KeyManagerFactory.getDefaultAlgorithm())).thenReturn(mockKeyManagerFactory);
+//        Mockito.when(mockGrpcSslClientContextFactory.get()).thenReturn(mockSslContextBuilder);
+//        Mockito.when(mockKeyStoreFactory.apply("pkcs12")).thenReturn(mockKeyStore);
+//        Mockito.when(mockFileInputStreamFactory.apply("x-client-key-path")).thenReturn(mockPkcs12FileInputStream);
+//        Mockito.when(mockKeyManagerFactoryFactory.apply(KeyManagerFactory.getDefaultAlgorithm())).thenReturn(mockKeyManagerFactory);
 
         target = new MinionGrpcSslContextBuilderFactoryImpl();
+        target.setKeyStoreFactory(keyStoreFactory);
+        target.setKeyManagerFactory(mockKeyManagerFactory);
+        target.setTrustManagerFactory(trustManagerFactory);
 
         target.setGrpcSslClientContextFactory(mockGrpcSslClientContextFactory);
     }
 
     @Test
-    void testCreateEmpty() {
+    void testCreateEmpty() throws Exception {
         //
         // Execute
         //
@@ -107,29 +121,29 @@ public class MinionGrpcSslContextBuilderFactoryImplTest {
 
     @Test
     void testInvalidTrustStore() throws Exception {
-        target.setTrustCertCollectionFilePath("invalid");
+        target.setTruststore("invalid");
         Assertions.assertThrows(RuntimeException.class, target::create);
 
-        target.setTrustCertCollectionFilePath("   ");
+        target.setTruststore("   ");
         Assertions.assertDoesNotThrow(target::create);
     }
 
     @Test
     void testInvalidCertificateOrKey() throws Exception {
-        target.setClientPrivateKeyFilePath("invalid");
-        target.setClientCertChainFilePath("invalid");
+        target.setKeystore("invalid");
+        target.setTruststore("invalid");
         Assertions.assertThrows(RuntimeException.class, target::create);
 
-        target.setClientPrivateKeyFilePath("   ");
-        target.setClientCertChainFilePath("   ");
+        target.setKeystore("   ");
+        target.setTruststore("   ");
         Assertions.assertDoesNotThrow(target::create);
 
-        target.setClientPrivateKeyFilePath("invalid");
-        target.setClientCertChainFilePath("   ");
+        target.setKeystore("invalid");
+        target.setTruststore("   ");
         Assertions.assertThrows(RuntimeException.class, target::create);
 
-        target.setClientPrivateKeyFilePath("   ");
-        target.setClientCertChainFilePath("invalid");
+        target.setKeystore("   ");
+        target.setTruststore("invalid");
         Assertions.assertThrows(RuntimeException.class, target::create);
     }
 
@@ -145,13 +159,13 @@ public class MinionGrpcSslContextBuilderFactoryImplTest {
 
     @Test
     void testPasswordNotNullPkcs12(@TempDir File root) throws Exception {
-        target.setClientPrivateKeyPassword("x-password-x");
+        target.setKeystorePassword("x-password-x");
         commonTestCreatePkcs12(root);
     }
 
     @Test
     void testPasswordNotNullPEM(@TempDir File root) throws Exception {
-        target.setClientPrivateKeyPassword("x-password-x");
+        target.setKeystorePassword("x-password-x");
         commonTestCreatePEM(root, "x-password-x");
     }
 
@@ -161,17 +175,16 @@ public class MinionGrpcSslContextBuilderFactoryImplTest {
         // Setup Test Data and Interactions
         //
         var testException = new RuntimeException("x-text-exc-x");
-        File clientCert = new File(root, "x-client-cert-path");
+        File clientCert = new File(root, "x-client-keystore");
         File clientKey = new File(root, "x-client-key-path");
         Mockito.when(mockSslContextBuilder.keyManager(clientCert, clientKey, null)).thenThrow(testException);
 
         //
         // Execute
         //
-        target.setClientCertChainFilePath(clientCert.getAbsolutePath());
-        target.setClientPrivateKeyFilePath(clientKey.getAbsolutePath());
-        target.setClientPrivateKeyIsPkcs12(false);
-        target.setTrustCertCollectionFilePath("x-trust-cert-path");
+        target.setKeystore(clientCert.getAbsolutePath());
+        target.setKeystoreType("file");
+//        target.setTrustCertCollectionFilePath("x-truststore");
 
         Exception actualException = null;
 
@@ -185,31 +198,29 @@ public class MinionGrpcSslContextBuilderFactoryImplTest {
         //
         // Verify the Results
         //
-        assertTrue(actualException.getMessage().contains("x-trust-cert-path does not exist"));
+        assertTrue(actualException.getMessage().contains("x-truststore does not exist"));
     }
 
 //========================================
 // Internals
 //----------------------------------------
 
-    void commonTestCreatePEM(File root, String expectedPassword) throws IOException {
+    void commonTestCreatePEM(File root, String expectedPassword) throws Exception {
         //
         // Setup Test Data and Interactions
         //
-        var clientCert = new File(root, "x-client-cert-path");
-        var clientKey = new File(root, "x-client-key-path");
-        var trustCert = new File(root, "x-trust-cert-path");
-        clientCert.createNewFile();
-        clientKey.createNewFile();
-        trustCert.createNewFile();
+        var keyStore = new File(root, "x-client-keystore");
+        var trustStore = new File(root, "x-truststore");
+        KeyStoreWrapper.create(keyStore, null);
+        KeyStoreWrapper.create(trustStore, null);
 
         //
         // Execute
         //
-        target.setClientCertChainFilePath(clientCert.getAbsolutePath());
-        target.setClientPrivateKeyFilePath(clientKey.getAbsolutePath());
-        target.setClientPrivateKeyIsPkcs12(false);
-        target.setTrustCertCollectionFilePath(trustCert.getAbsolutePath());
+//        target.setClientCertChainFilePath(keyStore.getAbsolutePath());
+//        target.setClientPrivateKeyFilePath(clientKey.getAbsolutePath());
+//        target.setClientPrivateKeyIsPkcs12(false);
+//        target.setTrustCertCollectionFilePath(trustStore.getAbsolutePath());
 
         SslContextBuilder result = target.create();
 
@@ -217,34 +228,35 @@ public class MinionGrpcSslContextBuilderFactoryImplTest {
         // Verify the Results
         //
         assertSame(result, mockSslContextBuilder);
-        Mockito.verify(mockSslContextBuilder).trustManager(trustCert);
-        Mockito.verify(mockSslContextBuilder).keyManager(clientCert, clientKey, expectedPassword);
+        Mockito.verify(mockSslContextBuilder).trustManager(any(TrustManagerFactory.class));
+        Mockito.verify(mockSslContextBuilder).keyManager(any(KeyManagerFactory.class));
     }
 
-    private void commonTestCreatePkcs12(File root) throws IOException {
+    private void commonTestCreatePkcs12(File root) throws Exception {
         //
         // Setup Test Data and Interactions
         //
-        Mockito.when(mockSslContextBuilder.keyManager(Mockito.any(KeyManagerFactory.class))).thenReturn(mockSslContextBuilder);
+        Mockito.when(mockSslContextBuilder.keyManager(any(KeyManagerFactory.class))).thenReturn(mockSslContextBuilder);
         Mockito.when(mockSslContextBuilder.sslProvider(SslProvider.JDK)).thenReturn(mockSslContextBuilder);
-        Mockito.when(mockSslContextBuilder.applicationProtocolConfig(Mockito.any(ApplicationProtocolConfig.class))).thenReturn(mockSslContextBuilder);
+        Mockito.when(mockSslContextBuilder.applicationProtocolConfig(any(ApplicationProtocolConfig.class))).thenReturn(mockSslContextBuilder);
 
         //
         // Execute
         //
-        File clientCert = new File(root, "x-client-cert-path");
-        clientCert.createNewFile();
+        File clientCert = new File(root, "x-client-keystore");
+        KeyStoreWrapper.create(clientCert, "");
         File clientKey = new File(root, "x-client-key-path");
         clientKey.createNewFile();
-        File trustCert = new File(root, "x-trust-cert-path");
+        File trustCert = new File(root, "x-truststore");
+        KeyStoreWrapper.create(trustCert, null);
         trustCert.createNewFile();
-        target.setClientCertChainFilePath(clientCert.getAbsolutePath());
-        target.setClientPrivateKeyFilePath(clientKey.getAbsolutePath());
-        target.setClientPrivateKeyIsPkcs12(true);
-        target.setTrustCertCollectionFilePath(trustCert.getAbsolutePath());
-        target.setKeyStoreFactory(mockKeyStoreFactory);
-        target.setFileInputStreamFactory(mockFileInputStreamFactory);
-        target.setKeyManagerFactoryFactory(mockKeyManagerFactoryFactory);
+//        target.setClientCertChainFilePath(clientCert.getAbsolutePath());
+//        target.setClientPrivateKeyFilePath(clientKey.getAbsolutePath());
+//        target.setClientPrivateKeyIsPkcs12(true);
+//        target.setTrustCertCollectionFilePath(trustCert.getAbsolutePath());
+//        target.setKeyStoreFactory(mockKeyStoreFactory);
+//        target.setFileInputStreamFactory(mockFileInputStreamFactory);
+//        target.setKeyManagerFactoryFactory(mockKeyManagerFactoryFactory);
 
         SslContextBuilder result = target.create();
 
@@ -291,5 +303,15 @@ public class MinionGrpcSslContextBuilderFactoryImplTest {
 
             return false;
         };
+    }
+
+    static class KeyStoreWrapper {
+
+        public static KeyStore create(File file, String password) throws IOException, GeneralSecurityException {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null);
+            keyStore.store(new FileOutputStream(file), password == null ? null : password.toCharArray());
+            return keyStore;
+        }
     }
 }

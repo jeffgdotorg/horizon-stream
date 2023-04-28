@@ -31,6 +31,7 @@ package org.opennms.horizon.minion.grpc;
 import static org.opennms.horizon.shared.ipc.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -169,14 +170,18 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
         }
 
         if (tlsEnabled) {
-            SslContextBuilder sslContextBuilder = minionGrpcSslContextBuilderFactory.create();
+            try {
+                SslContextBuilder sslContextBuilder = minionGrpcSslContextBuilderFactory.create();
 
-            channel = channelBuilder
+                channel = channelBuilder
                     .negotiationType(NegotiationType.TLS)
                     .sslContext(sslContextBuilder.build())
                     .build();
 
-            LOG.info("TLS enabled for gRPC");
+                LOG.info("TLS enabled for gRPC");
+            } catch (GeneralSecurityException e) {
+                LOG.error("Failed to setup secure connection with server", e);
+            }
         } else {
             channel = channelBuilder.usePlaintext().build();
         }

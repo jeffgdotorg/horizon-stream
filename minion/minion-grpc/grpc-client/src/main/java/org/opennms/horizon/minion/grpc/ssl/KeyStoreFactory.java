@@ -29,10 +29,12 @@
 
 package org.opennms.horizon.minion.grpc.ssl;
 
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import java.io.File;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
+import java.security.KeyStore;
 
-public interface MinionGrpcSslContextBuilderFactory {
-    SslContextBuilder create() throws GeneralSecurityException;
+public interface KeyStoreFactory {
+
+    KeyStore createKeyStore(String type, File file, String password) throws GeneralSecurityException;
+
 }

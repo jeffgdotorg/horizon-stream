@@ -34,6 +34,8 @@ import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
+import java.security.GeneralSecurityException;
+import javax.net.ssl.TrustManagerFactory;
 import lombok.Setter;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -52,53 +54,61 @@ import lombok.extern.slf4j.Slf4j;
 public class MinionGrpcSslContextBuilderFactoryImpl implements MinionGrpcSslContextBuilderFactory {
 
     @Setter
-    private String clientCertChainFilePath;
+    private String keystore;
     @Setter
-    private String clientPrivateKeyFilePath;
+    private String keystoreType;
     @Setter
-    private String clientPrivateKeyPassword;
+    private String keystorePassword;
     @Setter
-    private String trustCertCollectionFilePath;
+    private String truststore;
     @Setter
-    private boolean clientPrivateKeyIsPkcs12;
+    private String truststoreType;
+    @Setter
+    private String truststorePassword;
+
+    @Setter
+    private KeyManagerFactory keyManagerFactory;
+
+    @Setter
+    private TrustManagerFactory trustManagerFactory;
+
+    @Setter
+    private KeyStoreFactory keyStoreFactory;
 
     @Setter
     private Supplier<SslContextBuilder> grpcSslClientContextFactory = GrpcSslContexts::forClient;
-    @Setter
-    private FunctionWithException<String, KeyStore, KeyStoreException> keyStoreFactory = KeyStore::getInstance;
-    @Setter
-    private FunctionWithException<String, FileInputStream, IOException> fileInputStreamFactory = FileInputStream::new;
-    @Setter
-    private FunctionWithException<String, KeyManagerFactory, NoSuchAlgorithmException> keyManagerFactoryFactory = KeyManagerFactory::getInstance;
+
 
     @Override
-    public SslContextBuilder create() {
+    public SslContextBuilder create() throws GeneralSecurityException {
         SslContextBuilder builder = grpcSslClientContextFactory.get();
 
-        if (isSet(trustCertCollectionFilePath)) {
-            File trustCertCollectionFile = new File(trustCertCollectionFilePath.trim());
-            if (trustCertCollectionFile.exists()) {
-                builder.trustManager(trustCertCollectionFile);
+        if (isSet(truststore)) {
+            File trustStoreFile = new File(truststore.trim());
+            if (trustStoreFile.exists()) {
+                try {
+                    KeyStore keyStore = keyStoreFactory.createKeyStore(truststoreType, trustStoreFile, truststorePassword);
+                    TrustManagerFactory trustManagerFactory = trustManager();
+                    trustManagerFactory.init(keyStore);
+                    builder.trustManager(trustManagerFactory);
+                } catch (Exception exc) {
+                    throw new RuntimeException("Failed to configure trust store for GRPC connection", exc);
+                }
             } else {
-                throw new RuntimeException("Configured trust store" + trustCertCollectionFile.getAbsolutePath() + " does not exist");
+                throw new RuntimeException("Configured trust store" + trustStoreFile.getAbsolutePath() + " does not exist");
             }
         }
 
-        if (isSet(clientCertChainFilePath) || isSet(clientPrivateKeyFilePath)) {
-            File clientCertChainFile = new File(clientCertChainFilePath.trim());
-            File clientPrivateKeyFile = new File(clientPrivateKeyFilePath.trim());
-            if (clientCertChainFile.exists() && clientPrivateKeyFile.exists()) {
+        if (isSet(keystore)) {
+            File keyStoreFile = new File(keystore.trim());
+            if (keyStoreFile.exists()) {
                 try {
-                    if (clientPrivateKeyIsPkcs12) {
-                        configureKeyManagerPkcs12(builder);
-                    } else {
-                        configureKeyManagerOther(builder);
-                    }
+                    configureKeyManagerPkcs12(builder);
                 } catch (Exception exc) {
-                    throw new RuntimeException("Failed to initialize TLS", exc);
+                    throw new RuntimeException("Failed to initialize client key manager", exc);
                 }
             } else {
-                throw new RuntimeException("Configured client private key " + clientPrivateKeyFile.getAbsolutePath() + " and/or certificate " + clientCertChainFile.getAbsolutePath() + " do not exist.");
+                throw new RuntimeException("Configured keystore " + keyStoreFile.getAbsolutePath() + " does not exist.");
             }
         }
 
@@ -113,19 +123,10 @@ public class MinionGrpcSslContextBuilderFactoryImpl implements MinionGrpcSslCont
 // Internals
 //----------------------------------------
 
-    private void configureKeyManagerOther(SslContextBuilder builder) {
-            builder.keyManager(
-                new File(clientCertChainFilePath),
-                new File(clientPrivateKeyFilePath),
-                sanitizePassword()
-            );
-    }
-
-    private void configureKeyManagerPkcs12(SslContextBuilder builder) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
-        KeyStore keyStore = loadPrivateKeyPkcs12Store();
-
-        KeyManagerFactory keyManagerFactory = keyManagerFactoryFactory.apply(KeyManagerFactory.getDefaultAlgorithm());
-        keyManagerFactory.init(keyStore, passwordAsCharArray());
+    private void configureKeyManagerPkcs12(SslContextBuilder builder) throws GeneralSecurityException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        KeyStore keyStore = keyStoreFactory.createKeyStore(keystoreType, new File(keystore), keystorePassword);
+        KeyManagerFactory keyManagerFactory = keyManager();
+        keyManagerFactory.init(keyStore, null); // this is password for private key password
 
         ApplicationProtocolConfig apn =
             new ApplicationProtocolConfig(
@@ -142,33 +143,27 @@ public class MinionGrpcSslContextBuilderFactoryImpl implements MinionGrpcSslCont
             ;
     }
 
-    private KeyStore loadPrivateKeyPkcs12Store() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        KeyStore keyStore = keyStoreFactory.apply("pkcs12");
-        try (FileInputStream fis = fileInputStreamFactory.apply(clientPrivateKeyFilePath)) {
-            char[] passwordCharArray = passwordAsCharArray();
-            keyStore.load(fis, passwordCharArray);
-        }
-
-        return keyStore;
-    }
-
-    private char[] passwordAsCharArray() {
-        if (clientPrivateKeyPassword != null) {
-            return clientPrivateKeyPassword.toCharArray();
+    private char[] passwordAsCharArray(String password) {
+        if (password != null && !password.isBlank()) {
+            return password.toCharArray();
         }
 
         return null;
     }
 
-    private String sanitizePassword() {
-        // Password must be null if unset; empty string can lead to the SSL context builder failing
-        if (Strings.isNullOrEmpty(clientPrivateKeyPassword)) {
-            return null;
+    private TrustManagerFactory trustManager() throws NoSuchAlgorithmException {
+        if (trustManagerFactory == null) {
+            trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         }
-
-        return clientPrivateKeyPassword;
+        return trustManagerFactory;
     }
 
+    private KeyManagerFactory keyManager() throws NoSuchAlgorithmException {
+        if (keyManagerFactory == null) {
+            keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        }
+        return keyManagerFactory;
+    }
 
 //========================================
 // Functional Interface

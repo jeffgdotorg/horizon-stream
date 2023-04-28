@@ -70,7 +70,7 @@ public class MinionGrpcClientTest {
     private IpcIdentity testIpcIdentity;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         mockMetricRegistry = Mockito.mock(MetricRegistry.class);
         mockTracer = Mockito.mock(Tracer.class);
         mockMinionGrpcSslContextBuilderFactory = Mockito.mock(MinionGrpcSslContextBuilderFactory.class);
