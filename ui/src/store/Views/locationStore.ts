@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useLocationQueries } from '../Queries/locationQueries'
+import { useMinionsQueries } from '../Queries/minionsQueries'
 import { DisplayType } from '@/types/locations.d'
 import { useLocationMutations } from '../Mutations/locationMutations'
 
@@ -13,6 +14,7 @@ export const useLocationStore = defineStore('locationStore', () => {
   const updateIsFetching = ref()
 
   const locationQueries = useLocationQueries()
+  const minionsQueries = useMinionsQueries()
   const locationMutations = useLocationMutations()
 
   const fetchLocations = async () => {
@@ -36,53 +38,11 @@ export const useLocationStore = defineStore('locationStore', () => {
   }
 
   const fetchMinions = async () => {
-    try {
-      // const minions = await locationQueries.fetchMinions()
-      // minionsList.value = minions?.data?.value?.findAllMinions || []
-      minionsList.value = [
-        {
-          id: 1,
-          name: 'minion1',
-          version: 'v.1.1.1',
-          latency: '111ms',
-          status: 'UP',
-          utillization: '11%',
-          ip: '111.111.111.111',
-          contextMenu: [
-            { label: 'edit', handler: () => ({}) },
-            { label: 'delete', handler: () => ({}) }
-          ]
-        },
-        {
-          id: 2,
-          name: 'minion3',
-          version: 'v.3.3.3',
-          latency: '333ms',
-          status: 'DOWN',
-          utillization: '33%',
-          ip: '333.333.333.333',
-          contextMenu: [
-            { label: 'edit', handler: () => ({}) },
-            { label: 'delete', handler: () => ({}) }
-          ]
-        },
-        {
-          id: 3,
-          name: 'minion9',
-          version: 'v.9.9.9',
-          latency: '999ms',
-          status: 'DOWN',
-          utillization: '99%',
-          ip: '999.999.999.999',
-          contextMenu: [
-            { label: 'edit', handler: () => ({}) },
-            { label: 'delete', handler: () => ({}) }
-          ]
-        }
-      ]
-    } catch (err) {
-      minionsList.value = []
-    }
+    minionsQueries.fetchMinions()
+
+    watchEffect(() => {
+      minionsList.value = minionsQueries.minionsList
+    })
   }
 
   const searchMinions = async (searchTerm = '') => {

@@ -36,7 +36,7 @@
       class="minions-list"
     >
       <li
-        v-for="minion in minions"
+        v-for="minion in minionsList"
         :key="minion.id"
       >
         <LocationsMinionsCard :item="minion" />
@@ -56,12 +56,14 @@ import Help from '@featherds/icon/action/Help'
 import Search from '@featherds/icon/action/Search'
 import { useLocationStore } from '@/store/Views/locationStore'
 
-defineProps({
+const props = defineProps({
   minions: {
     type: Array,
     required: true
   }
 })
+
+const minionsList = computed(() => props.minions)
 
 const locationStore = useLocationStore()
 
