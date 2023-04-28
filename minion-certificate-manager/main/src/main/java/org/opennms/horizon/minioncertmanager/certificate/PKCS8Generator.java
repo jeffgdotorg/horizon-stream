@@ -42,7 +42,7 @@ public class PKCS8Generator {
     public static final String PKCS_1_2048_COMMAND = "openssl genrsa -out client.key.pkcs1 2048";
     public static final String PKCS8_COMMAND = "openssl pkcs8 -topk8 -in client.key.pkcs1 -out client.key -nocrypt";
 
-    public void generate(String location, String tenantId, Path path, File caCertFile, File caKeyFile) throws InterruptedException, IOException {
+    public void generate(String location, String tenantId, Path path, File archive, String archivePass, File caCertFile, File caKeyFile) throws InterruptedException, IOException {
         // Check if caCertFile exists
         if (!caCertFile.exists()) {
             throw new FileNotFoundException("CA certificate file not found: " + caCertFile.getPath());
@@ -69,6 +69,8 @@ public class PKCS8Generator {
         LOG.info("=== CA CERT: {}", caCertFile.getAbsolutePath());
         // Do not use this in Production (10 years is not a good idea)
         CommandExecutor.executeCommand("openssl x509 -req -in client.unsigned.cert -days 3650 -CA \"%s\" -CAkey \"%s\" -out client.signed.cert", file, caCertFile.getAbsolutePath(), caKeyFile.getAbsolutePath());
+
+        CommandExecutor.executeCommand("openssl pkcs12 -export -out \"%s\" -inkey client.key -in client.signed.cert -passout pass:\"%s\"", file, archive.getAbsolutePath(), archivePass);
 
         LOG.info("=== DONE");
     }

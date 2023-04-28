@@ -27,6 +27,9 @@
  *******************************************************************************/
 package org.opennms.horizon.minioncertmanager.certificate;
 
+import java.io.FileInputStream;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,29 +68,35 @@ public class PKCS8GeneratorTest {
 
 
     @Test
-    public void testGenerate() throws InterruptedException, IOException {
+    public void testGenerate() throws InterruptedException, GeneralSecurityException, IOException {
         // Test input
         String location = "testLocation";
         String tenantId = "testTenantId";
 
+        File p12 = tempDir.resolve("minion.p12").toFile();
         // Test execution
-        pkcs8Generator.generate(location, tenantId, tempDir, caCertFile, caKeyFile);
+        pkcs8Generator.generate(location, tenantId, tempDir, p12, "foo", caCertFile, caKeyFile);
 
-        // Test output
-        File pkcs1KeyFile = tempDir.resolve("client.key.pkcs1").toFile();
-        File pkcs8KeyFile = tempDir.resolve("client.key").toFile();
-        File unsignedCertFile = tempDir.resolve("client.unsigned.cert").toFile();
-        File signedCertFile = tempDir.resolve("client.signed.cert").toFile();
+        assertTrue(p12.exists());
 
-        assertTrue(pkcs1KeyFile.exists(), "PKCS1 key file should exist");
-        assertTrue(pkcs8KeyFile.exists(), "PKCS8 key file should exist");
-        assertTrue(unsignedCertFile.exists(), "Unsigned cert file should exist");
-        assertTrue(signedCertFile.exists(), "Signed cert file should exist");
+        KeyStore keyStore = KeyStore.getInstance("pkcs12");
+        keyStore.load(new FileInputStream(p12), "foo".toCharArray());
 
-        assertEquals("client.key.pkcs1", pkcs1KeyFile.getName(), "PKCS1 key file name should match");
-        assertEquals("client.key", pkcs8KeyFile.getName(), "PKCS8 key file name should match");
-        assertEquals("client.unsigned.cert", unsignedCertFile.getName(), "Unsigned cert file name should match");
-        assertEquals("client.signed.cert", signedCertFile.getName(), "Signed cert file name should match");
+//        // Test output
+//        File pkcs1KeyFile = tempDir.resolve("client.key.pkcs1").toFile();
+//        File pkcs8KeyFile = tempDir.resolve("client.key").toFile();
+//        File unsignedCertFile = tempDir.resolve("client.unsigned.cert").toFile();
+//        File signedCertFile = tempDir.resolve("client.signed.cert").toFile();
+//
+//        assertTrue(pkcs1KeyFile.exists(), "PKCS1 key file should exist");
+//        assertTrue(pkcs8KeyFile.exists(), "PKCS8 key file should exist");
+//        assertTrue(unsignedCertFile.exists(), "Unsigned cert file should exist");
+//        assertTrue(signedCertFile.exists(), "Signed cert file should exist");
+//
+//        assertEquals("client.key.pkcs1", pkcs1KeyFile.getName(), "PKCS1 key file name should match");
+//        assertEquals("client.key", pkcs8KeyFile.getName(), "PKCS8 key file name should match");
+//        assertEquals("client.unsigned.cert", unsignedCertFile.getName(), "Unsigned cert file name should match");
+//        assertEquals("client.signed.cert", signedCertFile.getName(), "Signed cert file name should match");
     }
 }
 
