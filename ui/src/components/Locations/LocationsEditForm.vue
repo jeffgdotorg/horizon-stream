@@ -13,7 +13,10 @@
           <FeatherButton icon="placeholder">
             <FeatherIcon :icon="placeholder"> </FeatherIcon>
           </FeatherButton>
-          <FeatherButton icon="Delete">
+          <FeatherButton
+            @click="deleteLocation"
+            icon="Delete"
+          >
             <FeatherIcon :icon="Delete"> </FeatherIcon>
           </FeatherButton>
         </template>
@@ -182,6 +185,15 @@ const downloadCredentialsBtn: IButtonTextIcon = {
   label: 'READY TO DOWNLOAD'
 }
 const downloadCredentials = () => ({})
+
+const deleteLocation = async () => {
+  const success = await locationStore.deleteLocation(props.id)
+
+  if (success) {
+    locationStore.setDisplayType(DisplayType.LIST)
+    form.clearErrors()
+  }
+}
 
 const instructions = {
   textButton: 'Need instructions for minion deployment at this location?',

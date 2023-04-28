@@ -19,5 +19,13 @@ export const useLocationMutations = defineStore('locationMutations', () => {
     return error
   }
 
-  return { createLocation, updateLocation }
+  const deleteLocation = async (payload) => {
+    const { execute, error } = useMutation(DeleteLocationDocument)
+
+    await execute(payload)
+
+    return error
+  }
+
+  return { createLocation, updateLocation, deleteLocation }
 })

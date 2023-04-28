@@ -128,6 +128,16 @@ export const useLocationStore = defineStore('locationStore', () => {
     return !error.value
   }
 
+  const deleteLocation = async (payload) => {
+    const error = await locationMutations.deleteLocation({ id: payload })
+
+    if (!error.value) {
+      fetchLocations()
+    }
+
+    return !error.value
+  }
+
   return {
     displayType,
     setDisplayType,
@@ -142,6 +152,7 @@ export const useLocationStore = defineStore('locationStore', () => {
     createLocation,
     saveIsFetching,
     updateLocation,
-    updateIsFetching
+    updateIsFetching,
+    deleteLocation
   }
 })
