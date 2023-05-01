@@ -9,6 +9,7 @@ stop ()
 }
 
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/ingress-nginx-controller 8123:80 &
+kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/ingress-nginx-controller 1443:443 &
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-inventory 29080:8080 &
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-inventory 29050:5005 &
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-alert 32080:8080 &
@@ -28,6 +29,10 @@ kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace de
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-events 30050:5005 &
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-datachoices 33080:8080 &
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-datachoices 33050:5005 &
+kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-minion-certificate-manager 34089:8990 &
+kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-minion-certificate-manager 34050:5005 &
+kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-minion-certificate-verifier 35080:8080 &
+kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-minion-certificate-verifier 35050:5005 &
 
 while wait
 do

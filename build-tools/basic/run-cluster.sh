@@ -1,5 +1,7 @@
 #!/bin/sh
 
+helm upgrade -i cert-manager cert-manager --repo https://charts.jetstack.io --set installCRDs=true --wait
+
 helm upgrade -i opennms ./charts/opennms -f build-tools/basic/helm-values.yaml \
   --set Grafana.Image=opennms/horizon-stream-grafana:local-basic \
   --set Keycloak.Image=opennms/horizon-stream-keycloak:local-basic \
@@ -10,6 +12,8 @@ helm upgrade -i opennms ./charts/opennms -f build-tools/basic/helm-values.yaml \
   --set OpenNMS.Inventory.Image=opennms/horizon-stream-inventory:local-basic \
   --set OpenNMS.MetricsProcessor.Image=opennms/horizon-stream-metrics-processor:local-basic \
   --set OpenNMS.Minion.Image=opennms/horizon-stream-minion:local-basic \
+  --set OpenNMS.MinionCertificateManager.Image=opennms/horizon-stream-minion-certificate-manager:local-basic \
+  --set OpenNMS.MinionCertificateVerifier.Image=opennms/horizon-stream-minion-certificate-verifier:local-basic \
   --set OpenNMS.MinionGateway.Image=opennms/horizon-stream-minion-gateway:local-basic \
   --set OpenNMS.MinionGatewayGrpcProxy.Image=opennms/horizon-stream-minion-gateway-grpc-proxy:local-basic \
   --set OpenNMS.Notification.Image=opennms/horizon-stream-notification:local-basic \
