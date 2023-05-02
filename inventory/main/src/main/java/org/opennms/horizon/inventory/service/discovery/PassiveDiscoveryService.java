@@ -163,7 +163,7 @@ public class PassiveDiscoveryService {
         }
     }
 
-    private void validateCommunityStrings(PassiveDiscoveryUpsertDTO passiveDiscovery) {
+    public void validateCommunityStrings(PassiveDiscoveryUpsertDTO passiveDiscovery) throws InventoryRuntimeException {
         String snmpCommunities = "";
         for (String snmpCommunity: passiveDiscovery.getCommunitiesList()){
             snmpCommunities += snmpCommunity.replace(",","") + " ";
