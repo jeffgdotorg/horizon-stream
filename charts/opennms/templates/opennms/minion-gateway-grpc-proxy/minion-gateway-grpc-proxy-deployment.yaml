@@ -46,8 +46,6 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: GRPC_DOWNSTREAM_HOST
               value: "{{ .Values.OpenNMS.MinionGateway.ServiceName }}"
             - name: GRPC_DOWNSTREAM_PORT
