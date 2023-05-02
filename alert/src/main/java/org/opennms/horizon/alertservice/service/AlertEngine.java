@@ -39,7 +39,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.opennms.horizon.alerts.proto.Alert;
-import org.opennms.horizon.alertservice.api.AlertLifecyleListener;
+import org.opennms.horizon.alertservice.api.AlertLifecycleListener;
 import org.opennms.horizon.alertservice.api.AlertService;
 import org.opennms.horizon.alertservice.db.repository.AlertRepository;
 import org.opennms.horizon.shared.constants.GrpcConstants;
@@ -59,7 +59,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
-public class AlertEngine implements AlertLifecyleListener {
+public class AlertEngine implements AlertLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(AlertEngine.class);
     public static final int DURATION = 14;
 

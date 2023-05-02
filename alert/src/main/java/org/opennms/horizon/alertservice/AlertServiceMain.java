@@ -26,30 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.api;
+package org.opennms.horizon.alertservice;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.util.Optional;
+@SpringBootApplication
+@EnableJpaRepositories
+@ConfigurationPropertiesScan
+public class AlertServiceMain {
 
-import org.opennms.horizon.alerts.proto.Alert;
-import org.opennms.horizon.events.proto.Event;
-
-public interface AlertService {
-    Optional<Alert> reduceEvent(Event e);
-
-    boolean deleteByIdAndTenantId(long id, String tenantId);
-
-    void deleteByTenantId(Alert alert, String tenantId);
-
-    Optional<Alert> acknowledgeByIdAndTenantId(long id, String tenantId);
-
-    Optional<Alert> unacknowledgeByIdAndTenantId(long id, String tenantId);
-
-    Optional<Alert> escalateByIdAndTenantId(long id, String tenantId);
-
-    Optional<Alert> clearByIdAndTenantId(long id, String tenantId);
-
-    void addListener(AlertLifecycleListener listener);
-
-    void removeListener(AlertLifecycleListener listener);
+    public static void main(String[] args) {
+        SpringApplication.run(AlertServiceMain.class, args);
+    }
 }

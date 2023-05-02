@@ -26,23 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.service;
+package org.opennms.horizon.alertservice.service.routing;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@SpringBootConfiguration
-@SpringBootApplication
-@ComponentScan(basePackages = "org.opennms.horizon.alertservice")
-@EnableJpaRepositories(basePackages = "org.opennms.horizon.alertservice.db.repository")
-@EntityScan(basePackages = "org.opennms.horizon.alertservice.db.entity")
-public class AlertServiceMain {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AlertServiceMain.class, args);
+@Getter
+@ConfigurationProperties(prefix = "kafka.topics")
+public class KafkaTopicProperties {
+    @Setter
+    private String event;
+    private final Topic alert = new Topic();
+    private final Topic monitoringPolicy = new Topic();
+
+    @Data
+    public static class Topic {
+        private String name;
+        private Integer partitions = 10;
+        private Short replicas = 1;
     }
 }

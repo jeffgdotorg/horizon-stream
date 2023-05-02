@@ -38,7 +38,7 @@ import org.opennms.horizon.alerts.proto.Alert;
  *
  * Listeners are invoked serially and the implementors should avoid blocking when possible.
  */
-public interface AlertLifecyleListener {
+public interface AlertLifecycleListener {
     /**
      * Called when an alert has been created or updated.
      *

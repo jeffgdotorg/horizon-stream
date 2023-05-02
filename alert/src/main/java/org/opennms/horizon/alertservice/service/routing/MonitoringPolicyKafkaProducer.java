@@ -5,20 +5,21 @@ import jakarta.persistence.PostPersist;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.horizon.alerts.proto.MonitorPolicyProto;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MonitoringPolicyKafkaProducer {
-    @Value("${kafka.topics.monitoring-policy}")
-    private String topic;
 
-    @Autowired
-    @Qualifier("kafkaProducerTemplate")
-    private KafkaTemplate<String, byte[]> kafkaTemplate;
+    private final KafkaTemplate<String, byte[]> kafkaTemplate;
+
+    private final String kafkaTopic;
+
+    public MonitoringPolicyKafkaProducer(KafkaTemplate<String, byte[]> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties) {
+        this.kafkaTopic = kafkaTopicProperties.getMonitoringPolicy().getName();
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     @PostUpdate
     @PostPersist
@@ -32,8 +33,12 @@ public class MonitoringPolicyKafkaProducer {
             .setNotifyByPagerDuty(monitorPolicy.getNotifyByPagerDuty())
             .build();
 
-        var record = new ProducerRecord<String, byte[]>(topic, proto.toByteArray());
+        var record = new ProducerRecord<>(kafkaTopic, toKey(monitorPolicy), proto.toByteArray());
         kafkaTemplate.send(record);
+    }
+
+    private String toKey(MonitorPolicy monitorPolicy) {
+        return monitorPolicy.getId().toString();
     }
 }
 
