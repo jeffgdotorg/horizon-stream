@@ -28,53 +28,23 @@
 
 package org.opennms.horizon.inventory.service;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.opennms.horizon.inventory.dto.NodeCreateDTO;
-import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.PassiveDiscoveryUpsertDTO;
-import org.opennms.horizon.inventory.dto.TagCreateDTO;
-import org.opennms.horizon.inventory.dto.TagCreateListDTO;
-import org.opennms.horizon.inventory.exception.EntityExistException;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
-import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.mapper.discovery.PassiveDiscoveryMapper;
-import org.opennms.horizon.inventory.model.IpInterface;
-import org.opennms.horizon.inventory.model.MonitoringLocation;
-import org.opennms.horizon.inventory.model.Node;
-import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.inventory.repository.discovery.PassiveDiscoveryRepository;
 import org.opennms.horizon.inventory.service.discovery.PassiveDiscoveryService;
-import org.opennms.horizon.inventory.service.taskset.CollectorTaskSetService;
-import org.opennms.horizon.inventory.service.taskset.MonitorTaskSetService;
 import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
-import org.opennms.horizon.inventory.service.taskset.publisher.TaskSetPublisher;
-import org.opennms.horizon.shared.constants.GrpcConstants;
-import org.opennms.taskset.contract.ScanType;
 
-import java.net.InetAddress;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 public class PassiveDiscoveryServiceTest {
     PassiveDiscoveryService passiveDiscoveryService;
