@@ -5,10 +5,10 @@ set -e
 MINION_ID='minion-standalone'
 MINION_LOCATION='minion-standalone-loc'
 IGNITE_SERVER_ADDRESSES=localhost
-MINION_GATEWAY_HOST=localhost
+MINION_GATEWAY_HOST=minion.onmshs.local
 # TODO - port 9443 for TLS?
-MINION_GATEWAY_PORT=8990
-MINION_GATEWAY_TLS="false"
+MINION_GATEWAY_PORT=1443
+MINION_GATEWAY_TLS="true"
 
 CERT_ROOTDIR="$(pwd)/target"
 CA_CERT_FILE="${CERT_ROOTDIR}/CA.cert"
@@ -28,7 +28,7 @@ CLIENT_KEY_IS_PKCS12="false"
 CLIENT_PRIVATE_KEY_PASSWORD=""
 
 # Prevent hostname verification failures by setting the expected cert "hostname"
-OVERRIDE_AUTHORITY="opennms-minion-ssl-gateway"
+OVERRIDE_AUTHORITY="minion.onmshs.local"
 
 USAGE()
 {
@@ -81,7 +81,7 @@ if [ "${EXTRACT_TILT_CERTS}" == "true" ]; then
 
   openssl genrsa -out "$CERT_ROOTDIR/client.key.pkcs1" 2048
   openssl pkcs8 -topk8 -in "$CERT_ROOTDIR/client.key.pkcs1" -out "$CLIENT_KEY_FILE" -nocrypt
-  openssl req -new -key "$CLIENT_KEY_FILE" -out "$CERT_ROOTDIR/client.unsigned.cert" -subj "/C=CA/ST=TBD/L=TBD/O=OpenNMS/CN=local-minion/OU=L:TestLocation/OU=T:opennms-prime"
+  openssl req -new -key "$CLIENT_KEY_FILE" -out "$CERT_ROOTDIR/client.unsigned.cert" -subj "/C=CA/ST=TBD/L=TBD/O=OpenNMS/CN=local-minion/OU=L:${MINION_LOCATION}/OU=T:opennms-prime"
   openssl x509 -req -in "$CERT_ROOTDIR/client.unsigned.cert" -days 14 -CA "$CERT_ROOTDIR/client-ca.crt" -CAkey "$CERT_ROOTDIR/client-ca.key" -out "$CLIENT_CERT_FILE" -CAcreateserial
 
   kubectl get secret root-ca-certificate -ogo-template='{{index .data "ca.crt" }}' | base64 --decode > $CA_CERT_FILE
