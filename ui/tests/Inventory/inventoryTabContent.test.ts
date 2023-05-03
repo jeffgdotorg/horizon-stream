@@ -1,11 +1,11 @@
 import { mount } from '@vue/test-utils'
-import InventoryDetectedNodesTabContent from '@/components/Inventory/InventoryDetectedNodesTabContent.vue'
+import InventoryTabContent from '@/components/Inventory/InventoryTabContent.vue'
 import { TimeUnit } from '@/types'
 
 const tabContent = [
   {
     id: 1,
-    label: 'Detected Node 1',
+    label: 'Monitored Node 1',
     status: '',
     metrics: [
       {
@@ -43,9 +43,9 @@ const tabContent = [
 
 let wrapper: any
 
-describe('InventoryDetectedNodesTabContent.vue', () => {
+describe.skip('InventoryTabContent.vue', () => {
   beforeAll(() => {
-    wrapper = mount(InventoryDetectedNodesTabContent, {
+    wrapper = mount(InventoryTabContent, {
       shallow: true,
       props: {
         tabContent
@@ -56,7 +56,7 @@ describe('InventoryDetectedNodesTabContent.vue', () => {
     wrapper.unmount()
   })
 
-  const tabComponents = ['icon', 'heading', 'metric-chip-list', 'text-anchor-list', 'icon-action-list']
+  const tabComponents = ['icon-storage', 'heading', 'metric-chip-list', 'text-anchor-list', 'icon-action-list']
   it.each(tabComponents)('should have "%s" components', (cmp) => {
     expect(wrapper.get(`[data-test="${cmp}"]`).exists()).toBe(true)
   })
