@@ -100,6 +100,7 @@ public class PassiveDiscoveryService {
         if (!request.getLocation().equals(discoveryOpt.get().getLocation())) {
             validateDiscovery(tenantId, request);
         }
+
         validateSnmpPorts(request);
         validateCommunityStrings(request);
 
@@ -145,14 +146,14 @@ public class PassiveDiscoveryService {
         Optional<PassiveDiscovery> discoveryOpt = repository.findByTenantIdAndLocation(tenantId, dto.getLocation());
         if (discoveryOpt.isPresent()) {
             PassiveDiscovery discovery = discoveryOpt.get();
-            
-            if (discovery.getId() != dto.getId()) {
+
+            if (discovery.getId() == dto.getId()) {
                 throw new InventoryRuntimeException("Already a passive discovery with location " + dto.getLocation());
             }
         }
     }
 
-    private void validateSnmpPorts(PassiveDiscoveryUpsertDTO dto) {
+    public void validateSnmpPorts(PassiveDiscoveryUpsertDTO dto) {
         List<Integer> snmpPorts = dto.getPortsList();
         for (Integer port : snmpPorts) {
             if (port < Constants.SNMP_PORT_MIN || port > Constants.SNMP_PORT_MAX) {
@@ -176,6 +177,9 @@ public class PassiveDiscoveryService {
             if (c > 127){
                 throw new InventoryRuntimeException("All characters must be 7bit ascii");
             }
+        }
+        if (snmpCommunities.length() > 128) {
+            throw new InventoryRuntimeException("Snmp communities string is too long");
         }
     }
 
