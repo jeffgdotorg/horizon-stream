@@ -37,10 +37,7 @@ import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.server.model.TimeRangeUnit;
 import org.opennms.horizon.server.model.TimeSeriesQueryResult;
 import org.opennms.horizon.server.service.grpc.InventoryClient;
-import org.opennms.horizon.server.service.metrics.normalization.NormalizationService;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -52,8 +49,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_MONITOR_TYPE;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_SCAN_TYPE;
+import static org.opennms.horizon.server.service.metrics.Constants.AZURE_MONITOR_TYPE;
+import static org.opennms.horizon.server.service.metrics.Constants.AZURE_SCAN_TYPE;
 
 @Slf4j
 @GraphQLApi

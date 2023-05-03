@@ -40,24 +40,23 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_SCAN_TYPE;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.BW_IN_PERCENTAGE;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.BW_OUT_PERCENTAGE;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.NETWORK_IN_BITS;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.NETWORK_OUT_BITS;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_AZURE_TOTAL_NETWORK_IN_BITS;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_AZURE_TOTAL_NETWORK_OUT_BITS;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_BW_IN_UTIL_PERCENTAGE;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_BW_OUT_UTIL_PERCENTAGE;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_IN;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_OUT;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_IN_BITS;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_OUT_BITS;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_PREFIX;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.TOTAL_NETWORK_BYTES_IN;
-import static org.opennms.horizon.server.service.metrics.normalization.Constants.TOTAL_NETWORK_BYTES_OUT;
+import static org.opennms.horizon.server.service.metrics.Constants.AZURE_SCAN_TYPE;
+import static org.opennms.horizon.server.service.metrics.Constants.BW_IN_PERCENTAGE;
+import static org.opennms.horizon.server.service.metrics.Constants.BW_OUT_PERCENTAGE;
+import static org.opennms.horizon.server.service.metrics.Constants.NETWORK_IN_BITS;
+import static org.opennms.horizon.server.service.metrics.Constants.NETWORK_OUT_BITS;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_AZURE_TOTAL_NETWORK_IN_BITS;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_AZURE_TOTAL_NETWORK_OUT_BITS;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_BW_IN_UTIL_PERCENTAGE;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_BW_OUT_UTIL_PERCENTAGE;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_IN;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_OUT;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_TOTAL_NETWORK_IN_BITS;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_FOR_TOTAL_NETWORK_OUT_BITS;
+import static org.opennms.horizon.server.service.metrics.Constants.QUERY_PREFIX;
+import static org.opennms.horizon.server.service.metrics.Constants.TOTAL_NETWORK_BYTES_IN;
+import static org.opennms.horizon.server.service.metrics.Constants.TOTAL_NETWORK_BYTES_OUT;
 
 @Component
 public class QueryService {
@@ -93,26 +92,26 @@ public class QueryService {
                     return QUERY_PREFIX + encode(QUERY_FOR_TOTAL_NETWORK_BYTES_OUT) + rangeQuerySuffixForTotal;
                 case NETWORK_IN_BITS:
                     if (isAzureNode(node)) {
-                        return QUERY_PREFIX + encode(QUERY_FOR_AZURE_TOTAL_NETWORK_IN_BITS) + rangeQuerySuffix;
+                        return QUERY_PREFIX + QUERY_FOR_AZURE_TOTAL_NETWORK_IN_BITS + rangeQuerySuffix;
                     } else {
-                        return QUERY_PREFIX + encode(QUERY_FOR_TOTAL_NETWORK_IN_BITS) + rangeQuerySuffix;
+                        return QUERY_PREFIX + QUERY_FOR_TOTAL_NETWORK_IN_BITS + rangeQuerySuffix;
                     }
                 case NETWORK_OUT_BITS:
                     if (isAzureNode(node)) {
-                        return QUERY_PREFIX + encode(QUERY_FOR_AZURE_TOTAL_NETWORK_OUT_BITS) + rangeQuerySuffix;
+                        return QUERY_PREFIX + QUERY_FOR_AZURE_TOTAL_NETWORK_OUT_BITS + rangeQuerySuffix;
                     } else {
-                        return QUERY_PREFIX + encode(QUERY_FOR_TOTAL_NETWORK_OUT_BITS) + rangeQuerySuffix;
+                        return QUERY_PREFIX + QUERY_FOR_TOTAL_NETWORK_OUT_BITS + rangeQuerySuffix;
                     }
                 case BW_IN_PERCENTAGE:
                     if (isAzureNode(node)) {
                         throw new RuntimeException("Operation not supported for Azure node: " + BW_IN_PERCENTAGE);
                     }
-                    return QUERY_PREFIX + encode(QUERY_FOR_BW_IN_UTIL_PERCENTAGE) + rangeQuerySuffix;
+                    return QUERY_PREFIX + QUERY_FOR_BW_IN_UTIL_PERCENTAGE + rangeQuerySuffix;
                 case BW_OUT_PERCENTAGE:
                     if (isAzureNode(node)) {
                         throw new RuntimeException("Operation not supported for Azure node: " + BW_OUT_PERCENTAGE);
                     }
-                    return QUERY_PREFIX + encode(QUERY_FOR_BW_OUT_UTIL_PERCENTAGE) + rangeQuerySuffix;
+                    return QUERY_PREFIX + QUERY_FOR_BW_OUT_UTIL_PERCENTAGE + rangeQuerySuffix;
             }
         }
         String queryString = getQueryString(metricName, labels);
