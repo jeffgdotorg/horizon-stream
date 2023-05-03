@@ -97,9 +97,7 @@ public class PassiveDiscoveryService {
             throw new InventoryRuntimeException("Passive discovery not found for id: " + id);
         }
 
-        if (!request.getLocation().equals(discoveryOpt.get().getLocation())) {
-            validateDiscovery(tenantId, request);
-        }
+        validateDiscovery(tenantId, request);
 
         validateSnmpPorts(request);
         validateCommunityStrings(request);
@@ -147,7 +145,7 @@ public class PassiveDiscoveryService {
         if (discoveryOpt.isPresent()) {
             PassiveDiscovery discovery = discoveryOpt.get();
 
-            if (discovery.getId() == dto.getId()) {
+            if (discovery.getId() != dto.getId()) {
                 throw new InventoryRuntimeException("Already a passive discovery with location " + dto.getLocation());
             }
         }
